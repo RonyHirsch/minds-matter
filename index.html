@@ -1,0 +1,3730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minds Matter</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root { --bg-primary:#0d1117; --bg-secondary:#161b22; --bg-tertiary:#21262d; --text-primary:#e6edf3; --text-secondary:#8b949e; --text-muted:#6e7681; --border:#30363d; --accent:#58a6ff; --accent-subtle:#1f6feb; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'DM Sans',sans-serif; background:var(--bg-primary); color:var(--text-primary); line-height:1.6; }
+        .hamburger { position:fixed; top:1rem; right:1rem; z-index:1000; background:var(--bg-secondary); border:1px solid var(--border); border-radius:8px; padding:0.75rem; cursor:pointer; display:flex; flex-direction:column; gap:4px; }
+        .hamburger span { display:block; width:20px; height:2px; background:var(--text-primary); transition:0.3s; }
+        .hamburger.active span:nth-child(1) { transform:rotate(45deg) translate(4px,4px); }
+        .hamburger.active span:nth-child(2) { opacity:0; }
+        .hamburger.active span:nth-child(3) { transform:rotate(-45deg) translate(4px,-4px); }
+        .side-panel { position:fixed; top:0; right:-480px; width:480px; max-width:95vw; height:100vh; background:var(--bg-secondary); border-left:1px solid var(--border); z-index:999; transition:right 0.3s; overflow-y:auto; padding:1.5rem; }
+        .side-panel.active { right:0; }
+        .side-panel-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:998; opacity:0; visibility:hidden; transition:0.3s; }
+        .side-panel-overlay.active { opacity:1; visibility:visible; }
+        .side-panel h2 { margin-bottom:1rem; color:var(--accent); font-size:1.3rem; }
+        .side-panel h3 { margin-top:1.25rem; margin-bottom:0.5rem; color:var(--accent); font-size:1rem; }
+        .side-panel p { color:var(--text-secondary); margin-bottom:0.5rem; font-size:0.9rem; }
+        .side-panel table { width:100%; font-size:0.85rem; margin:0.5rem 0; border-collapse:collapse; }
+        .side-panel th, .side-panel td { padding:0.4rem 0.5rem; text-align:left; border-bottom:1px solid var(--border); }
+        .side-panel th { color:var(--text-muted); font-weight:500; }
+        .side-panel a { color:var(--accent); }
+        .container { max-width:1400px; margin:0 auto; padding:2rem; }
+        header { text-align:center; margin-bottom:2rem; padding-bottom:2rem; border-bottom:1px solid var(--border); }
+        h1 { font-size:2.5rem; font-weight:700; margin-bottom:0.5rem; color:var(--accent); }
+        .subtitle { color:var(--text-secondary); font-size:1.1rem; }
+        .stats-bar { display:flex; justify-content:center; gap:2rem; margin-top:1.5rem; flex-wrap:wrap; }
+        .stat { background:var(--bg-secondary); padding:0.75rem 1.5rem; border-radius:8px; border:1px solid var(--border); }
+        .stat-value { font-size:1.5rem; font-weight:700; color:var(--accent); }
+        .stat-label { font-size:0.85rem; color:var(--text-secondary); }
+        .tabs { display:flex; gap:0.5rem; margin-bottom:2rem; flex-wrap:wrap; justify-content:center; }
+        .tab { padding:0.75rem 1.5rem; background:var(--bg-secondary); border:1px solid var(--border); border-radius:8px; cursor:pointer; font-family:inherit; font-size:0.95rem; color:var(--text-secondary); transition:0.2s; }
+        .tab:hover { background:var(--bg-tertiary); color:var(--text-primary); }
+        .tab.active { background:var(--accent-subtle); border-color:var(--accent); color:var(--text-primary); }
+        .panel { display:none; } .panel.active { display:block; }
+        .controls { background:var(--bg-secondary); padding:1.5rem; border-radius:12px; margin-bottom:2rem; border:1px solid var(--border); }
+        .control-row { display:flex; gap:1rem; flex-wrap:wrap; align-items:flex-start; margin-bottom:1rem; }
+        .control-row:last-child { margin-bottom:0; }
+        .control-group { flex:1; min-width:200px; }
+        .control-group label { display:block; margin-bottom:0.5rem; font-size:0.85rem; color:var(--text-secondary); font-weight:500; }
+        select, input[type="text"] { width:100%; padding:0.7rem 1rem; background:var(--bg-tertiary); border:1px solid var(--border); border-radius:8px; color:var(--text-primary); font-family:inherit; font-size:0.95rem; }
+        select:focus, input:focus { outline:none; border-color:var(--accent); }
+        .checkbox-group { background:var(--bg-tertiary); border:1px solid var(--border); border-radius:8px; padding:0.5rem; max-height:200px; overflow-y:auto; }
+        .checkbox-item { display:flex; align-items:center; padding:0.25rem 0.5rem; border-radius:4px; }
+        .checkbox-item:hover { background:var(--bg-secondary); }
+        .checkbox-item input { margin-right:0.5rem; accent-color:var(--accent); width:16px; height:16px; }
+        .checkbox-item label { font-size:0.9rem; cursor:pointer; flex:1; }
+        .checkbox-item.select-all { border-bottom:1px solid var(--border); margin-bottom:0.5rem; padding-bottom:0.5rem; }
+        .checkbox-item.select-all label { font-weight:600; color:var(--accent); }
+        .checkbox-section { font-size:0.75rem; color:var(--text-muted); padding:0.5rem 0.5rem 0.25rem; text-transform:uppercase; letter-spacing:0.5px; }
+        .btn { padding:0.7rem 1.5rem; background:var(--accent-subtle); color:var(--text-primary); border:none; border-radius:8px; cursor:pointer; font-family:inherit; font-size:0.95rem; font-weight:500; transition:0.2s; align-self:flex-end; margin-top:auto; }
+        .btn:hover { background:var(--accent); }
+        .results { background:var(--bg-secondary); border-radius:12px; border:1px solid var(--border); overflow:hidden; }
+        .results-header { padding:1rem 1.5rem; background:var(--bg-tertiary); border-bottom:1px solid var(--border); }
+        .results-header h3 { font-weight:600; font-size:1rem; }
+        .results-body { padding:1.5rem; }
+        .chart-container { position:relative; height:500px; margin-bottom:1.5rem; }
+        .chart-grid { display:grid; gap:1rem; margin-bottom:1.5rem; width:100%; max-width:100%; overflow:hidden; }
+        .chart-grid.cols-2 { grid-template-columns:repeat(2,minmax(0,1fr)); }
+        .chart-grid.cols-3 { grid-template-columns:repeat(3,minmax(0,1fr)); }
+        .chart-grid.cols-4 { grid-template-columns:repeat(4,minmax(0,1fr)); }
+        .chart-cell { overflow:hidden; min-width:0; width:100%; box-sizing:border-box; }
+        .chart-cell canvas { max-width:100%; }
+        .chart-cell { background:var(--bg-tertiary); border-radius:8px; padding:0.75rem; display:flex; flex-direction:column; }
+        .chart-cell h4 { font-size:0.95rem; margin-bottom:0.5rem; color:var(--text-secondary); text-align:center; white-space:normal; word-wrap:break-word; overflow-wrap:break-word; line-height:1.3; min-height:2.6em; display:flex; align-items:center; justify-content:center; }
+        .chart-cell canvas { max-height:180px; flex:1; }
+        .chart-cell-legend { font-size:0.8rem; display:flex; flex-wrap:wrap; gap:0.4rem; justify-content:center; margin-bottom:0.5rem; padding:0.4rem; background:var(--bg-secondary); border-radius:4px; min-height:1.8em; align-items:center; }
+        .chart-cell-legend .legend-item { display:flex; align-items:center; gap:0.2rem; }
+        .chart-cell-legend .legend-color { width:12px; height:12px; border-radius:2px; }
+        table { width:100%; border-collapse:collapse; font-size:0.9rem; }
+        th, td { padding:0.5rem 0.75rem; text-align:left; border-bottom:1px solid var(--border); }
+        th { background:var(--bg-tertiary); font-weight:600; color:var(--text-secondary); }
+        .suppressed { color:var(--text-muted); font-style:italic; }
+        .free-text-list { max-height:500px; overflow-y:auto; }
+        .free-text-item { padding:0.75rem; border-bottom:1px solid var(--border); font-size:0.9rem; }
+        .free-text-item:hover { background:var(--bg-tertiary); }
+        .response-count { background:var(--bg-tertiary); padding:0.2rem 0.6rem; border-radius:100px; font-size:0.8rem; color:var(--text-secondary); margin-left:0.5rem; }
+        .crosstab-wrapper { overflow-x:auto; }
+        .info-box { background:rgba(88,166,255,0.1); border:1px solid var(--accent); border-radius:8px; padding:1rem; margin-bottom:1.5rem; font-size:0.9rem; }
+        .no-data { color:var(--text-muted); font-style:italic; padding:2rem; text-align:center; }
+        .filter-badge { display:inline-block; background:var(--accent-subtle); padding:0.15rem 0.5rem; border-radius:100px; font-size:0.75rem; margin-left:0.5rem; }
+        .filter-note { display:inline-block; background:rgba(255,166,87,0.2); color:#ffa657; padding:0.15rem 0.5rem; border-radius:100px; font-size:0.75rem; margin-left:0.5rem; }
+        .legend-bar { display:flex; flex-wrap:wrap; gap:0.75rem; justify-content:center; margin-bottom:1rem; padding:0.75rem; background:var(--bg-tertiary); border-radius:8px; }
+        .legend-bar .legend-title { font-weight:600; margin-right:0.5rem; color:#e6edf3; }
+        .legend-bar .legend-item { display:flex; align-items:center; gap:0.35rem; font-size:0.95rem; }
+        .legend-bar .legend-color { width:16px; height:16px; border-radius:3px; }
+        .filter-row { display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; }
+        .filter-col { }
+        footer { text-align:center; padding:2rem; margin-top:3rem; border-top:1px solid var(--border); color:var(--text-muted); font-size:0.85rem; }
+        @media (max-width:768px) { .container { padding:1rem; } h1 { font-size:1.75rem; } .control-row { flex-direction:column; } .chart-grid.cols-2,.chart-grid.cols-3,.chart-grid.cols-4 { grid-template-columns:repeat(2,1fr); } .filter-row { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+    <div class="side-panel-overlay" id="overlay"></div>
+    <div class="side-panel" id="side-panel">
+        <h2>About & Statistics</h2>
+        <h3>Survey Overview</h3>
+        <p>This explorer shows data collected as part of a survey about the perceived relationship between consciousness and moral status. More information can be found <a href="https://osf.io/preprints/" target="_blank" style="color:#58a6ff;">here</a>.</p>
+        <p style="margin-top:0.5rem;">Cite as: <a href="https://doi.org/10.17605/OSF.IO/XXXXX" target="_blank" style="color:#58a6ff;">doi.org/10.17605/OSF.IO/XXXXX</a></p>
+        <h3>Survey Statistics</h3>
+        <div id="survey-stats-container"></div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>Minds Matter</h1>
+            <p class="subtitle">An explorer of results from a survey about the relationship between consciousness and moral status</p>
+            <div class="stats-bar">
+                <div class="stat"><div class="stat-value" id="total-respondents">—</div><div class="stat-label">Respondents</div></div>
+                <div class="stat"><div class="stat-value" id="total-questions">&gt;100</div><div class="stat-label">Questions</div></div>
+                <div class="stat"><div class="stat-value" id="total-countries">—</div><div class="stat-label">Countries</div></div>
+            </div>
+        </header>
+
+        <div class="tabs">
+            <button class="tab active" data-panel="distributions">Question Data</button>
+            <button class="tab" data-panel="crosstabs">Cross Questions <span style="font-size:0.7rem;background:#f0883e;color:#0d1117;padding:0.1rem 0.3rem;border-radius:3px;margin-left:0.3rem;vertical-align:middle;">beta</span></button>
+            <!-- Free-Text tab hidden - now integrated into Distributions
+            <button class="tab" data-panel="freetext">Free-Text Responses</button>
+            -->
+        </div>
+
+        <div id="distributions" class="panel active">
+            <div class="controls">
+                <div class="control-row">
+                    <div class="control-group">
+                        <label>Topic</label>
+                        <select id="dist-category"><option value="">Select a topic...</option></select>
+                    </div>
+                </div>
+                <div class="control-row">
+                    <div class="control-group">
+                        <label>Filter Responses</label>
+                        <div class="checkbox-group" id="sample-filter-box"></div>
+                    </div>
+                    <div class="control-group" style="flex:1.5;">
+                        <label>Question(s)</label>
+                        <div id="variable-container"><select id="dist-variable"><option value="">Select a topic first...</option></select></div>
+                    </div>
+                </div>
+                <div id="free-text-container" style="display:none;"></div>
+            </div>
+            <div class="results" id="dist-results">
+                <div class="results-header" style="display:flex;justify-content:space-between;align-items:center;">
+                    <h3 id="dist-title">Select a variable to view its distribution</h3>
+                    <button id="download-chart-btn" class="btn" style="display:none;padding:0.3rem 0.6rem;font-size:0.8rem;" onclick="downloadCharts()">⬇ Download PNG</button>
+                </div>
+                <div class="results-body">
+                    <div id="dist-legend-area"></div>
+                    <div id="dist-chart-area"></div>
+                    <div id="dist-table-container"></div>
+                    <div id="dist-freetext-area" style="display:none;margin-top:1.5rem;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="crosstabs" class="panel">
+            <div class="info-box"><strong>How to use:</strong> Cross-tabulate survey questions with demographics, experience levels, or other questions.</div>
+            <div class="controls">
+                <div class="control-row">
+                    <div class="control-group"><label>Variable 1 (rows)</label><select id="cross-var1"><option value="">Select...</option></select></div>
+                    <div class="control-group"><label>Variable 2 (columns)</label><select id="cross-var2"><option value="">Select...</option></select></div>
+                    <button class="btn" id="cross-show">Show Cross-Tab</button>
+                </div>
+            </div>
+            <div class="results" id="cross-results">
+                <div class="results-header"><h3 id="cross-title">Select variables to view cross-tabulation</h3></div>
+                <div class="results-body">
+                    <div class="chart-container" id="cross-chart-container" style="display:none;"><canvas id="cross-chart"></canvas></div>
+                    <div class="crosstab-wrapper" id="cross-table-container"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="freetext" class="panel">
+            <div class="info-box"><strong>Note:</strong> Responses shown in random order without demographic links.</div>
+            <div class="controls">
+                <div class="control-row">
+                    <div class="control-group" style="flex:2;"><label>Question</label><select id="freetext-question"><option value="">Select...</option></select></div>
+                    <button class="btn" id="freetext-show">Show Responses</button>
+                </div>
+            </div>
+            <div class="results" id="freetext-results">
+                <div class="results-header"><h3 id="freetext-title">Select a question</h3></div>
+                <div class="results-body">
+                    <div style="margin-bottom:1rem;"><input type="text" id="freetext-search" placeholder="Search responses..."></div>
+                    <div class="free-text-list" id="freetext-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2025 Rony Hirschhorn</p>
+            <p style="margin-top:0.5rem;"><a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" style="color:var(--text-muted);">License: CC-BY 4.0</a></p>
+            <p style="margin-top:0.5rem;color:var(--text-muted);">Cite as: <a href="https://doi.org/10.17605/OSF.IO/XXXXX" target="_blank" style="color:var(--text-muted);">doi.org/10.17605/OSF.IO/XXXXX</a></p>
+        </footer>
+    </div>
+
+<script>
+let DATA = {}, charts = {};
+
+// Set Chart.js global defaults for consistent fonts
+Chart.defaults.font.family = "'DM Sans', sans-serif";
+Chart.defaults.font.size = 12;
+Chart.defaults.color = '#8b949e';
+
+// Rating scale for consciousness/moral status attributions (1-4)
+const RL = {'1': 'Does Not Have', '2': "Probably Doesn't Have", '3': 'Probably Has', '4': 'Has'};
+// Agreement scale for graded consciousness questions - general (1-4)
+const AL = {'1': 'Strongly Disagree', '2': 'Disagree', '3': 'Agree', '4': 'Strongly Agree'};
+// Graded agreement scale for Equal/Unequal/Incomparable (1-4) - just numbers
+const GL = {'1': '1', '2': '2', '3': '3', '4': '4'};
+// Experience level scale (1-5)
+const EL = {'1': 'None', '2': '2', '3': '3', '4': '4', '5': 'Extremely'};
+function RLab(l) { return RL[l] || l; }
+function ALab(l) { return AL[l] || l; }
+function GLab(l) { return GL[l] || l; }
+function ELab(l) { return EL[l] || l; }
+
+async function loadData() {
+    const base = window.location.pathname.includes('.html') ? window.location.pathname.replace(/\/[^/]*$/, '/') : window.location.pathname;
+    const dataPath = base + 'data/';
+    try {
+        const [meta, dist, cross, ft, stats, es, fd] = await Promise.all([
+            fetch(dataPath + 'metadata.json').then(r => r.json()),
+            fetch(dataPath + 'distributions.json').then(r => r.json()),
+            fetch(dataPath + 'crosstabs.json').then(r => r.json()),
+            fetch(dataPath + 'freetext.json').then(r => r.json()),
+            fetch(dataPath + 'survey_stats.json').then(r => r.json()),
+            fetch(dataPath + 'entity_stats.json').then(r => r.json()),
+            fetch(dataPath + 'filtered_distributions.json').then(r => r.json())
+        ]);
+        DATA = {metadata: meta, distributions: dist, crosstabs: cross, freetext: ft, surveyStats: stats, entityStats: es, filteredDistributions: fd};
+        console.log('=== METADATA LOADED ===');
+        console.log('sample_values:', DATA.metadata.sample_values);
+        console.log('source_values:', DATA.metadata.source_values);
+        console.log('entity_list:', DATA.metadata.entity_list?.length);
+        console.log('question_groups:', Object.keys(DATA.metadata.question_groups || {}));
+        console.log('freetext keys:', Object.keys(DATA.freetext || {}));
+        console.log('freetext[all] keys:', Object.keys(DATA.freetext?.['all'] || {}));
+        console.log('free_text_by_topic:', DATA.metadata.free_text_by_topic);
+        initUI();
+    } catch (e) { console.error('Load error:', e); document.getElementById('dist-title').textContent = 'Error loading data'; }
+}
+
+function initUI() {
+    document.getElementById('total-respondents').textContent = DATA.metadata.total_respondents?.toLocaleString() || '—';
+    if (DATA.metadata.demographics?.country?.values) document.getElementById('total-countries').textContent = DATA.metadata.demographics.country.values.length;
+    populateSampleFilter();
+    populateCategoryDropdown();
+    populateCrosstabDropdowns();
+    populateFreetextDropdown();
+    setupEvents();
+    buildSurveyStats();
+}
+
+function DN(col) {
+    const dn = DATA.metadata.display_names?.[col];
+    return dn ? {s: dn[0], f: dn[1]} : {s: col?.substring?.(0,40) || col, f: col};
+}
+
+function capitalizePhase(name) {
+    if (!name) return name;
+    const lower = name.toLowerCase();
+    if (lower === 'preregistered' || lower === 'pre-registered') return 'Pre-registered';
+    if (lower === 'exploratory') return 'Exploratory';
+    if (lower === 'follow-up' || lower === 'follow up') return 'Follow-up';
+    if (lower === 'replication') return 'Replication';
+    return name.charAt(0).toUpperCase() + name.slice(1);
+}
+
+function buildSurveyStats() {
+    const s = DATA.surveyStats; if (!s) return;
+    let h = `<table><tr><th>Statistic</th><th>Value</th></tr>`;
+    h += `<tr><td>Total Respondents</td><td>${s.total_respondents?.toLocaleString() || '—'}</td></tr>`;
+    if (s.duration?.all) h += `<tr><td>Mean Duration</td><td>${(s.duration.all.mean/60).toFixed(1)} min</td></tr>`;
+    if (s.date_range?.all) h += `<tr><td>Data Collection</td><td>${s.date_range.all.start} – ${s.date_range.all.end}</td></tr>`;
+    document.getElementById('survey-stats-container').innerHTML = h + '</table>';
+}
+
+function populateSampleFilter() {
+    const box = document.getElementById('sample-filter-box');
+    const samples = DATA.metadata.sample_values || [];
+    const sources = DATA.metadata.source_values || [];
+    
+    let h = '<div class="checkbox-item"><input type="checkbox" id="f-none" checked><label for="f-none">All respondents (no filter)</label></div>';
+    
+    if (samples.length > 0 || sources.length > 0) {
+        h += '<div class="filter-row">';
+        
+        // Left column: Sample Phase
+        h += '<div class="filter-col">';
+        if (samples.length > 0) {
+            h += '<div class="checkbox-section">Sample Phase</div>';
+            samples.forEach(v => {
+                const displayName = capitalizePhase(v);
+                h += `<div class="checkbox-item"><input type="checkbox" id="f-s-${v}" data-t="sample" data-v="${v}"><label for="f-s-${v}">${displayName}</label></div>`;
+            });
+        }
+        h += '</div>';
+        
+        // Right column: Recruitment Source
+        h += '<div class="filter-col">';
+        if (sources.length > 0) {
+            h += '<div class="checkbox-section">Recruitment</div>';
+            sources.forEach(v => {
+                const displayName = v.charAt(0).toUpperCase() + v.slice(1);
+                h += `<div class="checkbox-item"><input type="checkbox" id="f-r-${v}" data-t="source" data-v="${v}"><label for="f-r-${v}">${displayName}</label></div>`;
+            });
+        }
+        h += '</div>';
+        
+        h += '</div>';
+    }
+    
+    box.innerHTML = h;
+    
+    box.querySelectorAll('input').forEach(cb => cb.addEventListener('change', () => {
+        if (cb.id === 'f-none' && cb.checked) {
+            box.querySelectorAll('input:not(#f-none)').forEach(x => x.checked = false);
+        } else if (cb.id !== 'f-none' && cb.checked) {
+            document.getElementById('f-none').checked = false;
+        }
+        if (!Array.from(box.querySelectorAll('input:not(#f-none)')).some(x => x.checked)) {
+            document.getElementById('f-none').checked = true;
+        }
+    }));
+}
+
+function getFilter() {
+    const box = document.getElementById('sample-filter-box');
+    if (document.getElementById('f-none')?.checked) {
+        console.log('[getFilter] All respondents selected');
+        return {k:'all', d:DATA.distributions, n:DATA.metadata.total_respondents, e:DATA.entityStats?.all||{}, rc:DATA.metadata.multiselect_respondent_counts||{}};
+    }
+    const smp = [], src = [];
+    box.querySelectorAll('input:checked').forEach(cb => {
+        if (cb.dataset.t === 'sample') smp.push(cb.dataset.v);
+        if (cb.dataset.t === 'source') src.push(cb.dataset.v);
+    });
+    
+    console.log('[getFilter] Samples:', smp, 'Sources:', src);
+    
+    // If nothing selected, fallback to all
+    if (smp.length === 0 && src.length === 0) {
+        console.log('[getFilter] Nothing selected, fallback to all');
+        return {k:'all', d:DATA.distributions, n:DATA.metadata.total_respondents, e:DATA.entityStats?.all||{}, rc:DATA.metadata.multiselect_respondent_counts||{}};
+    }
+    
+    // Check if all sources are selected (equivalent to no source filter)
+    // Compare case-insensitively since source values might be capitalized
+    const srcLower = src.map(s => s.toLowerCase());
+    const allSourcesLower = (DATA.metadata.source_values || []).map(s => s.toLowerCase());
+    const allSourcesSelected = allSourcesLower.length > 0 && allSourcesLower.every(s => srcLower.includes(s));
+    const effectiveSrc = allSourcesSelected ? [] : src;  // If all sources selected, treat as no source filter
+    
+    // Single sample, no effective source filter
+    if (smp.length === 1 && effectiveSrc.length === 0) {
+        const k = `sample_${smp[0]}`;
+        const fd = DATA.filteredDistributions?.[k];
+        if (fd) {
+            return {k, d:fd.distributions, n:fd.n, e:DATA.entityStats?.[k]||DATA.entityStats?.all||{}, rc:fd.multiselect_respondent_counts||{}};
+        }
+    }
+    
+    // No sample filter, single source
+    if (smp.length === 0 && effectiveSrc.length === 1) {
+        const k = `source_${effectiveSrc[0]}`;
+        const fd = DATA.filteredDistributions?.[k];
+        if (fd) {
+            return {k, d:fd.distributions, n:fd.n, e:DATA.entityStats?.[k]||DATA.entityStats?.all||{}, rc:fd.multiselect_respondent_counts||{}};
+        }
+    }
+    
+    // No sample filter, all sources selected (equivalent to all respondents)
+    if (smp.length === 0 && allSourcesSelected) {
+        return {k:'all', d:DATA.distributions, n:DATA.metadata.total_respondents, e:DATA.entityStats?.all||{}, rc:DATA.metadata.multiselect_respondent_counts||{}};
+    }
+    
+    // Single sample + single source
+    if (smp.length === 1 && effectiveSrc.length === 1) {
+        const k = `sample_${smp[0]}__source_${effectiveSrc[0]}`;
+        const fd = DATA.filteredDistributions?.[k];
+        if (fd) {
+            return {k, d:fd.distributions, n:fd.n, e:DATA.entityStats?.[k]||DATA.entityStats?.all||{}, rc:fd.multiselect_respondent_counts||{}};
+        }
+    }
+    
+    // Multiple samples (with or without source filter)
+    const keysToMerge = [];
+    
+    if (smp.length > 0 && effectiveSrc.length === 0) {
+        // Multiple samples, no source filter - merge sample distributions
+        smp.forEach(s => keysToMerge.push(`sample_${s}`));
+    } else if (smp.length > 0 && effectiveSrc.length === 1) {
+        // Multiple samples with single source - merge sample__source combinations
+        smp.forEach(s => keysToMerge.push(`sample_${s}__source_${effectiveSrc[0]}`));
+    } else if (smp.length > 0 && effectiveSrc.length > 1) {
+        // Multiple samples with multiple (but not all) sources - complex case
+        smp.forEach(s => {
+            effectiveSrc.forEach(srcVal => {
+                keysToMerge.push(`sample_${s}__source_${srcVal}`);
+            });
+        });
+    } else if (smp.length === 0 && effectiveSrc.length > 1) {
+        // No samples, multiple sources - merge source distributions
+        effectiveSrc.forEach(s => keysToMerge.push(`source_${s}`));
+    }
+    
+    // Merge distributions from multiple filters
+    const mergedDists = {};
+    const mergedRc = {};
+    let totalN = 0;
+    let mergedEntityStats = {};
+    
+    console.log('[getFilter] Keys to merge:', keysToMerge);
+    console.log('[getFilter] Available filteredDistributions keys:', Object.keys(DATA.filteredDistributions || {}));
+    
+    for (const k of keysToMerge) {
+        const fd = DATA.filteredDistributions?.[k];
+        console.log(`[getFilter] Looking up key "${k}":`, fd ? `found (n=${fd.n})` : 'NOT FOUND');
+        if (fd) {
+            totalN += fd.n;
+            for (const [distKey, distData] of Object.entries(fd.distributions || {})) {
+                if (!mergedDists[distKey]) mergedDists[distKey] = {};
+                for (const [valKey, count] of Object.entries(distData || {})) {
+                    if (typeof count === 'number') {
+                        mergedDists[distKey][valKey] = (mergedDists[distKey][valKey] || 0) + count;
+                    } else if (typeof count === 'string' && count.startsWith('<')) {
+                        if (!mergedDists[distKey][valKey]) mergedDists[distKey][valKey] = count;
+                    }
+                }
+            }
+            for (const [rcKey, rcCount] of Object.entries(fd.multiselect_respondent_counts || {})) {
+                mergedRc[rcKey] = (mergedRc[rcKey] || 0) + rcCount;
+            }
+            // Merge entity stats
+            const es = DATA.entityStats?.[k] || {};
+            for (const [entity, stats] of Object.entries(es)) {
+                if (!mergedEntityStats[entity]) {
+                    mergedEntityStats[entity] = {
+                        short_name: stats.short_name,
+                        consciousness_values: [],
+                        moral_status_values: [],
+                        paired_data: [],
+                        paired_n: 0,
+                        c_n: 0,
+                        ms_n: 0
+                    };
+                }
+                if (stats.consciousness_values) mergedEntityStats[entity].consciousness_values.push(...stats.consciousness_values);
+                if (stats.moral_status_values) mergedEntityStats[entity].moral_status_values.push(...stats.moral_status_values);
+                if (stats.paired_data) mergedEntityStats[entity].paired_data.push(...stats.paired_data);
+                mergedEntityStats[entity].paired_n = (mergedEntityStats[entity].paired_n || 0) + (stats.paired_n || 0);
+                mergedEntityStats[entity].c_n = (mergedEntityStats[entity].c_n || 0) + (stats.c_n || 0);
+                mergedEntityStats[entity].ms_n = (mergedEntityStats[entity].ms_n || 0) + (stats.ms_n || 0);
+            }
+        }
+    }
+    
+    // Calculate means/sds/sems for merged entity stats
+    for (const entity of Object.keys(mergedEntityStats)) {
+        const es = mergedEntityStats[entity];
+        if (es.consciousness_values && es.consciousness_values.length > 0) {
+            const cVals = es.consciousness_values;
+            const n = cVals.length;
+            es.c_mean = cVals.reduce((a, b) => a + b, 0) / n;
+            es.c_std = Math.sqrt(cVals.reduce((sum, v) => sum + Math.pow(v - es.c_mean, 2), 0) / n);
+            es.c_sem = es.c_std / Math.sqrt(n);
+            es.c_n = n;
+        }
+        if (es.moral_status_values && es.moral_status_values.length > 0) {
+            const mVals = es.moral_status_values;
+            const n = mVals.length;
+            es.ms_mean = mVals.reduce((a, b) => a + b, 0) / n;
+            es.ms_std = Math.sqrt(mVals.reduce((sum, v) => sum + Math.pow(v - es.ms_mean, 2), 0) / n);
+            es.ms_sem = es.ms_std / Math.sqrt(n);
+            es.ms_n = n;
+        }
+        if (es.paired_data && es.paired_data.length > 0) {
+            es.scatter_data = es.paired_data;
+            es.paired_n = es.paired_data.length;
+        }
+    }
+    
+    const mergedKey = keysToMerge.join('+');
+    console.log('[getFilter] Final merged N:', totalN, 'Key:', mergedKey);
+    return {k: mergedKey, d: mergedDists, n: totalN, e: mergedEntityStats, rc: mergedRc};
+}
+
+
+function populateCategoryDropdown() {
+    const sel = document.getElementById('dist-category');
+    sel.innerHTML = `
+        <option value="">Select a topic...</option>
+        <option value="ms_attr">Moral Status Attributions</option>
+        <option value="c_attr">Consciousness Attributions</option>
+        <option value="combined_attr">Entity Combined Attributions</option>
+        <option value="earth_danger">Earth in Danger</option>
+        <option value="ics">Intentions, Consciousness, Sensations</option>
+        <option value="kill_test">Kill to Pass a Test</option>
+        <option value="moral_cons">Moral Considerations</option>
+        <option value="graded_c">Graded Consciousness</option>
+        <option value="c_intel">Consciousness & Intelligence</option>
+        <option value="zombie_pill">Zombie Pill</option>
+        <option value="g_Calculated Variables">Calculated Variables</option>
+        <option value="demo">Demographics</option>
+        <option value="experience">Experience</option>
+        <option value="education">Education</option>
+        <option value="moral_features">Important Features for Moral Considerations</option>
+    `;
+    sel.addEventListener('change', updateVariableUI);
+}
+
+function buildCheckboxGroup(items, prefix) {
+    let h = '<div class="checkbox-group" id="vbox">';
+    h += '<div class="checkbox-item select-all"><input type="checkbox" id="v-all"><label for="v-all">Select All</label></div>';
+    items.forEach((item, i) => {
+        h += `<div class="checkbox-item"><input type="checkbox" id="v-${prefix}-${i}" data-k="${item.k}" data-c="${item.c}"><label for="v-${prefix}-${i}">${item.l}</label></div>`;
+    });
+    h += '</div>';
+    return h;
+}
+
+function updateVariableUI() {
+    const cat = document.getElementById('dist-category').value;
+    const vc = document.getElementById('variable-container');
+    const ftContainer = document.getElementById('free-text-container');
+    
+    // Clear free-text-container at the start (will be repopulated by addFreeTextSection if needed)
+    if (ftContainer) {
+        ftContainer.style.display = 'none';
+        ftContainer.innerHTML = '';
+    }
+    
+    if (!cat) {
+        vc.innerHTML = '<select id="dist-variable"><option value="">Select a topic first...</option></select>';
+        return;
+    }
+    
+    const entities = DATA.metadata.entity_list || [];
+    const qGroups = DATA.metadata.question_groups || {};
+    const surveyQs = DATA.metadata.survey_questions || {};
+    
+    // Sort entities alphabetically by short name
+    const sortedEntities = [...entities].sort((a, b) => a.short.localeCompare(b.short));
+    
+    // MS Attributions - checkbox list of entities
+    if (cat === 'ms_attr') {
+        let h = '<div class="checkbox-group" id="vbox">';
+        h += '<div class="checkbox-item select-all"><input type="checkbox" id="v-all"><label for="v-all">Select All</label></div>';
+        sortedEntities.forEach(e => h += `<div class="checkbox-item"><input type="checkbox" id="v-ms-${e.key}" data-entity="${e.key}" data-type="ms"><label for="v-ms-${e.key}">${e.short}</label></div>`);
+        h += '</div>';
+        vc.innerHTML = h;
+        document.getElementById('v-all').addEventListener('change', ev => vc.querySelectorAll('input:not(#v-all)').forEach(x => x.checked = ev.target.checked));
+        return;
+    }
+    
+    // C Attributions - checkbox list of entities
+    if (cat === 'c_attr') {
+        let h = '<div class="checkbox-group" id="vbox">';
+        h += '<div class="checkbox-item select-all"><input type="checkbox" id="v-all"><label for="v-all">Select All</label></div>';
+        sortedEntities.forEach(e => h += `<div class="checkbox-item"><input type="checkbox" id="v-c-${e.key}" data-entity="${e.key}" data-type="c"><label for="v-c-${e.key}">${e.short}</label></div>`);
+        h += '</div>';
+        vc.innerHTML = h;
+        document.getElementById('v-all').addEventListener('change', ev => vc.querySelectorAll('input:not(#v-all)').forEach(x => x.checked = ev.target.checked));
+        return;
+    }
+    
+    // Combined Attributions - checkbox list of entities for scatter plot
+    if (cat === 'combined_attr') {
+        let h = '<div class="checkbox-group" id="vbox">';
+        h += '<div class="checkbox-item select-all"><input type="checkbox" id="v-all"><label for="v-all">Select All</label></div>';
+        sortedEntities.forEach(e => h += `<div class="checkbox-item"><input type="checkbox" id="v-comb-${e.key}" data-entity="${e.key}" data-type="combined"><label for="v-comb-${e.key}">${e.short}</label></div>`);
+        h += '</div>';
+        // Display mode selector with explanation on the right
+        h += '<div class="display-mode-selector" style="margin-top:1rem;padding-top:0.75rem;border-top:1px solid var(--border);display:flex;gap:1.5rem;align-items:flex-start;">';
+        h += '<div style="flex-shrink:0;">';
+        h += '<label style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:0.5rem;display:block;">Display Mode:</label>';
+        h += '<div style="display:flex;gap:0.75rem;flex-wrap:wrap;font-size:0.95rem;">';
+        h += '<label style="display:flex;align-items:center;gap:0.3rem;cursor:pointer;"><input type="radio" name="display-mode" value="mean"> Mean</label>';
+        h += '<label style="display:flex;align-items:center;gap:0.3rem;cursor:pointer;"><input type="radio" name="display-mode" value="individual"> Individual Data</label>';
+        h += '<label style="display:flex;align-items:center;gap:0.3rem;cursor:pointer;"><input type="radio" name="display-mode" value="both" checked> Both</label>';
+        h += '</div></div>';
+        // Explanation box on the right
+        h += '<div style="font-size:0.75rem;color:var(--text-muted);background:var(--bg-secondary);padding:0.4rem 0.6rem;border-radius:4px;line-height:1.35;flex:1;">';
+        h += '<strong>Mean:</strong> Shows the average attribution (Consciousness, Moral Status) for each entity. Hover to see ± Standard Error.<br>';
+        h += '<strong>Individual Data:</strong> Shows all individual responses as jittered points.<br>';
+        h += '<strong>Both:</strong> Shows both mean and individual responses.';
+        h += '</div></div>';
+        vc.innerHTML = h;
+        document.getElementById('v-all').addEventListener('change', ev => vc.querySelectorAll('input[type="checkbox"]:not(#v-all)').forEach(x => x.checked = ev.target.checked));
+        // Add listener for display mode changes
+        vc.querySelectorAll('input[name="display-mode"]').forEach(r => r.addEventListener('change', showDist));
+        return;
+    }
+    
+    // Checkbox group categories (multi-select)
+    const checkboxGroups = {
+        'earth_danger': 'Earth in Danger',
+        'ics': 'Intentions, Consciousness, Sensations',
+        'moral_cons': 'Moral Considerations',
+        'graded_c': 'Graded Consciousness',
+        'c_intel': 'Consciousness & Intelligence'
+    };
+    
+    // Unified Experience category - combines levels and sources
+    if (cat === 'experience') {
+        const expLevels = DATA.metadata.experience_levels || {};
+        const expSources = DATA.metadata.experience_sources || {};
+        
+        // Build items: each experience level followed by its source
+        let h = '<div class="checkbox-group" id="vbox">';
+        h += '<div class="checkbox-item select-all"><input type="checkbox" id="v-all"><label for="v-all">Select All</label></div>';
+        
+        // Order: AI, Animal, Consciousness, Ethics
+        const expOrder = ['ai_exp', 'animal_exp', 'consciousness_exp', 'ethics_exp'];
+        const srcMap = {'ai_exp': 'ai_source', 'animal_exp': 'animal_types', 'consciousness_exp': 'consciousness_source', 'ethics_exp': 'ethics_source'};
+        
+        let idx = 0;
+        expOrder.forEach(expKey => {
+            const expData = expLevels[expKey];
+            const srcKey = srcMap[expKey];
+            const srcData = expSources[srcKey];
+            
+            if (expData) {
+                const expLabel = DN(expData.label).s;
+                h += `<div class="checkbox-item"><input type="checkbox" id="v-exp-${idx}" data-k="exp_${expKey}" data-c="${expData.label}" data-type="level"><label for="v-exp-${idx}">${expLabel}</label></div>`;
+                idx++;
+            }
+            if (srcData) {
+                const srcLabel = DN(srcData.label).s;  // No (Source) suffix
+                h += `<div class="checkbox-item" style="margin-left:1rem;"><input type="checkbox" id="v-exp-${idx}" data-k="expsrc_${srcKey}" data-c="${srcData.label}" data-type="source"><label for="v-exp-${idx}">${srcLabel}</label></div>`;
+                idx++;
+            }
+        });
+        
+        h += '</div>';
+        vc.innerHTML = h;
+        document.getElementById('v-all').addEventListener('change', ev => vc.querySelectorAll('input:not(#v-all)').forEach(x => x.checked = ev.target.checked));
+        addFreeTextSection(cat, vc);
+        return;
+    }
+    
+    // Kill to Pass a Test - special nested structure with No Kill Reasons
+    if (cat === 'kill_test') {
+        const kptCols = qGroups['Kill to Pass a Test'] || [];
+        const optionLabels = DATA.metadata.question_option_labels || {};
+        let items = [];
+        Object.entries(surveyQs).forEach(([k, cn]) => {
+            if (kptCols.includes(cn)) {
+                // Use custom option label if available
+                const label = optionLabels[cn] || DN(cn).s;
+                items.push({k: `survey_${k}`, c: cn, l: label});
+            }
+        });
+        
+        let h = '<div class="checkbox-group" id="vbox">';
+        // Select All checkbox
+        h += '<div class="checkbox-item select-all"><input type="checkbox" id="v-kpt-all"><label for="v-kpt-all">Select All</label></div>';
+        // Prefix text
+        h += '<div class="checkbox-prefix" style="font-size:0.95rem;color:var(--text-secondary);padding:0.5rem 0 0.25rem;font-style:italic;">Would you kill this entity to pass an important test?<br>A creature/system that...</div>';
+        // Nested entity checkboxes
+        items.forEach((item, i) => {
+            h += `<div class="checkbox-item" style="margin-left:1rem;"><input type="checkbox" id="v-kpt-${i}" data-k="${item.k}" data-c="${item.c}" class="kpt-entity"><label for="v-kpt-${i}">${item.l}</label></div>`;
+        });
+        h += '</div>';
+        vc.innerHTML = h;
+        
+        // Wire up the "Select All" header to toggle all entity checkboxes
+        document.getElementById('v-kpt-all').addEventListener('change', ev => {
+            vc.querySelectorAll('.kpt-entity').forEach(x => x.checked = ev.target.checked);
+        });
+        addFreeTextSection(cat, vc);
+        return;
+    }
+    
+    if (checkboxGroups[cat] !== undefined) {
+        const groupName = checkboxGroups[cat];
+        let items = [];
+        const optionLabels = DATA.metadata.question_option_labels || {};
+        
+        if (groupName) {
+            // Other groups - build from question_groups
+            const cols = qGroups[groupName] || [];
+            console.log(`Category ${cat} (${groupName}): looking for ${cols.length} columns`);
+            Object.entries(surveyQs).forEach(([k, cn]) => {
+                if (cols.includes(cn)) {
+                    // Use custom option label if available, otherwise use display name
+                    const label = optionLabels[cn] || DN(cn).s;
+                    items.push({k: `survey_${k}`, c: cn, l: label});
+                }
+            });
+            console.log(`Category ${cat}: found ${items.length} items`);
+        }
+        
+        if (items.length > 0) {
+            // Build custom checkbox group with prefix for certain categories
+            let h = '<div class="checkbox-group" id="vbox">';
+            h += '<div class="checkbox-item select-all"><input type="checkbox" id="v-all"><label for="v-all">Select All</label></div>';
+            
+            // Add prefix text for specific categories
+            if (cat === 'ics') {
+                h += '<div class="checkbox-prefix" style="font-size:0.95rem;color:var(--text-secondary);padding:0.5rem 0 0.25rem;font-style:italic;">Do you think a creature/system can...</div>';
+            } else if (cat === 'earth_danger') {
+                h += '<div class="checkbox-prefix" style="font-size:0.95rem;color:var(--text-secondary);padding:0.5rem 0 0.25rem;font-style:italic;">Who would you save?</div>';
+            }
+            
+            items.forEach((item, i) => {
+                h += `<div class="checkbox-item"><input type="checkbox" id="v-${cat}-${i}" data-k="${item.k}" data-c="${item.c}"><label for="v-${cat}-${i}">${item.l}</label></div>`;
+            });
+            h += '</div>';
+            vc.innerHTML = h;
+            document.getElementById('v-all').addEventListener('change', ev => vc.querySelectorAll('input:not(#v-all)').forEach(x => x.checked = ev.target.checked));
+            addFreeTextSection(cat, vc);
+            return;
+        }
+    }
+    
+    // Old-style group categories (dropdown) for remaining g_ prefixed
+    if (cat.startsWith('g_')) {
+        const gn = cat.replace('g_', '');
+        const cols = qGroups[gn] || [];
+        let opts = [];
+        Object.entries(surveyQs).forEach(([k, cn]) => {
+            if (cols.includes(cn)) opts.push({k: `survey_${k}`, l: DN(cn).s, c: cn});
+        });
+        let h = '<select id="dist-variable"><option value="">Select a question...</option>';
+        opts.forEach(o => h += `<option value="${o.k}" data-c="${o.c}">${o.l}</option>`);
+        vc.innerHTML = h + '</select>';
+        return;
+    }
+    
+    // Standard dropdown categories
+    let opts = [];
+    
+    // Demographics - checkbox group for multi-select
+    if (cat === 'demo') {
+        const demos = DATA.metadata.demographics || {};
+        let h = '<div class="checkbox-group" id="vbox">';
+        h += '<div class="checkbox-item select-all"><input type="checkbox" id="v-all"><label for="v-all">Select All</label></div>';
+        Object.entries(demos).filter(([k]) => k !== 'education').forEach(([k, o], i) => {
+            const label = DN(o.label).s;
+            h += `<div class="checkbox-item"><input type="checkbox" id="v-demo-${i}" data-k="demo_${k}" data-c="${o.label}"><label for="v-demo-${i}">${label}</label></div>`;
+        });
+        h += '</div>';
+        vc.innerHTML = h;
+        document.getElementById('v-all').addEventListener('change', ev => vc.querySelectorAll('input:not(#v-all)').forEach(x => x.checked = ev.target.checked));
+        addFreeTextSection(cat, vc);
+        return;
+    }
+    
+    if (cat === 'expsrc') Object.entries(DATA.metadata.experience_sources || {}).forEach(([k, o]) => opts.push({k: `expsrc_${k}`, l: DN(o.label).s}));
+    
+    // Zombie Pill - single question with full text
+    else if (cat === 'zombie_pill') {
+        let h = '<div class="zombie-pill-text" style="font-size:0.87rem;color:var(--text-secondary);line-height:1.5;padding:0.6rem;background:var(--bg-secondary);border-radius:6px;">';
+        h += '<p style="margin:0 0 0.5rem;"><strong>Imagine someone offers you a pill.</strong> If you take it, you will live the best life one could possibly imagine (for example, you will create things of great value, have a fulfilling life surrounded by friends and family, etc.).</p>';
+        h += '<p style="margin:0 0 0.5rem;">But you will not consciously experience any of this. That is, your actions and behaviors will look as if you are conscious, so no one could ever suspect that you are actually not conscious. But in reality, everything you do will not be accompanied by conscious experiences. You will be living your best life, but will not experience any aspect of it.</p>';
+        h += '<p style="margin:0;font-weight:600;"><em>Would you take the pill?</em></p>';
+        h += '</div>';
+        vc.innerHTML = h;
+        return;
+    }
+    // Education - two questions (background and field)
+    else if (cat === 'education') {
+        let h = '<div class="checkbox-group" id="vbox">';
+        h += '<div class="checkbox-item"><input type="checkbox" id="v-edu-background" data-k="demo_education" data-mode="single"><label for="v-edu-background">What is your education background?</label></div>';
+        h += '<div class="checkbox-item"><input type="checkbox" id="v-edu-field" data-k="multiselect_education_topic" data-mode="multiselect"><label for="v-edu-field">In what topic?</label></div>';
+        h += '</div>';
+        vc.innerHTML = h;
+        addFreeTextSection(cat, vc);
+        return;
+    }
+    // Moral features - radio button options (single selection only)
+    else if (cat === 'moral_features') {
+        let h = '<div class="checkbox-group" id="vbox">';
+        h += '<div class="checkbox-item"><input type="radio" name="mf-option" id="v-mf-important" data-k="multiselect_moral_considerations_important" data-mode="single"><label for="v-mf-important">What do you think is important for moral considerations?</label></div>';
+        h += '<div class="checkbox-item"><input type="radio" name="mf-option" id="v-mf-most" data-k="multiselect_moral_considerations_most" data-mode="single"><label for="v-mf-most">Which do you think is the most important for moral considerations?</label></div>';
+        h += '<div class="checkbox-item"><input type="radio" name="mf-option" id="v-mf-stacked" data-mode="stacked"><label for="v-mf-stacked">Combined</label></div>';
+        h += '</div>';
+        vc.innerHTML = h;
+        addFreeTextSection(cat, vc);
+        return;
+    }
+    
+    let h = '<select id="dist-variable"><option value="">Select a question...</option>';
+    opts.forEach(o => h += `<option value="${o.k}">${o.l}</option>`);
+    vc.innerHTML = h + '</select>';
+    
+    // Add free text section if applicable
+    addFreeTextSection(cat, vc);
+}
+
+// Helper to get free text questions for a category
+function getFreeTextForCategory(cat) {
+    const ftByTopic = DATA.metadata.free_text_by_topic || {};
+    return ftByTopic[cat] || null;
+}
+
+// Helper to add free text section to the full-width container
+function addFreeTextSection(cat, vc) {
+    const ftInfo = getFreeTextForCategory(cat);
+    const ftContainer = document.getElementById('free-text-container');
+    
+    // Check if we have free text questions or if this is kill_test (which has no_kill)
+    const hasFreeText = ftInfo && ftInfo.questions && ftInfo.questions.length > 0;
+    const isKillTest = cat === 'kill_test';
+    
+    if (!hasFreeText && !isKillTest) {
+        if (ftContainer) {
+            ftContainer.style.display = 'none';
+            ftContainer.innerHTML = '';
+        }
+        return;
+    }
+    
+    let h = '<div class="free-text-section" style="padding:0.75rem 1rem;background:var(--bg-tertiary);border-radius:8px;margin-top:0.5rem;">';
+    
+    // For kill_test, add the "No Kill Reasons" section with title
+    if (isKillTest) {
+        h += '<div class="checkbox-section" style="font-size:0.8rem;margin-bottom:0.5rem;letter-spacing:0.5px;">When responding \'No\' to killing all entities:</div>';
+        h += '<div class="checkbox-item" style="margin-bottom:0.75rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);"><input type="checkbox" id="v-nokill" data-k="multiselect_no_kill_reason" data-type="nokill"><label for="v-nokill" style="font-size:0.9rem;">You wouldn\'t eliminate any of the creatures; why?</label></div>';
+    }
+    
+    // Free text questions section
+    if (hasFreeText) {
+        h += '<div class="checkbox-section" style="font-size:0.8rem;margin-bottom:0.5rem;letter-spacing:0.5px;">Free Text Responses in this Topic</div>';
+        h += '<div class="checkbox-group" id="ft-box" style="display:flex;flex-wrap:wrap;gap:0.5rem 1.5rem;">';
+        ftInfo.questions.forEach(([key, label], i) => {
+            // Use single quotes for data attribute and escape double quotes within
+            const escapedLabel = label.replace(/"/g, '&quot;');
+            h += `<div class="checkbox-item" style="flex:0 0 auto;"><input type="checkbox" id="ft-${i}" data-ft-key="${key}" data-ft-label="${escapedLabel}"><label for="ft-${i}" style="font-size:0.85rem;">${escHTML(label)}</label></div>`;
+        });
+        h += '</div>';
+    }
+    
+    h += '</div>';
+    
+    if (ftContainer) {
+        ftContainer.innerHTML = h;
+        ftContainer.style.display = 'block';
+        
+        // Add change listener to trigger refresh
+        ftContainer.querySelectorAll('input').forEach(cb => {
+            cb.addEventListener('change', () => {
+                showDist();
+                setTimeout(updateDownloadButton, 100);
+            });
+        });
+    }
+}
+
+function populateCrosstabDropdowns() {
+    const addOpts = sel => {
+        if (DATA.metadata.question_groups) Object.entries(DATA.metadata.question_groups).forEach(([gn, cols]) => {
+            const og = document.createElement('optgroup'); og.label = gn;
+            Object.entries(DATA.metadata.survey_questions).forEach(([k, cn]) => {
+                if (cols.includes(cn)) { const o = document.createElement('option'); o.value = `survey_${k}`; o.textContent = DN(cn).s; o.dataset.f = DN(cn).f; og.appendChild(o); }
+            });
+            if (og.children.length) sel.appendChild(og);
+        });
+        const dg = document.createElement('optgroup'); dg.label = 'Demographics';
+        Object.entries(DATA.metadata.demographics || {}).forEach(([k, o]) => { const opt = document.createElement('option'); opt.value = `demo_${k}`; opt.textContent = DN(o.label).s; opt.dataset.f = DN(o.label).f; dg.appendChild(opt); });
+        sel.appendChild(dg);
+        const eg = document.createElement('optgroup'); eg.label = 'Experience Levels';
+        Object.entries(DATA.metadata.experience_levels || {}).forEach(([k, o]) => { const opt = document.createElement('option'); opt.value = `exp_${k}`; opt.textContent = DN(o.label).s; opt.dataset.f = DN(o.label).f; eg.appendChild(opt); });
+        sel.appendChild(eg);
+    };
+    addOpts(document.getElementById('cross-var1'));
+    addOpts(document.getElementById('cross-var2'));
+}
+
+function populateFreetextDropdown() {
+    const sel = document.getElementById('freetext-question');
+    Object.entries(DATA.metadata.free_text_questions || {}).forEach(([k, l]) => {
+        if (DATA.freetext[k]) { const nm = DN(l); sel.innerHTML += `<option value="${k}" data-f="${nm.f}">${nm.s}</option>`; }
+    });
+}
+
+function setupEvents() {
+    document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach(x => x.classList.remove('active'));
+        t.classList.add('active'); document.getElementById(t.dataset.panel).classList.add('active');
+    }));
+    const hb = document.getElementById('hamburger'), sp = document.getElementById('side-panel'), ov = document.getElementById('overlay');
+    hb.addEventListener('click', () => { hb.classList.toggle('active'); sp.classList.toggle('active'); ov.classList.toggle('active'); });
+    ov.addEventListener('click', () => { hb.classList.remove('active'); sp.classList.remove('active'); ov.classList.remove('active'); });
+    
+    // Auto-refresh on category change
+    document.getElementById('dist-category').addEventListener('change', () => {
+        updateVariableUI();
+        showDist();
+        setTimeout(updateDownloadButton, 100);
+    });
+    
+    // Auto-refresh on sample filter changes
+    document.getElementById('sample-filter-box').addEventListener('change', () => {
+        showDist();
+        setTimeout(updateDownloadButton, 100);
+    });
+    
+    // Auto-refresh on variable container changes (checkboxes and dropdowns)
+    document.getElementById('variable-container').addEventListener('change', () => {
+        showDist();
+        setTimeout(updateDownloadButton, 100);
+    });
+    
+    document.getElementById('cross-show').addEventListener('click', showCross);
+    document.getElementById('freetext-show').addEventListener('click', showFreetext);
+    document.getElementById('freetext-search').addEventListener('input', filterFreetext);
+}
+
+function destroyCharts() { Object.values(charts).forEach(c => c?.destroy()); charts = {}; }
+
+// Helper to capitalize labels for certain categories (EiD Cluster, ICS Group)
+function capitalizeLabel(label) {
+    if (!label || typeof label !== 'string') return label;
+    // Capitalize each word
+    return label.split('-').map(word => 
+        word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+    ).join('-');
+}
+
+// Check if labels need capitalization (for EiD Cluster, ICS Group)
+function shouldCapitalizeLabels(labels) {
+    const clusterLabels = ['anthropocentric', 'non-anthropocentric'];
+    const icsLabels = ['cognitive-agential', 'experiential', 'multidimensional', 'other'];
+    const allLower = labels.map(l => l.toLowerCase());
+    return allLower.some(l => clusterLabels.includes(l) || icsLabels.includes(l));
+}
+
+function getColors(labels, scaleType = null) {
+    const c = DATA.metadata.colors || {};
+    
+    // Helper to convert to integer string (handles floats like '1.0' -> '1')
+    const toIntStr = l => String(parseInt(parseFloat(l)));
+    
+    // If specific scale type requested, use it
+    if (scaleType === 'graded' && labels.every(l => ['1','2','3','4'].includes(toIntStr(l)))) {
+        return labels.map(l => c.graded_scale?.[toIntStr(l)] || '#58a6ff');
+    }
+    if (scaleType === 'experience' && labels.every(l => ['1','2','3','4','5'].includes(toIntStr(l)))) {
+        return labels.map(l => c.experience_scale?.[toIntStr(l)] || '#58a6ff');
+    }
+    if (scaleType === 'agreement' && labels.every(l => ['1','2','3','4'].includes(toIntStr(l)))) {
+        return labels.map(l => c.agreement_scale?.[toIntStr(l)] || '#58a6ff');
+    }
+    
+    // Rating scale (1-4) - check FIRST before experience scale
+    // This is for consciousness/moral status attributions
+    if (labels.length <= 4 && labels.every(l => ['1','2','3','4'].includes(toIntStr(l)))) {
+        return labels.map(l => c.rating_scale?.[toIntStr(l)] || '#58a6ff');
+    }
+    // Experience scale (1-5)
+    if (labels.every(l => ['1','2','3','4','5'].includes(toIntStr(l)))) {
+        return labels.map(l => c.experience_scale?.[toIntStr(l)] || '#58a6ff');
+    }
+    // Earth in Danger answers
+    if (c.earth_danger && labels.some(l => c.earth_danger[l])) {
+        return labels.map(l => c.earth_danger[l] || '#58a6ff');
+    }
+    // Kill answers (Yes/No with parentheses)
+    if (c.kill && labels.some(l => l.includes('kill to pass the test'))) {
+        return labels.map(l => c.kill[l] || '#58a6ff');
+    }
+    // Yes/No (simple)
+    if (c.yes_no && labels.every(l => c.yes_no[l])) {
+        return labels.map(l => c.yes_no[l]);
+    }
+    // C&I Share colors
+    if (c.c_intel_share && labels.some(l => c.c_intel_share[l])) {
+        return labels.map(l => c.c_intel_share[l] || '#58a6ff');
+    }
+    // EiD Cluster colors
+    if (c.eid_cluster && labels.some(l => c.eid_cluster[l] || c.eid_cluster[l.toLowerCase()])) {
+        return labels.map(l => c.eid_cluster[l] || c.eid_cluster[l.toLowerCase()] || '#58a6ff');
+    }
+    // ICS Group colors
+    if (c.ics_group && labels.some(l => c.ics_group[l] || c.ics_group[l.toLowerCase()])) {
+        return labels.map(l => c.ics_group[l] || c.ics_group[l.toLowerCase()] || '#58a6ff');
+    }
+    // Education background colors
+    if (c.education && labels.some(l => c.education[l])) {
+        return labels.map(l => c.education[l] || '#58a6ff');
+    }
+    // Moral features colors
+    if (c.moral_features && labels.some(l => c.moral_features[l])) {
+        return labels.map(l => c.moral_features[l] || '#58a6ff');
+    }
+    // Animal types colors
+    if (c.animal_types && labels.some(l => c.animal_types[l])) {
+        return labels.map(l => c.animal_types[l] || '#58a6ff');
+    }
+    // Gender colors
+    if (c.gender && labels.some(l => c.gender[l])) {
+        return labels.map(l => c.gender[l] || '#4a9b9e');
+    }
+    // Age colors (check for age ranges)
+    if (c.age && labels.some(l => c.age[l])) {
+        return labels.map(l => c.age[l] || '#4a9b9e');
+    }
+    const def = ['#58a6ff','#1f6feb','#388bfd','#79c0ff','#0d419d','#1158c7'];
+    return labels.map((_, i) => def[i % def.length]);
+}
+
+function buildRatingLegend(scaleType = 'rating', title = '') {
+    const c = DATA.metadata.colors || {};
+    let labels, colorKey;
+    
+    if (scaleType === 'graded') {
+        labels = GL;
+        colorKey = 'graded_scale';
+    } else if (scaleType === 'agreement') {
+        labels = AL;
+        colorKey = 'agreement_scale';
+    } else if (scaleType === 'experience') {
+        labels = EL;
+        colorKey = 'experience_scale';
+    } else {
+        labels = RL;
+        colorKey = 'rating_scale';
+    }
+    
+    const colors = c[colorKey] || {};
+    let h = '<div class="legend-bar">';
+    if (title) {
+        h += `<span class="legend-title">${title}</span>`;
+    }
+    const sortedKeys = Object.keys(labels).sort((a, b) => parseInt(a) - parseInt(b));
+    sortedKeys.forEach(k => {
+        const v = labels[k];
+        const color = colors[k] || '#58a6ff';
+        // For graded scale, just show the number
+        // For experience scale, show "k: label" only if label differs from k
+        let label;
+        if (scaleType === 'graded') {
+            label = v;
+        } else if (scaleType === 'experience') {
+            label = (v === k) ? k : `${k}: ${v}`;
+        } else {
+            label = `${k}: ${v}`;
+        }
+        h += `<span class="legend-item"><span class="legend-color" style="background:${color}"></span>${label}</span>`;
+    });
+    h += '</div>';
+    return h;
+}
+
+function buildCustomLegend(data, title = null) {
+    let labels = Object.keys(data);
+    
+    // Check if this is education data and use custom order
+    const eduOrder = DATA.metadata.education_order || [];
+    const isEducation = eduOrder.length > 0 && labels.some(l => eduOrder.includes(l));
+    
+    if (isEducation) {
+        // Sort by education order
+        labels = labels.sort((a, b) => {
+            const idxA = eduOrder.indexOf(a);
+            const idxB = eduOrder.indexOf(b);
+            if (idxA === -1 && idxB === -1) return a.localeCompare(b);
+            if (idxA === -1) return 1;
+            if (idxB === -1) return -1;
+            return idxA - idxB;
+        });
+    } else if (labels.some(l => l.includes('-') && !isNaN(parseInt(l)))) {
+        // Sort: by first number for age ranges
+        labels = labels.sort((a, b) => parseInt(a) - parseInt(b));
+    } else {
+        labels = labels.sort();
+    }
+    
+    // Capitalize labels for EiD Cluster and ICS Group
+    const needsCapitalize = shouldCapitalizeLabels(labels);
+    const displayLabels = needsCapitalize ? labels.map(capitalizeLabel) : labels;
+    
+    const colors = getColors(labels);
+    let h = '<div class="legend-bar">';
+    if (title) {
+        h += `<span class="legend-title" style="font-weight:600;margin-right:0.75rem;color:var(--text-secondary);">${title}</span>`;
+    }
+    displayLabels.forEach((l, i) => {
+        h += `<span class="legend-item"><span class="legend-color" style="background:${colors[i]}"></span>${l}</span>`;
+    });
+    h += '</div>';
+    return h;
+}
+
+function buildChartCellLegend(data, scaleType = 'rating') {
+    let labels = Object.keys(data);
+    
+    // Get the appropriate label map
+    const labelMap = scaleType === 'graded' ? GL : (scaleType === 'agreement' ? AL : (scaleType === 'experience' ? EL : RL));
+    
+    // Check if numeric (could be floats like 1.0, 2.0 or strings '1', '2')
+    // But exclude age ranges like "18-25" which contain dashes
+    const hasDash = labels.some(l => l.includes('-'));
+    const isNumeric = !hasDash && labels.every(l => !isNaN(parseFloat(l)));
+    const isRating = labels.every(l => ['1','2','3','4'].includes(String(parseInt(parseFloat(l)))));
+    const isExperience = labels.every(l => ['1','2','3','4','5'].includes(String(parseInt(parseFloat(l)))));
+    
+    // Sort - numeric for rating/experience scales, alphabetical for others (or by first number for ranges)
+    if (isNumeric) {
+        labels = labels.sort((a, b) => parseFloat(a) - parseFloat(b));
+    } else if (hasDash) {
+        // Sort age ranges by first number
+        labels = labels.sort((a, b) => parseInt(a) - parseInt(b));
+    } else {
+        labels = labels.sort();
+    }
+    
+    const colors = getColors(labels, scaleType);
+    let h = '<div class="chart-cell-legend">';
+    labels.forEach((l, i) => {
+        // For custom (demographics etc), use the label as-is
+        // For rating scales, convert to int and look up label
+        const displayVal = (scaleType === 'custom' || hasDash) ? l : (isNumeric ? String(parseInt(parseFloat(l))) : l);
+        const labelText = labelMap[displayVal] || displayVal;
+        let label;
+        if (scaleType === 'graded') {
+            label = displayVal;
+        } else if (scaleType === 'experience' && labelText === displayVal) {
+            label = displayVal;
+        } else if ((isRating || isExperience) && scaleType !== 'custom') {
+            label = `${displayVal}: ${labelText}`;
+        } else {
+            label = l;  // Use original label for custom/demographics
+        }
+        h += `<span class="legend-item"><span class="legend-color" style="background:${colors[i]}"></span>${label}</span>`;
+    });
+    h += '</div>';
+    return h;
+}
+
+function showDist() {
+    destroyCharts();
+    const cat = document.getElementById('dist-category').value;
+    const filter = getFilter();
+    const {d: dists, n: totalN, e: entityStats, k: filterKey, rc: respondentCounts} = filter;
+    
+    // Clear free text area initially
+    const ftArea = document.getElementById('dist-freetext-area');
+    if (ftArea) {
+        ftArea.style.display = 'none';
+        ftArea.innerHTML = '';
+    }
+    
+    // Check actual filter checkbox selections
+    const box = document.getElementById('sample-filter-box');
+    const isAllSelected = document.getElementById('f-none')?.checked;
+    const followUpCheckbox = box?.querySelector('input[data-v="follow-up"]');
+    const isFollowUpChecked = followUpCheckbox?.checked || false;
+    
+    // Count how many sample checkboxes are checked
+    const sampleCheckboxes = box?.querySelectorAll('input[data-t="sample"]:checked') || [];
+    const isFollowUpOnly = isFollowUpChecked && sampleCheckboxes.length === 1 && 
+        Array.from(sampleCheckboxes).every(cb => cb.dataset.v === 'follow-up');
+    
+    // Categories that were NOT asked in follow-up
+    const notInFollowup = DATA.metadata.not_in_followup || [];
+    const categoryNotInFollowup = notInFollowup.includes(cat);
+    
+    // Helper to calculate actual N from distribution data
+    const calcNFromData = (data) => {
+        if (!data) return 0;
+        return Object.values(data).reduce((sum, v) => {
+            return sum + (typeof v === 'number' ? v : 0);
+        }, 0);
+    };
+    
+    // Helper to get respondent count for a key (for multiselect questions)
+    const getRespondentCount = (key) => {
+        return respondentCounts?.[key] || null;
+    };
+    
+    // Helper to check if data has suppressed values (k<5)
+    const hasSuppressedValues = (data) => {
+        if (!data) return false;
+        return Object.values(data).some(v => typeof v === 'string' && v.startsWith('<'));
+    };
+    
+    // Build badge - will be updated with actual N later
+    // For now, create a function that builds the badge with the correct N
+    const buildBadge = (actualN, hasData, data = null) => {
+        let b = ` <span class="filter-badge">N=${actualN}</span>`;
+        
+        // If follow-up only AND category not in follow-up - just show N=0, no note (the "Data not available" message will show)
+        if (isFollowUpOnly && categoryNotInFollowup) {
+            return ` <span class="filter-badge">N=0</span>`;
+        }
+        // If all respondents or follow-up is included AND category not in follow-up
+        if ((isAllSelected || isFollowUpChecked) && categoryNotInFollowup) {
+            b += `<span class="filter-note">NOTE: Data excludes Follow-up sample (not asked this question)</span>`;
+        }
+        // Single variable distributions no longer have k-anonymity suppression
+        // (suppression only applies to crosstabs)
+        
+        return b;
+    };
+    
+    const chartArea = document.getElementById('dist-chart-area');
+    const tableArea = document.getElementById('dist-table-container');
+    const legendArea = document.getElementById('dist-legend-area');
+    
+    legendArea.innerHTML = '';
+    
+    if (!cat) { document.getElementById('dist-title').textContent = 'Please select a category'; chartArea.innerHTML = ''; tableArea.innerHTML = ''; return; }
+    
+    // For follow-up only on non-followup category, show empty state with explanation
+    if (isFollowUpOnly && categoryNotInFollowup) {
+        const badge = buildBadge(0, false);
+        document.getElementById('dist-title').innerHTML = 'No Data Available' + badge;
+        chartArea.innerHTML = '<p class="no-data"><em>Data not available: this sample was not presented with these questions</em></p>';
+        tableArea.innerHTML = '';
+        return;
+    }
+    
+    // MS Attributions
+    if (cat === 'ms_attr') {
+        const sel = getSelectedEntities('ms');
+        if (sel.length === 0) { document.getElementById('dist-title').textContent = 'Please select at least one entity'; chartArea.innerHTML = ''; tableArea.innerHTML = ''; return; }
+        // Calculate N from first entity's data
+        const firstData = sel.length > 0 ? dists[`ms_${sel[0].entity}`] : null;
+        const actualN = firstData ? calcNFromData(firstData) : totalN;
+        showEntityDonuts(sel, 'ms', dists, buildBadge(actualN, !!firstData), legendArea);
+        return;
+    }
+    
+    // C Attributions
+    if (cat === 'c_attr') {
+        const sel = getSelectedEntities('c');
+        if (sel.length === 0) { document.getElementById('dist-title').textContent = 'Please select at least one entity'; chartArea.innerHTML = ''; tableArea.innerHTML = ''; return; }
+        const firstData = sel.length > 0 ? dists[`c_${sel[0].entity}`] : null;
+        const actualN = firstData ? calcNFromData(firstData) : totalN;
+        showEntityDonuts(sel, 'c', dists, buildBadge(actualN, !!firstData), legendArea);
+        return;
+    }
+    
+    // Combined Attributions (scatter)
+    if (cat === 'combined_attr') {
+        const sel = getSelectedEntities('combined');
+        if (sel.length === 0) { document.getElementById('dist-title').textContent = 'Please select at least one entity'; chartArea.innerHTML = ''; tableArea.innerHTML = ''; return; }
+        // For combined, use the paired_n from entity stats
+        const firstStats = sel.length > 0 ? entityStats[sel[0].entity] : null;
+        const actualN = firstStats?.paired_n || totalN;
+        // Get display mode
+        const displayModeRadio = document.querySelector('input[name="display-mode"]:checked');
+        const displayMode = displayModeRadio?.value || 'mean';
+        showCombinedScatter(sel, entityStats, buildBadge(actualN, !!firstStats), legendArea, displayMode);
+        return;
+    }
+    
+    // Kill for Test - special handling with nested entity questions and No Kill Reasons
+    if (cat === 'kill_test') {
+        const vbox = document.getElementById('vbox');
+        const entityChecks = vbox ? Array.from(vbox.querySelectorAll('.kpt-entity:checked')) : [];
+        
+        // No Kill checkbox is now in the free-text-container
+        const ftContainer = document.getElementById('free-text-container');
+        const noKillCheck = ftContainer ? ftContainer.querySelector('#v-nokill:checked') : null;
+        const hasFreeText = ftContainer && ftContainer.querySelectorAll('#ft-box input:checked').length > 0;
+        
+        if (entityChecks.length === 0 && !noKillCheck) {
+            if (hasFreeText) {
+                // No main questions but free text selected - show only free text
+                let ftTitle = `Kill to Pass a Test: Free Text Responses`;
+                // Add follow-up note if relevant (kill_test is in notInFollowup)
+                if (categoryNotInFollowup && (isAllSelected || isFollowUpChecked) && !isFollowUpOnly) {
+                    ftTitle += `<span class="filter-note">NOTE: Data excludes Follow-up sample (not asked)</span>`;
+                }
+                document.getElementById('dist-title').innerHTML = ftTitle;
+                chartArea.innerHTML = '';
+                tableArea.innerHTML = '';
+                showDistFreeText(filterKey);
+                return;
+            }
+            document.getElementById('dist-title').textContent = 'Please select at least one question';
+            chartArea.innerHTML = '';
+            tableArea.innerHTML = '';
+            return;
+        }
+        
+        // Build selections
+        const entitySel = entityChecks.map(cb => ({k: cb.dataset.k, c: cb.dataset.c, l: cb.nextElementSibling.textContent}));
+        
+        // If only No Kill Reasons is selected
+        if (entityChecks.length === 0 && noKillCheck) {
+            const key = 'multiselect_no_kill_reason';
+            const data = dists[key];
+            const dataN = getRespondentCount(key) || (data ? calcNFromData(data) : 0);
+            let mselectBadge = ` <span class="filter-badge">N=${dataN}</span>`;
+            mselectBadge += `<span class="filter-note">NOTE: Only respondents who answered "No" to ALL killing questions</span>`;
+            // Add Follow-up exclusion note if relevant
+            if ((isAllSelected || isFollowUpChecked) && !isFollowUpOnly) {
+                mselectBadge += `<span class="filter-note">NOTE: Data excludes Follow-up sample (not asked this question)</span>`;
+            }
+            document.getElementById('dist-title').innerHTML = 'You wouldn\'t eliminate any of the creatures; why?' + mselectBadge;
+            legendArea.innerHTML = '';
+            if (!data || Object.keys(data).length === 0) {
+                chartArea.innerHTML = '<p class="no-data"><em>Data not available: this sample was not presented with this question</em></p>';
+                tableArea.innerHTML = '';
+                return;
+            }
+            showHorizontalBarChart(data, 'You wouldn\'t eliminate any of the creatures; why?', dataN);
+            return;
+        }
+        
+        // If only entity questions selected (no No Kill Reasons)
+        if (entityChecks.length > 0 && !noKillCheck) {
+            const firstData = entitySel.length > 0 ? dists[entitySel[0].k] : null;
+            const actualN = firstData ? calcNFromData(firstData) : 0;
+            const badge = buildBadge(actualN, !!firstData);
+            const gridClass = entitySel.length <= 2 ? 'cols-2' : 'cols-3';
+            showMultiDist(entitySel, dists, badge, gridClass, legendArea, 'kill_test');
+            showDistFreeText(filterKey);
+            return;
+        }
+        
+        // Both entity questions and No Kill Reasons selected
+        const firstData = entitySel.length > 0 ? dists[entitySel[0].k] : null;
+        const actualN = firstData ? calcNFromData(firstData) : 0;
+        const badge = buildBadge(actualN, !!firstData);
+        
+        document.getElementById('dist-title').innerHTML = `Kill for Test: ${entitySel.length + 1} Questions${badge}`;
+        
+        // Create grid for entity donuts, then horizontal bar for No Kill Reasons
+        const gridClass = entitySel.length <= 2 ? 'cols-2' : 'cols-3';
+        let htmlParts = [];
+        htmlParts.push(`<div class="chart-grid ${gridClass}" id="cgrid-kpt"></div>`);
+        
+        // Add No Kill Reasons section with increased font sizes (since it's in its own row with plenty of space)
+        const noKillData = dists['multiselect_no_kill_reason'];
+        const noKillN = getRespondentCount('multiselect_no_kill_reason') || (noKillData ? calcNFromData(noKillData) : 0);
+        htmlParts.push(`<div class="special-demo-section" style="margin-top:1.5rem;">
+            <h4 style="text-align:center;margin:0 0 0.5rem;color:var(--text-secondary);font-size:1.15rem;">You wouldn't eliminate any of the creatures; why? <span class="filter-badge" style="font-weight:normal;font-size:0.85rem;color:#e6edf3;">N=${noKillN}</span></h4>
+            <p style="text-align:center;font-size:0.85rem;color:var(--text-muted);margin-bottom:0.5rem">Only respondents who answered "No" to ALL killing questions</p>
+            <div class="chart-container" style="height:350px"><canvas id="c-nokill"></canvas></div>
+        </div>`);
+        
+        chartArea.innerHTML = htmlParts.join('');
+        legendArea.innerHTML = '';  // No global legend for mixed view
+        
+        // Create donut charts for entities with per-cell legends
+        const grid = document.getElementById('cgrid-kpt');
+        entitySel.forEach((o, i) => {
+            const data = dists[o.k];
+            if (!data) return;
+            
+            const cell = document.createElement('div');
+            cell.className = 'chart-cell';
+            const cellLegend = buildChartCellLegend(data, 'rating');
+            cell.innerHTML = `<h4>${o.l}</h4>${cellLegend}<canvas id="c-kpt-${i}"></canvas>`;
+            grid.appendChild(cell);
+            
+            const keys = Object.keys(data).sort((a, b) => parseFloat(a) - parseFloat(b));
+            const toIntStr = l => String(parseInt(parseFloat(l)));
+            const labels = keys.map(l => RLab(toIntStr(l)));
+            const values = keys.map(k => typeof data[k] === 'number' ? data[k] : 0);
+            const total = values.reduce((a, b) => a + b, 0);
+            
+            charts[`c-kpt-${i}`] = new Chart(document.getElementById(`c-kpt-${i}`).getContext('2d'), {
+                type: 'doughnut',
+                data: {labels, datasets: [{data: values, backgroundColor: getColors(keys, 'rating'), borderWidth: 0}]},
+                options: {responsive: true, plugins: {legend: {display: false}, tooltip: {callbacks: {label: ctx => `${ctx.label}: ${ctx.raw} (${((ctx.raw/total)*100).toFixed(1)}%)`}}}}
+            });
+        });
+        
+        // Create horizontal bar chart for No Kill Reasons
+        if (noKillData) {
+            const sortedEntries = Object.entries(noKillData)
+                .filter(([k, v]) => typeof v === 'number')
+                .sort((a, b) => b[1] - a[1]);
+            const labels = sortedEntries.map(([k]) => k);
+            const values = sortedEntries.map(([, v]) => v);
+            
+            charts['c-nokill'] = new Chart(document.getElementById('c-nokill').getContext('2d'), {
+                type: 'bar',
+                data: {labels, datasets: [{data: values, backgroundColor: '#4a9b9e', borderWidth: 0}]},
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {legend: {display: false}, tooltip: {callbacks: {label: ctx => `${ctx.raw} (${((ctx.raw/noKillN)*100).toFixed(1)}%)`}}},
+                    scales: {x: {beginAtZero: true, grid: {color: '#30363d'}, ticks: {color: '#8b949e', font: {size: 13}}}, y: {grid: {display: false}, ticks: {color: '#e6edf3', autoSkip: false, font: {size: 14}}}}
+                }
+            });
+        }
+        
+        tableArea.innerHTML = '<p class="no-data">Select individual questions for detailed tables</p>';
+        showDistFreeText(filterKey);
+        return;
+    }
+    
+    // Checkbox group categories
+    const checkboxCats = ['earth_danger', 'ics', 'moral_cons', 'graded_c', 'c_intel'];
+    const checkboxCatNames = {
+        'earth_danger': 'Earth in Danger',
+        'ics': 'Intentions, Consciousness, Sensations',
+        'moral_cons': 'Moral Considerations',
+        'graded_c': 'Graded Consciousness',
+        'c_intel': 'Consciousness & Intelligence'
+    };
+    if (checkboxCats.includes(cat)) {
+        const vbox = document.getElementById('vbox');
+        const sel = vbox ? Array.from(vbox.querySelectorAll('input:checked:not(#v-all)')).map(cb => ({k: cb.dataset.k, c: cb.dataset.c, l: cb.nextElementSibling.textContent})) : [];
+        
+        // Check if free text is selected (only #ft-box inputs)
+        const ftContainer = document.getElementById('free-text-container');
+        const hasFreeText = ftContainer && ftContainer.querySelectorAll('#ft-box input:checked').length > 0;
+        
+        // Check if this category was not in follow-up
+        const categoryNotInFollowup = notInFollowup.includes(cat);
+        
+        if (sel.length === 0) {
+            if (hasFreeText) {
+                // No main questions but free text selected - show only free text
+                let ftTitle = `${checkboxCatNames[cat] || cat}: Free Text Responses`;
+                // Add follow-up note if relevant
+                if (categoryNotInFollowup && (isAllSelected || isFollowUpChecked) && !isFollowUpOnly) {
+                    ftTitle += `<span class="filter-note">NOTE: Data excludes Follow-up sample (not asked)</span>`;
+                }
+                document.getElementById('dist-title').innerHTML = ftTitle;
+                chartArea.innerHTML = '';
+                tableArea.innerHTML = '';
+                showDistFreeText(filterKey);
+                return;
+            }
+            document.getElementById('dist-title').textContent = 'Please select at least one question';
+            chartArea.innerHTML = '';
+            tableArea.innerHTML = '';
+            return;
+        }
+        
+        // Calculate actual N from first question's data
+        const firstData = sel.length > 0 ? dists[sel[0].k] : null;
+        const actualN = firstData ? calcNFromData(firstData) : 0;
+        let badge = buildBadge(actualN, !!firstData);
+        
+        // For moral_cons, check if any selected questions are not in Follow-up
+        // Questions like "Some people > others?" and "Some animals > others?" were not asked in Follow-up
+        if (cat === 'moral_cons' && (isAllSelected || isFollowUpChecked) && !isFollowUpOnly) {
+            const questionsNotInFollowup = DATA.metadata.questions_not_in_followup || [];
+            const hasQuestionsNotInFollowup = sel.some(o => questionsNotInFollowup.some(q => o.l.includes(q)));
+            if (hasQuestionsNotInFollowup) {
+                badge = ` <span class="filter-badge">N=${actualN}</span>`;
+                badge += `<span class="filter-note">NOTE: Data excludes Follow-up sample for some questions (not asked)</span>`;
+            }
+        }
+        
+        // Earth in Danger and Kill for Test: max 3 columns
+        const max3Cols = ['earth_danger'];
+        const gridClass = max3Cols.includes(cat)
+            ? (sel.length <= 2 ? 'cols-2' : 'cols-3')
+            : (sel.length <= 2 ? 'cols-2' : (sel.length <= 3 ? 'cols-3' : 'cols-4'));
+        showMultiDist(sel, dists, badge, gridClass, legendArea, cat);
+        showDistFreeText(filterKey);
+        return;
+    }
+    
+    // Unified Experience category
+    if (cat === 'experience') {
+        const vbox = document.getElementById('vbox');
+        const checkedInputs = vbox ? Array.from(vbox.querySelectorAll('input:checked:not(#v-all)')) : [];
+        
+        // Check if free text is selected
+        const ftContainer = document.getElementById('free-text-container');
+        const hasFreeText = ftContainer && ftContainer.querySelectorAll('input:checked').length > 0;
+        
+        if (checkedInputs.length === 0) {
+            if (hasFreeText) {
+                // No main questions but free text selected - show only free text
+                document.getElementById('dist-title').innerHTML = `Experience: Free Text Responses`;
+                chartArea.innerHTML = '';
+                tableArea.innerHTML = '';
+                showDistFreeText(filterKey);
+                return;
+            }
+            document.getElementById('dist-title').textContent = 'Please select at least one question';
+            chartArea.innerHTML = '';
+            tableArea.innerHTML = '';
+            return;
+        }
+        
+        // Separate levels and sources
+        const levels = checkedInputs.filter(cb => cb.dataset.type === 'level').map(cb => ({k: cb.dataset.k, c: cb.dataset.c, l: cb.nextElementSibling.textContent}));
+        const sources = checkedInputs.filter(cb => cb.dataset.type === 'source').map(cb => ({k: cb.dataset.k, c: cb.dataset.c, l: cb.nextElementSibling.textContent}));
+        
+        // Calculate actual N from first item's data
+        // For sources (multiselect), use respondent count; for levels, use calcNFromData
+        const firstKey = checkedInputs[0]?.dataset.k;
+        const firstData = firstKey ? dists[firstKey] : null;
+        const firstIsSource = checkedInputs[0]?.dataset.type === 'source';
+        const actualN = firstIsSource ? 
+            (getRespondentCount(firstKey) || (firstData ? calcNFromData(firstData) : 0)) :
+            (firstData ? calcNFromData(firstData) : 0);
+        
+        // Check if sources are selected
+        const hasSourceSelected = sources.length > 0;
+        let expBadge = buildBadge(actualN, !!firstData, firstData);
+        
+        // For sources, add note that it's only for those who rated 3+ on that experience
+        if (hasSourceSelected) {
+            const sourceKey = sources[0].k;
+            const sourceN = getRespondentCount(sourceKey) || (dists[sourceKey] ? calcNFromData(dists[sourceKey]) : actualN);
+            expBadge = ` <span class="filter-badge">N=${sourceN}</span><span class="filter-note">NOTE: Experience source only includes respondents who rated 3+ on this experience</span>`;
+        }
+        
+        // If only one item selected
+        if (checkedInputs.length === 1) {
+            const cb = checkedInputs[0];
+            const data = dists[cb.dataset.k];
+            const title = cb.nextElementSibling.textContent;
+            // For sources (multiselect), use respondent count; for levels, use calcNFromData
+            const isSource = cb.dataset.type === 'source';
+            const itemN = isSource ?
+                (getRespondentCount(cb.dataset.k) || (data ? calcNFromData(data) : 0)) :
+                (data ? calcNFromData(data) : 0);
+            
+            // Build badge for this specific item
+            let itemBadge;
+            if (cb.dataset.type === 'source') {
+                // Experience sources are only for those who rated 3+ on that experience
+                itemBadge = ` <span class="filter-badge">N=${itemN}</span><span class="filter-note">NOTE: Experience source only includes respondents who rated 3+ on this experience</span>`;
+            } else {
+                itemBadge = buildBadge(itemN, !!data, data);
+            }
+            
+            document.getElementById('dist-title').innerHTML = title + itemBadge;
+            
+            if (!data || Object.keys(data).length === 0) {
+                chartArea.innerHTML = '<p class="no-data"><em>Data not available: this sample was not presented with this question</em></p>';
+                tableArea.innerHTML = '';
+                return;
+            }
+            
+            if (cb.dataset.type === 'source') {
+                // Sources: animal_types gets vertical colored bars, others get horizontal bars
+                const isAnimalTypes = cb.dataset.k.includes('animal_types');
+                // Pass respondent N for percentage calculation
+                const respN = getRespondentCount(cb.dataset.k) || itemN;
+                if (isAnimalTypes) {
+                    showBarChart(data, title, 'animal_types', respN);
+                } else {
+                    showHorizontalBarChart(data, title, respN);
+                }
+            } else {
+                // Levels: donut chart with experience scale
+                showExperienceDonut(data, title, legendArea);
+            }
+            return;
+        }
+        
+        // Multiple items: show grid
+        const allSel = [...levels, ...sources];
+        const gridClass = allSel.length <= 2 ? 'cols-2' : (allSel.length <= 3 ? 'cols-3' : 'cols-4');
+        showExperienceMixed(allSel, dists, expBadge, gridClass, legendArea, respondentCounts);
+        showDistFreeText(filterKey);
+        return;
+    }
+    
+    // Moral Features category - radio button options (single selection)
+    if (cat === 'moral_features') {
+        const vbox = document.getElementById('vbox');
+        const selectedInput = vbox ? vbox.querySelector('input:checked') : null;
+        
+        // Check if free text is selected
+        const ftContainer = document.getElementById('free-text-container');
+        const hasFreeText = ftContainer && ftContainer.querySelectorAll('input:checked').length > 0;
+        
+        if (!selectedInput) {
+            if (hasFreeText) {
+                // No main questions but free text selected - show only free text
+                document.getElementById('dist-title').innerHTML = `Important Features for Moral Considerations: Free Text Responses`;
+                chartArea.innerHTML = '';
+                tableArea.innerHTML = '';
+                showDistFreeText(filterKey);
+                return;
+            }
+            document.getElementById('dist-title').textContent = 'Please select a question option';
+            chartArea.innerHTML = '';
+            tableArea.innerHTML = '';
+            return;
+        }
+        
+        const isStacked = selectedInput.dataset.mode === 'stacked';
+        const isMostImportant = selectedInput.dataset.k === 'multiselect_moral_considerations_most';
+        
+        // Check if follow-up only is selected - Most Important doesn't have follow-up data
+        if (isFollowUpOnly && isMostImportant) {
+            // Show no data for Most Important when only follow-up is selected
+            document.getElementById('dist-title').innerHTML = 'Most Important Feature' + ` <span class="filter-badge">N=0</span><span class="filter-note">NOTE: "Most Important" was not asked in the Follow-up sample</span>`;
+            chartArea.innerHTML = '';
+            tableArea.innerHTML = '';
+            legendArea.innerHTML = '';
+            return;
+        }
+        
+        // Follow-up only + Combined: show Important data with note about Most Important
+        if (isFollowUpOnly && isStacked) {
+            const importantData = dists['multiselect_moral_considerations_important'];
+            const dataN = getRespondentCount('multiselect_moral_considerations_important') || (importantData ? calcNFromData(importantData) : 0);
+            let badge = ` <span class="filter-badge">N=${dataN}</span>`;
+            badge += `<span class="filter-note">NOTE: "Most Important" was not asked in Follow-up. Showing only "Important for Moral Considerations".</span>`;
+            document.getElementById('dist-title').innerHTML = 'Important Features for Moral Considerations' + badge;
+            
+            if (!importantData || Object.keys(importantData).length === 0) {
+                chartArea.innerHTML = '<p class="no-data"><em>Data not available</em></p>';
+                tableArea.innerHTML = '';
+                return;
+            }
+            const respN = getRespondentCount('multiselect_moral_considerations_important') || dataN;
+            showBarChart(importantData, 'What do you think is important for moral considerations?', 'moral_features', respN);
+            return;
+        }
+        
+        if (isStacked) {
+            const importantData = dists['multiselect_moral_considerations_important'];
+            const mostData = dists['multiselect_moral_considerations_most'];
+            // Use respondent count from filter - this is the actual number of people who answered
+            // Do NOT use calcNFromData for multiselect as it sums all selections, not respondents
+            const stackedN = getRespondentCount('multiselect_moral_considerations_important') || totalN;
+            let stackedBadge = buildBadge(stackedN, !!(importantData || mostData));
+            // Add note if follow-up is included (either explicitly or via "All respondents") but Most Important doesn't have follow-up data
+            if (isFollowUpChecked || isAllSelected) {
+                stackedBadge += `<span class="filter-note">NOTE: "Most Important" excludes Follow-up sample</span>`;
+            }
+            document.getElementById('dist-title').innerHTML = 'Important Features for Moral Considerations (Combined)' + stackedBadge;
+            
+            if ((!importantData || Object.keys(importantData).length === 0) && (!mostData || Object.keys(mostData).length === 0)) {
+                chartArea.innerHTML = '<p class="no-data"><em>Data not available: this sample was not presented with these questions</em></p>';
+                tableArea.innerHTML = '';
+                return;
+            }
+            showStackedBarChart(importantData, mostData, 'Features', 'moral_features', dists, stackedN);
+        } else {
+            // Single question selected
+            const data = dists[selectedInput.dataset.k];
+            // Use respondent count from filter
+            const dataN = getRespondentCount(selectedInput.dataset.k) || (data ? calcNFromData(data) : 0);
+            let singleBadge = buildBadge(dataN, !!data, data);
+            const isMostQ = selectedInput.dataset.k.includes('_most');
+            const titleText = isMostQ ? 'Which do you think is the most important for moral considerations?' : 'What do you think is important for moral considerations?';
+            // Add notes for Most Important
+            if (isMostImportant) {
+                if (isFollowUpChecked && !isFollowUpOnly) {
+                    singleBadge += `<span class="filter-note">NOTE: Excludes Follow-up sample. Only asked if multiple features were marked as "Important".</span>`;
+                } else {
+                    singleBadge += `<span class="filter-note">NOTE: Only asked if multiple features were marked as "Important for Moral Considerations"</span>`;
+                }
+            }
+            document.getElementById('dist-title').innerHTML = titleText + singleBadge;
+            
+            if (!data || Object.keys(data).length === 0) {
+                chartArea.innerHTML = '<p class="no-data"><em>Data not available: this sample was not presented with this question</em></p>';
+                tableArea.innerHTML = '';
+                return;
+            }
+            showBarChart(data, titleText, 'moral_features', dataN);
+        }
+        showDistFreeText(filterKey);
+        return;
+    }
+    
+    // Zombie Pill - single question auto-display
+    if (cat === 'zombie_pill') {
+        // Find the Zombie Pill question in survey_questions
+        const qGroups = DATA.metadata.question_groups || {};
+        const surveyQs = DATA.metadata.survey_questions || {};
+        const zombieCols = qGroups['Zombie Pill'] || [];
+        let zombieKey = null;
+        Object.entries(surveyQs).forEach(([k, cn]) => {
+            if (zombieCols.includes(cn)) zombieKey = `survey_${k}`;
+        });
+        
+        if (zombieKey) {
+            const data = dists[zombieKey];
+            const dataN = data ? calcNFromData(data) : 0;
+            const zombieBadge = buildBadge(dataN, !!data, data);
+            document.getElementById('dist-title').innerHTML = 'Zombie Pill' + zombieBadge;
+            legendArea.innerHTML = '';
+            if (!data || Object.keys(data).length === 0) {
+                chartArea.innerHTML = '<p class="no-data"><em>Data not available: this sample was not presented with this question</em></p>';
+                tableArea.innerHTML = '';
+                return;
+            }
+            showSingleDonut(data, 'Would You Take the Pill?', true, 'Would You Take the Pill?');
+        } else {
+            document.getElementById('dist-title').textContent = 'Zombie Pill question not found';
+            chartArea.innerHTML = '';
+            tableArea.innerHTML = '';
+        }
+        return;
+    }
+    
+    // Education - two questions (background and field)
+    if (cat === 'education') {
+        const vbox = document.getElementById('vbox');
+        const checkedInputs = vbox ? Array.from(vbox.querySelectorAll('input:checked')) : [];
+        
+        // Check if free text is selected
+        const ftContainer = document.getElementById('free-text-container');
+        const hasFreeText = ftContainer && ftContainer.querySelectorAll('input:checked').length > 0;
+        
+        if (checkedInputs.length === 0) {
+            if (hasFreeText) {
+                // No main questions but free text selected - show only free text
+                document.getElementById('dist-title').innerHTML = `Education: Free Text Responses`;
+                chartArea.innerHTML = '';
+                tableArea.innerHTML = '';
+                showDistFreeText(filterKey);
+                return;
+            }
+            document.getElementById('dist-title').textContent = 'Please select a question option';
+            chartArea.innerHTML = '';
+            tableArea.innerHTML = '';
+            return;
+        }
+        
+        // Handle each selection
+        checkedInputs.forEach((cb, idx) => {
+            const dataKey = cb.dataset.k;
+            const isMultiselect = cb.dataset.mode === 'multiselect';
+            const data = dists[dataKey];
+            
+            // For multiselect, use respondent count from filter (not metadata)
+            let dataN;
+            if (isMultiselect) {
+                dataN = getRespondentCount(dataKey) || (data ? calcNFromData(data) : 0);
+            } else {
+                dataN = data ? calcNFromData(data) : 0;
+            }
+            
+            const eduBadge = buildBadge(dataN, !!data, data);
+            const title = cb.nextElementSibling.textContent;
+            
+            if (checkedInputs.length === 1) {
+                document.getElementById('dist-title').innerHTML = title + eduBadge;
+                legendArea.innerHTML = '';
+                
+                if (!data || Object.keys(data).length === 0) {
+                    chartArea.innerHTML = '<p class="no-data"><em>Data not available: this sample was not presented with this question</em></p>';
+                    tableArea.innerHTML = '';
+                    return;
+                }
+                
+                if (isMultiselect) {
+                    showHorizontalBarChart(data, title);
+                } else {
+                    showSingleDonut(data, title);
+                }
+            }
+        });
+        
+        // If multiple selected, show stacked vertically (full width each)
+        if (checkedInputs.length > 1) {
+            const firstCb = checkedInputs[0];
+            const firstData = dists[firstCb.dataset.k];
+            let firstN;
+            if (firstCb.dataset.mode === 'multiselect') {
+                firstN = getRespondentCount(firstCb.dataset.k) || (firstData ? calcNFromData(firstData) : 0);
+            } else {
+                firstN = firstData ? calcNFromData(firstData) : 0;
+            }
+            const eduBadge = buildBadge(firstN, !!firstData, firstData);
+            document.getElementById('dist-title').innerHTML = 'Education' + eduBadge;
+            legendArea.innerHTML = '';
+            
+            // Stack vertically instead of side-by-side
+            let htmlContent = '';
+            checkedInputs.forEach((cb, i) => {
+                const dataKey = cb.dataset.k;
+                const isMultiselect = cb.dataset.mode === 'multiselect';
+                const data = dists[dataKey];
+                const title = cb.nextElementSibling.textContent;
+                
+                if (!data) return;
+                
+                if (isMultiselect) {
+                    // Calculate height based on number of items
+                    const numItems = Object.keys(data).filter(k => typeof data[k] === 'number').length;
+                    const chartHeight = Math.max(numItems * 32 + 80, 350);
+                    htmlContent += `<div class="edu-section" style="margin-bottom:2rem;">
+                        <h4 style="text-align:center;margin-bottom:0.75rem;color:var(--text-secondary);font-size:1rem;">${title}</h4>
+                        <div class="chart-container" style="height:${chartHeight}px;"><canvas id="c-edu-${i}"></canvas></div>
+                    </div>`;
+                } else {
+                    htmlContent += `<div class="edu-section" style="margin-bottom:2rem;">
+                        <h4 style="text-align:center;margin-bottom:0.5rem;color:var(--text-secondary);font-size:1rem;">${title}</h4>
+                        <div id="leg-edu-${i}" style="text-align:center;margin-bottom:0.5rem;"></div>
+                        <div class="chart-container" style="height:350px;max-width:400px;margin:0 auto;"><canvas id="c-edu-${i}"></canvas></div>
+                    </div>`;
+                }
+            });
+            chartArea.innerHTML = htmlContent;
+            
+            // Create charts
+            checkedInputs.forEach((cb, i) => {
+                const dataKey = cb.dataset.k;
+                const isMultiselect = cb.dataset.mode === 'multiselect';
+                const data = dists[dataKey];
+                
+                if (!data) return;
+                
+                if (isMultiselect) {
+                    const sortedEntries = Object.entries(data)
+                        .filter(([k, v]) => typeof v === 'number')
+                        .sort((a, b) => b[1] - a[1]);
+                    const labels = sortedEntries.map(([k]) => k);
+                    const values = sortedEntries.map(([, v]) => v);
+                    const total = values.reduce((a, b) => a + b, 0);
+                    
+                    charts[`c-edu-${i}`] = new Chart(document.getElementById(`c-edu-${i}`).getContext('2d'), {
+                        type: 'bar',
+                        data: {labels, datasets: [{data: values, backgroundColor: '#4a9b9e', borderWidth: 0}]},
+                        options: {indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: {legend: {display: false}, tooltip: {callbacks: {label: ctx => `${ctx.raw} (${((ctx.raw/total)*100).toFixed(1)}%)`}}}, scales: {x: {beginAtZero: true, grid: {color: '#30363d'}, ticks: {color: '#e6edf3', font: {size: 12}}}, y: {grid: {display: false}, ticks: {color: '#e6edf3', autoSkip: false, font: {size: 12}}}}}
+                    });
+                } else {
+                    // Add legend
+                    const legEl = document.getElementById(`leg-edu-${i}`);
+                    if (legEl) legEl.innerHTML = buildChartCellLegend(data, 'custom');
+                    
+                    let keys = Object.keys(data);
+                    if (keys.some(k => k.includes('-'))) {
+                        keys = keys.sort((a, b) => parseInt(a) - parseInt(b));
+                    } else {
+                        keys = keys.sort();
+                    }
+                    const values = keys.map(k => typeof data[k] === 'number' ? data[k] : 0);
+                    const total = values.reduce((a, b) => a + b, 0);
+                    
+                    charts[`c-edu-${i}`] = new Chart(document.getElementById(`c-edu-${i}`).getContext('2d'), {
+                        type: 'doughnut',
+                        data: {labels: keys, datasets: [{data: values, backgroundColor: getColors(keys), borderWidth: 0}]},
+                        options: {responsive: true, maintainAspectRatio: false, plugins: {legend: {display: false}, tooltip: {callbacks: {label: ctx => `${ctx.label}: ${ctx.raw} (${((ctx.raw/total)*100).toFixed(1)}%)`}}}}
+                    });
+                }
+            });
+            
+            tableArea.innerHTML = '<p class="no-data">Select individual questions for detailed tables</p>';
+        }
+        showDistFreeText(filterKey);
+        return;
+    }
+    
+    // Demographics - checkbox group with special handling for country/employment
+    if (cat === 'demo') {
+        const vbox = document.getElementById('vbox');
+        const checkedInputs = vbox ? Array.from(vbox.querySelectorAll('input:checked:not(#v-all)')) : [];
+        
+        // Check if free text is selected
+        const ftContainer = document.getElementById('free-text-container');
+        const hasFreeText = ftContainer && ftContainer.querySelectorAll('input:checked').length > 0;
+        
+        if (checkedInputs.length === 0) {
+            if (hasFreeText) {
+                // No main questions but free text selected - show only free text
+                document.getElementById('dist-title').innerHTML = `Demographics: Free Text Responses`;
+                chartArea.innerHTML = '';
+                tableArea.innerHTML = '';
+                showDistFreeText(filterKey);
+                return;
+            }
+            document.getElementById('dist-title').textContent = 'Please select at least one demographic';
+            chartArea.innerHTML = '';
+            tableArea.innerHTML = '';
+            return;
+        }
+        
+        // Get first data for N calculation
+        const firstKey = checkedInputs[0].dataset.k;
+        const firstData = dists[firstKey];
+        const actualN = firstData ? calcNFromData(firstData) : 0;
+        const demoBadge = buildBadge(actualN, !!firstData, firstData);
+        
+        // Single selection - show as full chart
+        if (checkedInputs.length === 1) {
+            const cb = checkedInputs[0];
+            const data = dists[cb.dataset.k];
+            const title = cb.nextElementSibling.textContent;
+            
+            document.getElementById('dist-title').innerHTML = title + demoBadge;
+            
+            if (!data || Object.keys(data).length === 0) {
+                chartArea.innerHTML = '<p class="no-data"><em>Data not available: this sample was not presented with this question</em></p>';
+                tableArea.innerHTML = '';
+                legendArea.innerHTML = '';
+                return;
+            }
+            
+            // Check if this is country (many values) - use horizontal bar chart
+            const isCountry = cb.dataset.k.includes('country');
+            const isEmployment = cb.dataset.k.includes('employment');
+            
+            if (isCountry || isEmployment) {
+                legendArea.innerHTML = '';
+                showHorizontalBarChart(data, title);
+            } else {
+                showSingleDonut(data, title);
+            }
+            return;
+        }
+        
+        // Multiple selections - show in grid
+        document.getElementById('dist-title').innerHTML = `Demographics: ${checkedInputs.length} Variables${demoBadge}`;
+        
+        // Separate country/employment from others (they need special handling)
+        const specialItems = checkedInputs.filter(cb => 
+            cb.dataset.k.includes('country') || cb.dataset.k.includes('employment'));
+        const regularItems = checkedInputs.filter(cb => 
+            !cb.dataset.k.includes('country') && !cb.dataset.k.includes('employment'));
+        
+        let htmlParts = [];
+        
+        // Regular demographics as grid of donuts
+        if (regularItems.length > 0) {
+            const gridClass = regularItems.length <= 2 ? 'cols-2' : 'cols-4';
+            let gridHtml = `<div class="chart-grid ${gridClass}" id="cgrid-regular">`;
+            regularItems.forEach((cb, i) => {
+                const title = cb.nextElementSibling.textContent;
+                gridHtml += `<div class="chart-cell"><h4 style="font-size:1.25rem;">${title}</h4><div class="chart-cell-legend" id="leg-r-${i}" style="font-size:1rem;"></div><canvas id="c-r-${i}"></canvas></div>`;
+            });
+            gridHtml += '</div>';
+            htmlParts.push(gridHtml);
+        }
+        
+        // Country and employment as separate horizontal bar charts
+        // Calculate height based on number of items for proper spacing
+        specialItems.forEach((cb, i) => {
+            const title = cb.nextElementSibling.textContent;
+            const data = dists[cb.dataset.k];
+            const numItems = data ? Object.keys(data).filter(k => typeof data[k] === 'number').length : 10;
+            const itemHeight = 36; // pixels per bar - increased further
+            const chartHeight = Math.max(numItems * itemHeight + 80, 300); // minimum 300px
+            htmlParts.push(`<div class="special-demo-section"><h4 style="text-align:center;margin:1.5rem 0 0.75rem;color:var(--text-secondary);font-size:1.25rem;">${title}</h4><div class="chart-container" style="height:${chartHeight}px"><canvas id="c-s-${i}"></canvas></div></div>`);
+        });
+        
+        chartArea.innerHTML = htmlParts.join('');
+        legendArea.innerHTML = '';
+        
+        // Create regular donut charts
+        regularItems.forEach((cb, i) => {
+            const data = dists[cb.dataset.k];
+            if (!data) return;
+            
+            // Sort keys: alphabetically for gender, by first number for age ranges
+            let keys = Object.keys(data);
+            if (keys.some(k => k.includes('-'))) {
+                // Age ranges - sort by first number
+                keys = keys.sort((a, b) => parseInt(a) - parseInt(b));
+            } else {
+                // Alphabetical (for gender, etc.)
+                keys = keys.sort();
+            }
+            const values = keys.map(k => typeof data[k] === 'number' ? data[k] : 0);
+            const total = values.reduce((a, b) => a + b, 0);
+            
+            // Add per-cell legend with larger font
+            const legEl = document.getElementById(`leg-r-${i}`);
+            if (legEl) {
+                legEl.innerHTML = buildChartCellLegend(data, 'custom');
+            }
+            
+            charts[`c-r-${i}`] = new Chart(document.getElementById(`c-r-${i}`).getContext('2d'), {
+                type: 'doughnut',
+                data: {labels: keys, datasets: [{data: values, backgroundColor: getColors(keys), borderWidth: 0}]},
+                options: {responsive: true, plugins: {legend: {display: false}, tooltip: {callbacks: {label: ctx => `${ctx.label}: ${ctx.raw} (${((ctx.raw/total)*100).toFixed(1)}%)`}}}}
+            });
+        });
+        
+        // Create horizontal bar charts for country/employment
+        specialItems.forEach((cb, i) => {
+            const data = dists[cb.dataset.k];
+            if (!data) return;
+            
+            const sortedEntries = Object.entries(data)
+                .filter(([k, v]) => typeof v === 'number')
+                .sort((a, b) => b[1] - a[1]);
+            
+            const labels = sortedEntries.map(([k]) => k);
+            const values = sortedEntries.map(([, v]) => v);
+            const total = values.reduce((a, b) => a + b, 0);
+            const maxVal = Math.max(...values);
+            
+            charts[`c-s-${i}`] = new Chart(document.getElementById(`c-s-${i}`).getContext('2d'), {
+                type: 'bar',
+                data: {labels, datasets: [{data: values, backgroundColor: '#4a9b9e', borderWidth: 0}]},
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {legend: {display: false}, tooltip: {callbacks: {label: ctx => `${ctx.raw} (${((ctx.raw/total)*100).toFixed(1)}%)`}}},
+                    scales: {x: {beginAtZero: true, max: Math.ceil(maxVal * 1.1 / 50) * 50, grid: {color: '#30363d'}, ticks: {color: '#e6edf3', font: {size: 15}, stepSize: 50}}, y: {grid: {display: false}, ticks: {color: '#e6edf3', autoSkip: false, font: {size: 15}}}}
+                }
+            });
+        });
+        
+        tableArea.innerHTML = '<p class="no-data">Select individual demographics for detailed tables</p>';
+        showDistFreeText(filterKey);
+        return;
+    }
+    
+    // Single select dropdown
+    const varSel = document.getElementById('dist-variable');
+    const v = varSel?.value;
+    if (!v) { document.getElementById('dist-title').textContent = 'Please select a question'; chartArea.innerHTML = ''; tableArea.innerHTML = ''; return; }
+    
+    const data = dists[v];
+    const dataN = data ? calcNFromData(data) : 0;
+    const dropdownBadge = buildBadge(dataN, !!data, data);
+    const title = varSel.selectedOptions[0]?.dataset?.c ? DN(varSel.selectedOptions[0].dataset.c).f : varSel.selectedOptions[0]?.textContent || v;
+    document.getElementById('dist-title').innerHTML = title + dropdownBadge;
+    
+    if (!data) { chartArea.innerHTML = '<p class="no-data">Data not available (may be restricted for privacy or not pre-computed)</p>'; tableArea.innerHTML = ''; return; }
+    
+    // Use bar chart for multiselect/experience source categories with many non-numeric options
+    const isMultiselect = cat === 'multiselect' || cat === 'expsrc';
+    const hasMultipleCategories = Object.keys(data).length > 2;
+    const isNonNumeric = !Object.keys(data).every(k => ['1','2','3','4','5'].includes(String(parseInt(parseFloat(k)))));
+    
+    if (isMultiselect && hasMultipleCategories && isNonNumeric) {
+        // Determine colorKey based on variable
+        const colorKey = v.includes('animal_types') ? 'animal_types' : null;
+        showBarChart(data, varSel.selectedOptions[0]?.textContent || v, colorKey);
+    } else {
+        showSingleDonut(data, varSel.selectedOptions[0]?.textContent || v);
+    }
+    
+    // Update download button visibility
+    setTimeout(updateDownloadButton, 100);
+}
+
+function getSelectedEntities(type) {
+    const vbox = document.getElementById('vbox');
+    if (!vbox) return [];
+    return Array.from(vbox.querySelectorAll('input:checked:not(#v-all)')).map(cb => {
+        const entity = cb.dataset.entity;
+        const entityInfo = DATA.metadata.entity_list?.find(e => e.key === entity);
+        return {
+            entity: entity,
+            short: cb.nextElementSibling.textContent,
+            color: entityInfo?.color || '#58a6ff',
+            l: cb.nextElementSibling.textContent
+        };
+    });
+}
+
+function showEntityDonuts(entities, type, dists, badge, legendArea) {
+    const prefix = type === 'ms' ? 'Moral Status' : 'Consciousness';
+    const legendTitle = type === 'ms' ? 'Does it Have Moral Status?' : 'Does it Have Consciousness?';
+    document.getElementById('dist-title').innerHTML = `${prefix} Attributions: ${entities.length} ${entities.length === 1 ? 'Entity' : 'Entities'}${badge}`;
+    
+    const chartArea = document.getElementById('dist-chart-area');
+    const tableArea = document.getElementById('dist-table-container');
+    
+    // Helper to convert to integer string (handles floats)
+    const toIntStr = l => String(parseInt(parseFloat(l)));
+    
+    // Check if any entity has data
+    const hasAnyData = entities.some(e => {
+        const colKey = `${type}_${e.entity}`;
+        const surveyKey = Object.entries(DATA.metadata.survey_questions).find(([k, v]) => v === colKey)?.[0];
+        const data = surveyKey ? dists[`survey_${surveyKey}`] : null;
+        return data && Object.keys(data).length > 0;
+    });
+    
+    if (!hasAnyData) {
+        legendArea.innerHTML = '';
+        chartArea.innerHTML = '<p class="no-data"><em>Data not available: this sample was not presented with these questions</em></p>';
+        tableArea.innerHTML = '';
+        return;
+    }
+    
+    // Show horizontal legend at top for rating scale with title
+    legendArea.innerHTML = buildRatingLegend('rating', legendTitle);
+    
+    if (entities.length === 1) {
+        const e = entities[0];
+        const colKey = `${type}_${e.entity}`;
+        const surveyKey = Object.entries(DATA.metadata.survey_questions).find(([k, v]) => v === colKey)?.[0];
+        const data = surveyKey ? dists[`survey_${surveyKey}`] : null;
+        
+        if (!data) { chartArea.innerHTML = '<p class="no-data"><em>Data not available: this sample was not presented with this question</em></p>'; tableArea.innerHTML = ''; legendArea.innerHTML = ''; return; }
+        showSingleDonut(data, e.short, false);  // false = don't show side legend
+    } else {
+        const gridClass = entities.length <= 4 ? 'cols-4' : 'cols-4';
+        chartArea.innerHTML = `<div class="chart-grid ${gridClass}" id="cgrid"></div>`;
+        const grid = document.getElementById('cgrid');
+        
+        // Collect all rows for sorting
+        let rows = [];
+        
+        entities.forEach((e, i) => {
+            const colKey = `${type}_${e.entity}`;
+            const surveyKey = Object.entries(DATA.metadata.survey_questions).find(([k, v]) => v === colKey)?.[0];
+            const data = surveyKey ? dists[`survey_${surveyKey}`] : null;
+            if (!data) return;
+            
+            const cell = document.createElement('div'); cell.className = 'chart-cell';
+            cell.innerHTML = `<h4>${e.short}</h4><canvas id="c-${i}"></canvas>`;
+            grid.appendChild(cell);
+            
+            // Sort keys numerically for rating scale (1,2,3,4) - handles floats
+            const sortedKeys = Object.keys(data).sort((a, b) => parseFloat(a) - parseFloat(b));
+            const labels = sortedKeys.map(l => RLab(toIntStr(l)));
+            const values = sortedKeys.map(k => typeof data[k] === 'number' ? data[k] : 0);
+            const total = values.reduce((a, b) => a + b, 0);
+            
+            charts[`c-${i}`] = new Chart(document.getElementById(`c-${i}`).getContext('2d'), {
+                type: 'doughnut', data: {labels, datasets: [{data: values, backgroundColor: getColors(sortedKeys), borderWidth: 0}]},
+                options: {responsive: true, plugins: {legend: {display: false}, tooltip: {callbacks: {label: ctx => `${ctx.label}: ${ctx.raw} (${((ctx.raw/total)*100).toFixed(1)}%)`}}}}
+            });
+            
+            // Store data for table (one row per entity)
+            const entityData = {entity: e.short, total: total, ratings: {}};
+            sortedKeys.forEach(l => {
+                const v = data[l];
+                const valueNum = parseInt(parseFloat(l)) || 0;
+                entityData.ratings[valueNum] = {
+                    count: v,
+                    sup: typeof v === 'string',
+                    pct: typeof v === 'string' ? '—' : ((v/total)*100).toFixed(1)+'%'
+                };
+            });
+            rows.push(entityData);
+        });
+        
+        // Build table with one row per entity, columns for each rating
+        // Use same labels as RL constant for consistency
+        let tbl = '<table><thead><tr><th>Entity</th>';
+        [1, 2, 3, 4].forEach(r => {
+            tbl += `<th>${r}: ${RL[String(r)]}</th><th>% ${r}: ${RL[String(r)]}</th>`;
+        });
+        tbl += '</tr></thead><tbody>';
+        
+        rows.forEach(r => {
+            tbl += `<tr><td>${r.entity}</td>`;
+            [1, 2, 3, 4].forEach(rating => {
+                const rd = r.ratings[rating] || {count: '—', pct: '—', sup: false};
+                tbl += `<td class="${rd.sup?'suppressed':''}">${rd.count}</td><td class="${rd.sup?'suppressed':''}">${rd.pct}</td>`;
+            });
+            tbl += '</tr>';
+        });
+        tableArea.innerHTML = tbl + '</tbody></table>';
+    }
+}
+
+function showCombinedScatter(entities, entityStats, badge, legendArea, displayMode = 'both') {
+    const modeLabels = {'mean': 'Mean ± SE', 'individual': 'Individual Data', 'both': 'Both'};
+    document.getElementById('dist-title').innerHTML = `Entity Combined Attributions: ${entities.length} ${entities.length === 1 ? 'Entity' : 'Entities'}${badge}`;
+    
+    const chartArea = document.getElementById('dist-chart-area');
+    const tableArea = document.getElementById('dist-table-container');
+    
+    if (!entityStats || Object.keys(entityStats).length === 0) {
+        chartArea.innerHTML = '<p class="no-data">Data not available</p>';
+        tableArea.innerHTML = '';
+        return;
+    }
+    
+    // Build entity color map
+    const entityColors = {};
+    DATA.metadata.entity_list?.forEach(e => { entityColors[e.key] = e.color; });
+    
+    // Build legend for entities
+    let legendHtml = '<div class="legend-bar">';
+    entities.forEach(e => {
+        const color = entityColors[e.entity] || '#58a6ff';
+        legendHtml += `<span class="legend-item"><span class="legend-color" style="background:${color}"></span>${e.short}</span>`;
+    });
+    legendHtml += '</div>';
+    legendArea.innerHTML = legendHtml;
+    
+    // Collect datasets based on display mode
+    const countMap = {};
+    const datasets = [];
+    
+    // Individual data points (for 'individual' and 'both' modes)
+    if (displayMode === 'individual' || displayMode === 'both') {
+        // First pass: count points at each position for each entity
+        const positionCounts = {};
+        entities.forEach(e => {
+            const stats = entityStats[e.entity];
+            if (stats?.scatter_data?.length) {
+                stats.scatter_data.forEach(([c, ms]) => {
+                    const cInt = Math.round(parseFloat(c));
+                    const msInt = Math.round(parseFloat(ms));
+                    const key = `${e.entity}_${cInt}_${msInt}`;
+                    positionCounts[key] = (positionCounts[key] || 0) + 1;
+                });
+            }
+        });
+        
+        // Adaptive jitter based on count at each position
+        const getJitter = (count) => {
+            if (count <= 1) return 0;
+            if (count <= 5) return 0.08;
+            if (count <= 15) return 0.12;
+            if (count <= 40) return 0.18;
+            return 0.22;  // max jitter (reduced from 0.4)
+        };
+        
+        entities.forEach((e, idx) => {
+            const stats = entityStats[e.entity];
+            if (stats?.scatter_data?.length) {
+                const color = entityColors[e.entity] || '#58a6ff';
+                const points = [];
+                
+                // Track which position index we're at for each position
+                const positionIndex = {};
+                
+                stats.scatter_data.forEach(([c, ms]) => {
+                    const cInt = Math.round(parseFloat(c));
+                    const msInt = Math.round(parseFloat(ms));
+                    const key = `${e.entity}_${cInt}_${msInt}`;
+                    countMap[key] = (countMap[key] || 0) + 1;
+                    
+                    // Get count at this position for jitter calculation
+                    const countAtPosition = positionCounts[key] || 1;
+                    const jitterRadius = getJitter(countAtPosition);
+                    
+                    // Ellipse jitter (slightly wider horizontally)
+                    let jitterX = 0, jitterY = 0;
+                    if (jitterRadius > 0) {
+                        const angle = Math.random() * 2 * Math.PI;
+                        const r = Math.sqrt(Math.random()) * jitterRadius;
+                        jitterX = r * Math.cos(angle) * 1.1;  // Slight horizontal bias
+                        jitterY = r * Math.sin(angle) * 0.9;
+                    }
+                    
+                    points.push({
+                        x: cInt + jitterX,
+                        y: msInt + jitterY,
+                        entity: e.short,
+                        entityKey: e.entity,
+                        cOrig: cInt,
+                        msOrig: msInt,
+                        isMean: false
+                    });
+                });
+                datasets.push({
+                    label: e.short,
+                    data: points,
+                    backgroundColor: color + (displayMode === 'both' ? '55' : '99'),
+                    borderColor: color,
+                    pointRadius: displayMode === 'both' ? 3 : 4,
+                    order: 2
+                });
+            }
+        });
+    }
+    
+    // Mean points (for 'mean' and 'both' modes) - SE shown only on hover via tooltip
+    if (displayMode === 'mean' || displayMode === 'both') {
+        entities.forEach((e, idx) => {
+            const stats = entityStats[e.entity];
+            if (stats?.c_mean != null && stats?.ms_mean != null) {
+                const color = entityColors[e.entity] || '#58a6ff';
+                
+                // Mean point dataset (larger dot with darker border)
+                // Darken the color for the border
+                const darkerBorder = color.replace(/^#/, '');
+                const r = Math.max(0, parseInt(darkerBorder.substr(0,2), 16) - 60);
+                const g = Math.max(0, parseInt(darkerBorder.substr(2,2), 16) - 60);
+                const b = Math.max(0, parseInt(darkerBorder.substr(4,2), 16) - 60);
+                const darkBorderColor = `#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`;
+                
+                datasets.push({
+                    label: e.short + ' (Mean)',
+                    data: [{
+                        x: stats.c_mean,
+                        y: stats.ms_mean,
+                        entity: e.short,
+                        entityKey: e.entity,
+                        isMean: true,
+                        cMean: stats.c_mean,
+                        msMean: stats.ms_mean,
+                        cSem: stats.c_sem,
+                        msSem: stats.ms_sem,
+                        n: stats.paired_n
+                    }],
+                    backgroundColor: color,
+                    borderColor: darkBorderColor,
+                    borderWidth: 1.5,
+                    pointRadius: 12,
+                    pointStyle: 'circle',
+                    order: 1  // Draw means on top
+                });
+            }
+        });
+    }
+    
+    chartArea.innerHTML = '<div class="chart-container"><canvas id="dist-chart"></canvas></div>';
+    
+    charts.main = new Chart(document.getElementById('dist-chart').getContext('2d'), {
+        type: 'scatter',
+        data: {datasets},
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+                legend: {display: false},
+                tooltip: {
+                    mode: 'point',
+                    callbacks: {
+                        title: (items) => {
+                            if (!items.length) return '';
+                            // Check if any are mean points
+                            const meanItems = items.filter(i => i.raw.isMean);
+                            if (meanItems.length > 0) {
+                                return meanItems.map(i => i.raw.entity).join(', ');
+                            }
+                            // For individual points, show descriptive position (4-point scale)
+                            const pt = items[0].raw;
+                            const cLabels = {
+                                1: 'Does not have consciousness',
+                                2: 'Probably doesn\'t have consciousness',
+                                3: 'Probably has consciousness',
+                                4: 'Has consciousness'
+                            };
+                            const msLabels = {
+                                1: 'Does not have moral status',
+                                2: 'Probably doesn\'t have moral status',
+                                3: 'Probably has moral status',
+                                4: 'Has moral status'
+                            };
+                            const cLabel = cLabels[pt.cOrig] || `Consciousness=${pt.cOrig}`;
+                            const msLabel = msLabels[pt.msOrig] || `Moral Status=${pt.msOrig}`;
+                            return `${cLabel} & ${msLabel}`;
+                        },
+                        label: ctx => {
+                            const pt = ctx.raw;
+                            if (pt.isMean) {
+                                return [
+                                    `Consciousness: M=${pt.cMean.toFixed(2)} ± ${pt.cSem?.toFixed(3) || '—'}`,
+                                    `Moral Status: M=${pt.msMean.toFixed(2)} ± ${pt.msSem?.toFixed(3) || '—'}`,
+                                    `N: ${pt.n || '—'}`
+                                ];
+                            }
+                            const count = countMap[`${pt.entityKey}_${pt.cOrig}_${pt.msOrig}`] || 1;
+                            return `${pt.entity}: ${count}`;
+                        },
+                        // Deduplicate labels for same entity at same position
+                        afterBody: (items) => {
+                            return [];  // Used to deduplicate via filter below
+                        }
+                    },
+                    filter: (item, index, items) => {
+                        // For individual points, deduplicate by entity + position
+                        const pt = item.raw;
+                        if (pt.isMean) return true;  // Always show mean points
+                        const key = `${pt.entityKey}_${pt.cOrig}_${pt.msOrig}`;
+                        // Check if this is the first occurrence of this entity at this position
+                        for (let i = 0; i < index; i++) {
+                            const prevPt = items[i].raw;
+                            if (!prevPt.isMean) {
+                                const prevKey = `${prevPt.entityKey}_${prevPt.cOrig}_${prevPt.msOrig}`;
+                                if (prevKey === key) return false;  // Duplicate, filter out
+                            }
+                        }
+                        return true;
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    min: 0.5, max: 4.5,
+                    title: {display: true, text: 'Consciousness', color: '#e6edf3', font: {size: 16, weight: '500'}},
+                    ticks: {
+                        stepSize: 1,
+                        color: '#e6edf3',
+                        font: {size: 14},
+                        callback: function(value) {
+                            if (value >= 1 && value <= 4 && Number.isInteger(value)) {
+                                return RL[value] || value;
+                            }
+                            return '';
+                        }
+                    },
+                    grid: {
+                        color: '#30363d',
+                        drawOnChartArea: true
+                    },
+                    afterBuildTicks: function(axis) {
+                        axis.ticks = [1, 2, 3, 4].map(v => ({value: v}));
+                    }
+                },
+                y: {
+                    min: 0.5, max: 4.5,
+                    title: {display: true, text: 'Moral Status', color: '#e6edf3', font: {size: 16, weight: '500'}},
+                    ticks: {
+                        stepSize: 1,
+                        color: '#e6edf3',
+                        font: {size: 14},
+                        callback: function(value) {
+                            if (value >= 1 && value <= 4 && Number.isInteger(value)) {
+                                return RL[value] || value;
+                            }
+                            return '';
+                        }
+                    },
+                    grid: {
+                        color: '#30363d',
+                        drawOnChartArea: true
+                    },
+                    afterBuildTicks: function(axis) {
+                        axis.ticks = [1, 2, 3, 4].map(v => ({value: v}));
+                    }
+                }
+            }
+        }
+    });
+    
+    // Table with stats
+    let tbl = '<table><thead><tr><th>Entity</th><th>C Mean</th><th>C SD</th><th>C SEM</th><th>MS Mean</th><th>MS SD</th><th>MS SEM</th><th>N</th></tr></thead><tbody>';
+    entities.forEach(e => {
+        const s = entityStats[e.entity];
+        if (s) {
+            tbl += `<tr><td>${e.short}</td><td>${s.c_mean?.toFixed(2)||'—'}</td><td>${s.c_std?.toFixed(2)||'—'}</td><td>${s.c_sem?.toFixed(3)||'—'}</td><td>${s.ms_mean?.toFixed(2)||'—'}</td><td>${s.ms_std?.toFixed(2)||'—'}</td><td>${s.ms_sem?.toFixed(3)||'—'}</td><td>${s.paired_n||'—'}</td></tr>`;
+        }
+    });
+    tableArea.innerHTML = tbl + '</tbody></table>';
+}
+
+function showMultiDist(sel, dists, badge, gridClass, legendArea, category = '') {
+    document.getElementById('dist-title').innerHTML = `${sel.length} Questions Selected${badge}`;
+    
+    // Check if any questions have data
+    const hasAnyData = sel.some(o => {
+        const data = dists[o.k];
+        return data && Object.keys(data).length > 0;
+    });
+    
+    if (!hasAnyData) {
+        legendArea.innerHTML = '';
+        document.getElementById('dist-chart-area').innerHTML = '<p class="no-data"><em>Data not available: this sample was not presented with these questions</em></p>';
+        document.getElementById('dist-table-container').innerHTML = '';
+        return;
+    }
+    
+    // Check if graded_c questions are Equal/Unequal/Incomparable (use numeric GL scale)
+    const isGradedNumeric = (label) => {
+        const lowerLabel = (label || '').toLowerCase();
+        return lowerLabel.includes('equal') || lowerLabel.includes('unequal') || lowerLabel.includes('incomparable');
+    };
+    
+    // Determine scale type PER QUESTION for graded_c category
+    const getQuestionScaleType = (o) => {
+        if (category === 'graded_c') {
+            return isGradedNumeric(o.l) ? 'graded' : 'agreement';
+        }
+        if (['c_intel'].includes(category)) return 'agreement';
+        if (category === 'exp' || category === 'experience') return 'experience';
+        return 'rating';
+    };
+    
+    // Get label function for a scale type
+    const getLabelFnForScale = (st) => {
+        if (st === 'graded') return GLab;
+        if (st === 'agreement') return ALab;
+        if (st === 'experience') return ELab;
+        return RLab;
+    };
+    
+    const useExperienceScale = category === 'exp' || category === 'experience';
+    
+    // Helper to check if rating scale (handles floats)
+    const isRatingScale = (keys) => keys.every(k => ['1','2','3','4'].includes(String(parseInt(parseFloat(k)))));
+    const isExperienceScaleFn = (keys) => keys.every(k => ['1','2','3','4','5'].includes(String(parseInt(parseFloat(k)))));
+    
+    // Check if all questions have same scale type
+    const scaleTypes = sel.map(o => getQuestionScaleType(o));
+    const allSameScale = scaleTypes.every(st => st === scaleTypes[0]);
+    
+    // Check if all questions have same response type (for unified legend)
+    const allRating = sel.every(o => {
+        const data = dists[o.k];
+        if (!data) return false;
+        const keys = Object.keys(data);
+        return useExperienceScale ? isExperienceScaleFn(keys) : isRatingScale(keys);
+    });
+    
+    // If all same type AND same scale, show global legend
+    if (allRating && allSameScale) {
+        legendArea.innerHTML = buildRatingLegend(scaleTypes[0]);
+    } else {
+        legendArea.innerHTML = '';  // Per-chart legends will be shown
+    }
+    
+    document.getElementById('dist-chart-area').innerHTML = `<div class="chart-grid ${gridClass}" id="cgrid"></div>`;
+    const grid = document.getElementById('cgrid');
+    
+    // Collect all rows for sorting
+    let rows = [];
+    
+    sel.forEach((o, i) => {
+        const data = dists[o.k];
+        if (!data) return;
+        
+        // Get this question's scale type
+        const qScaleType = getQuestionScaleType(o);
+        const getLabelFn = getLabelFnForScale(qScaleType);
+        
+        const cell = document.createElement('div'); cell.className = 'chart-cell';
+        const keys = Object.keys(data);
+        const isRating = useExperienceScale ? isExperienceScaleFn(keys) : isRatingScale(keys);
+        const isNumeric = keys.every(k => !isNaN(parseFloat(k)));
+        
+        // Sort keys numerically for rating/numeric scales
+        let sortedKeys = keys;
+        if (isNumeric) {
+            sortedKeys = sortedKeys.sort((a, b) => parseFloat(a) - parseFloat(b));
+        }
+        
+        // Per-chart legend if not all same type
+        let cellLegend = '';
+        if (!allRating || !allSameScale) {
+            cellLegend = buildChartCellLegend(data, qScaleType);
+        }
+        
+        // Determine plot title - for kill_test use display names (stripped tokens), otherwise use label
+        let plotTitle = o.l;
+        if (category === 'kill_test' && o.c) {
+            plotTitle = DN(o.c).s || o.l;
+        }
+        
+        // Special handling for specific categories with alignment issues
+        let titleStyle = '';
+        let extraSpacing = '';
+        
+        // Earth in Danger: smaller font for very long UWS+AI question when 3+ items selected
+        if (category === 'earth_danger' && sel.length >= 3) {
+            if (plotTitle.includes('unresponsive wakefulness syndrome') && plotTitle.includes('artificial intelligence')) {
+                titleStyle = 'font-size:0.85rem;';
+            }
+        }
+        
+        // ICS: smaller font when all 4 selected
+        if (category === 'ics' && sel.length === 4) {
+            titleStyle = 'font-size:0.85rem;';
+        }
+        
+        // Moral Considerations: add spacing for PRIOS_Q_PEOPLE (shorter title) when all 4 selected
+        if (category === 'moral_cons' && sel.length === 4) {
+            if (plotTitle.includes('people') && !plotTitle.includes('animals')) {
+                extraSpacing = '<div style="height:1.3em;"></div>';
+            }
+        }
+        
+        // Graded Consciousness: add spacing for shorter titles when all 4 selected
+        // Only for Q_GRADED_EQUAL and Q_GRADED_MATTERMORE, NOT for Unequal/Incomparable
+        if (category === 'graded_c' && sel.length === 4) {
+            const isEqual = plotTitle.includes('equally conscious') && !plotTitle.includes('not equally');
+            const isMattersMore = plotTitle.includes('matter more') || plotTitle.includes('Matters More');
+            if (isEqual || isMattersMore) {
+                extraSpacing = '<div style="height:1.3em;"></div>';
+            }
+        }
+        
+        cell.innerHTML = `<h4 style="${titleStyle}">${plotTitle}</h4>${extraSpacing}${cellLegend}<canvas id="c-${i}"></canvas>`;
+        grid.appendChild(cell);
+        
+        const toIntStr = l => String(parseInt(parseFloat(l)));
+        const labels = sortedKeys.map(l => isRating ? getLabelFn(toIntStr(l)) : (isNumeric ? toIntStr(l) : l));
+        const values = sortedKeys.map(k => typeof data[k] === 'number' ? data[k] : 0);
+        const total = values.reduce((a, b) => a + b, 0);
+        
+        charts[`c-${i}`] = new Chart(document.getElementById(`c-${i}`).getContext('2d'), {
+            type: 'doughnut', data: {labels, datasets: [{data: values, backgroundColor: getColors(sortedKeys, qScaleType), borderWidth: 0}]},
+            options: {responsive: true, plugins: {legend: {display: false}, tooltip: {callbacks: {label: ctx => `${ctx.label}: ${ctx.raw} (${((ctx.raw/total)*100).toFixed(1)}%)`}}}}
+        });
+        
+        sortedKeys.forEach(l => {
+            const v = data[l];
+            const sup = typeof v === 'string';
+            const valueNum = parseInt(parseFloat(l)) || 0;
+            rows.push({
+                question: o.l,
+                questionIdx: i,
+                value: valueNum,
+                valueLabel: isRating ? getLabelFn(toIntStr(l)) : (isNumeric ? toIntStr(l) : l),
+                rawLabel: l,  // Keep raw label for binary detection
+                count: v,
+                total: total,
+                pct: sup ? '—' : ((v/total)*100).toFixed(1)+'%',
+                sup: sup
+            });
+        });
+    });
+    
+    // Check if this is a binary choice category (each question has exactly 2 options)
+    const questionGroups = {};
+    rows.forEach(r => {
+        if (!questionGroups[r.questionIdx]) questionGroups[r.questionIdx] = [];
+        questionGroups[r.questionIdx].push(r);
+    });
+    const isBinary = Object.values(questionGroups).every(g => g.length === 2);
+    const binaryCategories = ['earth_danger', 'ics', 'moral_cons', 'kill_test'];
+    const useBinaryFormat = isBinary && binaryCategories.includes(category);
+    
+    if (useBinaryFormat) {
+        // Build one-row-per-question table with category-specific headers
+        let tbl = '<table><thead><tr><th>Question</th>';
+        if (category === 'earth_danger') {
+            tbl += '<th>Option 1</th><th>Count</th><th>%</th><th>Option 2</th><th>Count</th><th>%</th>';
+        } else {
+            // ICS, Moral Cons, Kill for Test use Yes/No format
+            tbl += '<th>Yes</th><th>% Yes</th><th>No</th><th>% No</th>';
+        }
+        tbl += '</tr></thead><tbody>';
+        
+        Object.entries(questionGroups).forEach(([idx, group]) => {
+            const q = group[0].question;
+            
+            if (category === 'earth_danger') {
+                const opt1 = group[0];
+                const opt2 = group[1];
+                tbl += `<tr><td>${q}</td>`;
+                tbl += `<td>${opt1.valueLabel}</td><td class="${opt1.sup?'suppressed':''}">${opt1.count}</td><td class="${opt1.sup?'suppressed':''}">${opt1.pct}</td>`;
+                tbl += `<td>${opt2.valueLabel}</td><td class="${opt2.sup?'suppressed':''}">${opt2.count}</td><td class="${opt2.sup?'suppressed':''}">${opt2.pct}</td>`;
+                tbl += '</tr>';
+            } else {
+                // Find Yes and No responses
+                const yesOpt = group.find(g => g.rawLabel === 'Yes' || g.rawLabel.includes('Yes (')) || group[0];
+                const noOpt = group.find(g => g.rawLabel === 'No' || g.rawLabel.includes('No (')) || group[1];
+                tbl += `<tr><td>${q}</td>`;
+                tbl += `<td class="${yesOpt.sup?'suppressed':''}">${yesOpt.count}</td><td class="${yesOpt.sup?'suppressed':''}">${yesOpt.pct}</td>`;
+                tbl += `<td class="${noOpt.sup?'suppressed':''}">${noOpt.count}</td><td class="${noOpt.sup?'suppressed':''}">${noOpt.pct}</td>`;
+                tbl += '</tr>';
+            }
+        });
+        document.getElementById('dist-table-container').innerHTML = tbl + '</tbody></table>';
+    } else {
+        // Sort by question index, then by value (for rating scales) or label
+        rows.sort((a, b) => {
+            if (a.questionIdx !== b.questionIdx) return a.questionIdx - b.questionIdx;
+            return a.value - b.value;
+        });
+        
+        // Build standard table
+        let tbl = '<table><thead><tr><th>Question</th><th>Value</th><th>Count</th><th>%</th></tr></thead><tbody>';
+        rows.forEach(r => {
+            tbl += `<tr><td>${r.question}</td><td>${r.valueLabel}</td><td class="${r.sup?'suppressed':''}">${r.count}</td><td class="${r.sup?'suppressed':''}">${r.pct}</td></tr>`;
+        });
+        document.getElementById('dist-table-container').innerHTML = tbl + '</tbody></table>';
+    }
+}
+
+function showSingleDonut(data, qName, showSideLegend = true, legendTitle = null) {
+    const chartArea = document.getElementById('dist-chart-area');
+    const legendArea = document.getElementById('dist-legend-area');
+    chartArea.innerHTML = '<div class="chart-container" style="height:400px;"><canvas id="dist-chart"></canvas></div>';
+    
+    // Helper to convert to integer string (handles floats like '1.0' -> '1')
+    const toIntStr = l => String(parseInt(parseFloat(l)));
+    const hasDash = Object.keys(data).some(k => k.includes('-'));
+    const isNumeric = !hasDash && Object.keys(data).every(k => !isNaN(parseFloat(k)));
+    const isR = Object.keys(data).every(k => ['1','2','3','4'].includes(toIntStr(k)));
+    
+    // Check if this is education data
+    const eduOrder = DATA.metadata.education_order || [];
+    const isEducation = eduOrder.length > 0 && Object.keys(data).some(k => eduOrder.includes(k));
+    
+    // Sort labels: education order, numeric for rating scales, by first number for age ranges, alphabetically otherwise
+    let sortedKeys = Object.keys(data);
+    if (isEducation) {
+        sortedKeys = sortedKeys.sort((a, b) => {
+            const idxA = eduOrder.indexOf(a);
+            const idxB = eduOrder.indexOf(b);
+            if (idxA === -1 && idxB === -1) return a.localeCompare(b);
+            if (idxA === -1) return 1;
+            if (idxB === -1) return -1;
+            return idxA - idxB;
+        });
+    } else if (isNumeric) {
+        sortedKeys = sortedKeys.sort((a, b) => parseFloat(a) - parseFloat(b));
+    } else if (hasDash && !isNaN(parseInt(sortedKeys[0]))) {
+        sortedKeys = sortedKeys.sort((a, b) => parseInt(a) - parseInt(b));
+    } else {
+        sortedKeys = sortedKeys.sort();
+    }
+    
+    // Capitalize labels for EiD Cluster and ICS Group
+    const needsCapitalize = shouldCapitalizeLabels(sortedKeys);
+    const labels = sortedKeys.map(l => {
+        if (isR) return RLab(toIntStr(l));
+        if (isNumeric) return toIntStr(l);
+        return needsCapitalize ? capitalizeLabel(l) : l;
+    });
+    const values = sortedKeys.map(k => typeof data[k] === 'number' ? data[k] : 0);
+    const total = values.reduce((a, b) => a + b, 0);
+    
+    // Show horizontal legend (never side legend)
+    if (isR) {
+        legendArea.innerHTML = buildRatingLegend();
+    } else {
+        legendArea.innerHTML = buildCustomLegend(data, legendTitle);
+    }
+    
+    charts.main = new Chart(document.getElementById('dist-chart').getContext('2d'), {
+        type: 'doughnut',
+        data: {labels, datasets: [{data: values, backgroundColor: getColors(sortedKeys), borderWidth: 0}]},
+        options: {responsive: true, maintainAspectRatio: false, plugins: {legend: {display: false}, tooltip: {callbacks: {label: ctx => `${ctx.label}: ${ctx.raw} (${((ctx.raw/total)*100).toFixed(1)}%)`}}}}
+    });
+    let h = `<table><thead><tr><th>${qName}</th><th>Count</th><th>%</th></tr></thead><tbody>`;
+    sortedKeys.forEach((l, idx) => { 
+        const v = data[l];
+        const sup = typeof v === 'string';
+        const displayLabel = labels[idx];  // Use the already-processed labels array
+        h += `<tr><td>${displayLabel}</td><td class="${sup?'suppressed':''}">${v}</td><td class="${sup?'suppressed':''}">` + (sup ? '—' : ((v/total)*100).toFixed(1)+'%') + `</td></tr>`; 
+    });
+    document.getElementById('dist-table-container').innerHTML = h + '</tbody></table>';
+}
+
+function showExperienceDonut(data, qName, legendArea) {
+    const chartArea = document.getElementById('dist-chart-area');
+    chartArea.innerHTML = '<div class="chart-container" style="height:400px;"><canvas id="dist-chart"></canvas></div>';
+    
+    // Helper to convert to integer string (handles floats like '1.0' -> '1')
+    const toIntStr = l => String(parseInt(parseFloat(l)));
+    const isNumeric = Object.keys(data).every(k => !isNaN(parseFloat(k)));
+    
+    // Sort labels numerically
+    let sortedKeys = Object.keys(data);
+    if (isNumeric) {
+        sortedKeys = sortedKeys.sort((a, b) => parseFloat(a) - parseFloat(b));
+    }
+    
+    // Use experience scale labels
+    const labels = sortedKeys.map(l => ELab(toIntStr(l)));
+    const values = sortedKeys.map(k => typeof data[k] === 'number' ? data[k] : 0);
+    const total = values.reduce((a, b) => a + b, 0);
+    
+    // Show experience scale legend
+    legendArea.innerHTML = buildRatingLegend('experience', 'Experience Level');
+    
+    charts.main = new Chart(document.getElementById('dist-chart').getContext('2d'), {
+        type: 'doughnut',
+        data: {labels, datasets: [{data: values, backgroundColor: getColors(sortedKeys, 'experience'), borderWidth: 0}]},
+        options: {responsive: true, maintainAspectRatio: false, plugins: {legend: {display: false}, tooltip: {callbacks: {label: ctx => `${ctx.label}: ${ctx.raw} (${((ctx.raw/total)*100).toFixed(1)}%)`}}}}
+    });
+    
+    let h = `<table><thead><tr><th>${qName}</th><th>Count</th><th>%</th></tr></thead><tbody>`;
+    sortedKeys.forEach(l => { 
+        const v = data[l];
+        const sup = typeof v === 'string';
+        const displayLabel = ELab(toIntStr(l));
+        h += `<tr><td>${displayLabel}</td><td class="${sup?'suppressed':''}">${v}</td><td class="${sup?'suppressed':''}">` + (sup ? '—' : ((v/total)*100).toFixed(1)+'%') + `</td></tr>`; 
+    });
+    document.getElementById('dist-table-container').innerHTML = h + '</tbody></table>';
+}
+
+function showBarChart(data, qName, colorKey = null, respondentN = null) {
+    const chartArea = document.getElementById('dist-chart-area');
+    const legendArea = document.getElementById('dist-legend-area');
+    legendArea.innerHTML = '';  // No legend needed for bar chart - colors are self-explanatory
+    
+    // Sort by count (descending)
+    const sortedEntries = Object.entries(data)
+        .filter(([k, v]) => typeof v === 'number')
+        .sort((a, b) => b[1] - a[1]);
+    
+    const labels = sortedEntries.map(([k]) => k);
+    const values = sortedEntries.map(([, v]) => v);
+    const totalSelections = values.reduce((a, b) => a + b, 0);
+    // Use respondentN for percentage if provided (for multiselect), otherwise use totalSelections
+    const percentBase = respondentN || totalSelections;
+    
+    // Get colors from metadata or use default
+    const colorMap = colorKey ? (DATA.metadata.colors?.[colorKey] || {}) : {};
+    const defaultColors = ['#58a6ff','#f78166','#7ee787','#d2a8ff','#ffa657','#79c0ff','#ff7b72','#a5d6ff'];
+    const colors = labels.map((l, i) => colorMap[l] || defaultColors[i % defaultColors.length]);
+    
+    // Helper to wrap long labels into multiple lines
+    const wrapLabel = (label, maxWidth = 20) => {
+        if (label.length <= maxWidth) return label;
+        const words = label.split(' ');
+        const lines = [];
+        let currentLine = '';
+        for (const word of words) {
+            if ((currentLine + ' ' + word).trim().length <= maxWidth) {
+                currentLine = (currentLine + ' ' + word).trim();
+            } else {
+                if (currentLine) lines.push(currentLine);
+                currentLine = word;
+            }
+        }
+        if (currentLine) lines.push(currentLine);
+        return lines;
+    };
+    
+    // Wrap labels for display
+    const wrappedLabels = labels.map(l => wrapLabel(l, 25));
+    
+    // Use larger font when displayed alone (standalone), smaller when many labels
+    const fontSize = labels.length > 8 ? 11 : 14;
+    
+    chartArea.innerHTML = '<div class="chart-container" style="height:450px;"><canvas id="dist-chart"></canvas></div>';
+    
+    charts.main = new Chart(document.getElementById('dist-chart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: wrappedLabels,
+            datasets: [{
+                data: values,
+                backgroundColor: colors,
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {display: false},
+                tooltip: {
+                    callbacks: {
+                        title: ctx => labels[ctx[0].dataIndex],  // Show full label in tooltip
+                        label: ctx => `${ctx.raw} (${((ctx.raw/percentBase)*100).toFixed(1)}%)`
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: {display: false},
+                    ticks: {
+                        color: '#e6edf3',
+                        maxRotation: 0,  // Keep labels straight
+                        minRotation: 0,
+                        autoSkip: false,  // Show all labels
+                        font: {size: fontSize + 1}  // Slightly larger
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: {color: '#30363d'},
+                    ticks: {color: '#e6edf3', font: {size: 14}},
+                    title: {display: true, text: 'Count', color: '#e6edf3', font: {size: 15, weight: 'bold'}}
+                }
+            }
+        }
+    });
+    
+    // Build table
+    let h = `<table><thead><tr><th>${qName}</th><th>Count</th><th>%</th></tr></thead><tbody>`;
+    sortedEntries.forEach(([k, v]) => {
+        h += `<tr><td>${k}</td><td>${v}</td><td>${((v/percentBase)*100).toFixed(1)}%</td></tr>`;
+    });
+    // Add suppressed values
+    Object.entries(data).filter(([k, v]) => typeof v === 'string').forEach(([k, v]) => {
+        h += `<tr><td>${k}</td><td class="suppressed">${v}</td><td class="suppressed">—</td></tr>`;
+    });
+    document.getElementById('dist-table-container').innerHTML = h + '</tbody></table>';
+}
+
+function showStackedBarChart(importantData, mostImportantData, title, colorKey = 'moral_features', dists = null, respondentN = null) {
+    const chartArea = document.getElementById('dist-chart-area');
+    const legendArea = document.getElementById('dist-legend-area');
+    
+    // Use combined_most data if available (includes single-feature selections as "most important")
+    const combinedMostData = dists?.['multiselect_moral_considerations_combined_most'] || mostImportantData;
+    
+    // Get all unique labels from both datasets
+    const allLabels = [...new Set([...Object.keys(importantData || {}), ...Object.keys(combinedMostData || {})])];
+    
+    // Sort labels by total count (Important is the total, Most Important is a subset)
+    const sortedLabels = allLabels
+        .filter(l => (typeof importantData?.[l] === 'number') || (typeof combinedMostData?.[l] === 'number'))
+        .sort((a, b) => {
+            // Sort by total Important count (which includes Most Important selections)
+            const aTotal = importantData?.[a] || 0;
+            const bTotal = importantData?.[b] || 0;
+            return bTotal - aTotal;
+        });
+    
+    // Important = total selections for this feature
+    // Most Important = subset of Important (people who also marked it as their single most important)
+    // Important Only = Important - Most Important (people who marked it important but not most important)
+    const mostValues = sortedLabels.map(l => (typeof combinedMostData?.[l] === 'number') ? combinedMostData[l] : 0);
+    const totalImportantValues = sortedLabels.map(l => (typeof importantData?.[l] === 'number') ? importantData[l] : 0);
+    // Important Only = Total Important - Most Important (to avoid double counting in stacked bar)
+    const importantOnlyValues = sortedLabels.map((l, i) => Math.max(0, totalImportantValues[i] - mostValues[i]));
+    
+    // Get colors from metadata
+    const colorMap = DATA.metadata.colors?.[colorKey] || {};
+    const defaultColors = ['#58a6ff','#f78166','#7ee787','#d2a8ff','#ffa657','#79c0ff','#ff7b72','#a5d6ff'];
+    const colors = sortedLabels.map((l, i) => colorMap[l] || defaultColors[i % defaultColors.length]);
+    
+    // Helper to wrap long labels into multiple lines
+    const wrapLabel = (label, maxWidth = 20) => {
+        if (label.length <= maxWidth) return label;
+        const words = label.split(' ');
+        const lines = [];
+        let currentLine = '';
+        for (const word of words) {
+            if ((currentLine + ' ' + word).trim().length <= maxWidth) {
+                currentLine = (currentLine + ' ' + word).trim();
+            } else {
+                if (currentLine) lines.push(currentLine);
+                currentLine = word;
+            }
+        }
+        if (currentLine) lines.push(currentLine);
+        return lines;
+    };
+    
+    // Wrap labels for display
+    const wrappedLabels = sortedLabels.map(l => wrapLabel(l, 25));
+    
+    // Show legend - Most Important is brighter (at bottom), Important Only is more transparent (on top)
+    legendArea.innerHTML = '<div class="legend-bar"><span class="legend-item"><span class="legend-color" style="background:rgba(255,255,255,0.9)"></span>Most Important</span><span class="legend-item"><span class="legend-color" style="background:rgba(255,255,255,0.4)"></span>Important (not most)</span></div>';
+    
+    chartArea.innerHTML = '<div class="chart-container" style="height:480px;"><canvas id="dist-chart"></canvas></div>';
+    
+    charts.main = new Chart(document.getElementById('dist-chart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: wrappedLabels,
+            datasets: [
+                {
+                    // Most Important at bottom (first), brighter
+                    label: 'Most Important',
+                    data: mostValues,
+                    backgroundColor: colors.map(c => c + 'E6'),  // Brighter (more opaque)
+                    borderWidth: 0
+                },
+                {
+                    // Important Only on top (second), more transparent
+                    label: 'Important (not most)',
+                    data: importantOnlyValues,
+                    backgroundColor: colors.map(c => c + '55'),  // More transparent
+                    borderWidth: 0
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {display: false},  // Use our custom legend instead
+                tooltip: {
+                    callbacks: {
+                        title: ctx => sortedLabels[ctx[0].dataIndex],  // Show full label in tooltip
+                        label: ctx => {
+                            // Use respondentN for percentage (number of people, not sum of selections)
+                            const base = respondentN || 1;
+                            return `${ctx.dataset.label}: ${ctx.raw} (${((ctx.raw/base)*100).toFixed(1)}%)`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    stacked: true,
+                    grid: {display: false},
+                    ticks: {
+                        color: '#e6edf3',
+                        maxRotation: 0,  // Keep labels straight
+                        minRotation: 0,
+                        autoSkip: false,  // Show all labels
+                        font: {size: 13}
+                    }
+                },
+                y: {
+                    stacked: true,
+                    beginAtZero: true,
+                    grid: {color: '#30363d'},
+                    ticks: {color: '#e6edf3', font: {size: 13}},
+                    title: {display: true, text: 'Count', color: '#e6edf3', font: {size: 14}}
+                }
+            }
+        }
+    });
+    
+    // Build table with percentages
+    // Total Important = number of unique people who selected this feature (cannot exceed N)
+    // For percentages, use respondentN (number of people who answered, not sum of selections)
+    const tableBase = respondentN || 1;  // Avoid division by zero, but respondentN should always be provided
+    let h = '<table><thead><tr><th>Feature</th><th>Most Important</th><th>%</th><th>Important Only</th><th>%</th><th>Total</th><th>%</th></tr></thead><tbody>';
+    sortedLabels.forEach((l, i) => {
+        const impOnly = importantOnlyValues[i];
+        const most = mostValues[i];
+        const total = totalImportantValues[i];  // Total = Most Important + Important Only
+        const mostPct = tableBase > 1 ? ((most/tableBase)*100).toFixed(1) + '%' : '—';
+        const impPct = tableBase > 1 ? ((impOnly/tableBase)*100).toFixed(1) + '%' : '—';
+        const totalPct = tableBase > 1 ? ((total/tableBase)*100).toFixed(1) + '%' : '—';
+        h += `<tr><td>${l}</td><td>${most}</td><td>${mostPct}</td><td>${impOnly}</td><td>${impPct}</td><td>${total}</td><td>${totalPct}</td></tr>`;
+    });
+    document.getElementById('dist-table-container').innerHTML = h + '</tbody></table>';
+}
+
+function showHorizontalBarChart(data, qName, respondentN = null) {
+    const chartArea = document.getElementById('dist-chart-area');
+    const legendArea = document.getElementById('dist-legend-area');
+    legendArea.innerHTML = '';  // No legend needed
+    
+    // Sort by count (descending)
+    const sortedEntries = Object.entries(data)
+        .filter(([k, v]) => typeof v === 'number')
+        .sort((a, b) => b[1] - a[1]);
+    
+    const labels = sortedEntries.map(([k]) => k);
+    const values = sortedEntries.map(([, v]) => v);
+    const totalSelections = values.reduce((a, b) => a + b, 0);
+    // Use respondentN for percentage if provided (for multiselect), otherwise use totalSelections
+    const percentBase = respondentN || totalSelections;
+    
+    // Helper to wrap long labels
+    const wrapLabel = (label, maxWidth = 35) => {
+        if (label.length <= maxWidth) return label;
+        const words = label.split(' ');
+        const lines = [];
+        let currentLine = '';
+        for (const word of words) {
+            if ((currentLine + ' ' + word).trim().length <= maxWidth) {
+                currentLine = (currentLine + ' ' + word).trim();
+            } else {
+                if (currentLine) lines.push(currentLine);
+                currentLine = word;
+            }
+        }
+        if (currentLine) lines.push(currentLine);
+        return lines;
+    };
+    
+    const wrappedLabels = labels.map(l => wrapLabel(l));
+    
+    // Adjust height based on number of items
+    const chartHeight = Math.max(300, sortedEntries.length * 40);
+    
+    chartArea.innerHTML = `<div class="chart-container" style="height:${chartHeight}px;"><canvas id="dist-chart"></canvas></div>`;
+    
+    charts.main = new Chart(document.getElementById('dist-chart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: wrappedLabels,
+            datasets: [{
+                data: values,
+                backgroundColor: '#4a9b9e',
+                borderWidth: 0
+            }]
+        },
+        options: {
+            indexAxis: 'y',  // Horizontal bars
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {display: false},
+                tooltip: {
+                    callbacks: {
+                        title: ctx => labels[ctx[0].dataIndex],  // Show full label in tooltip
+                        label: ctx => `${ctx.raw} (${((ctx.raw/percentBase)*100).toFixed(1)}%)`
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    grid: {color: '#30363d'},
+                    ticks: {color: '#e6edf3', font: {size: 13}},
+                    title: {display: true, text: 'Count', color: '#e6edf3', font: {size: 14}}
+                },
+                y: {
+                    grid: {display: false},
+                    ticks: {color: '#e6edf3', autoSkip: false, font: {size: 13}}
+                }
+            }
+        }
+    });
+    
+    // Build table
+    let h = `<table><thead><tr><th>${qName}</th><th>Count</th><th>%</th></tr></thead><tbody>`;
+    sortedEntries.forEach(([k, v]) => {
+        h += `<tr><td>${k}</td><td>${v}</td><td>${((v/percentBase)*100).toFixed(1)}%</td></tr>`;
+    });
+    Object.entries(data).filter(([k, v]) => typeof v === 'string').forEach(([k, v]) => {
+        h += `<tr><td>${k}</td><td class="suppressed">${v}</td><td class="suppressed">—</td></tr>`;
+    });
+    document.getElementById('dist-table-container').innerHTML = h + '</tbody></table>';
+}
+
+function showExperienceMixed(sel, dists, badge, gridClass, legendArea, respondentCounts = {}) {
+    // Categorize selections
+    const levels = sel.filter(o => o.k.startsWith('exp_'));
+    const sources = sel.filter(o => !o.k.startsWith('exp_'));
+    const hasSources = sources.length > 0;
+    
+    // If mixed (levels + sources), use Experience N for the top badge
+    // The badge passed in is based on all selections, but we want Experience N only
+    let titleBadge = badge;
+    if (hasSources && levels.length > 0) {
+        // Get N from first level's data
+        const firstLevelData = dists[levels[0].k];
+        if (firstLevelData) {
+            const expN = Object.values(firstLevelData).reduce((a, b) => typeof b === 'number' ? a + b : a, 0);
+            titleBadge = ` <span class="filter-badge">N=${expN}</span>`;
+            titleBadge += `<span class="filter-note">NOTE: Source was only asked if respondents rated 3+ on its corresponding experience</span>`;
+        }
+    }
+    
+    document.getElementById('dist-title').innerHTML = `Experience: ${sel.length} Questions Selected${titleBadge}`;
+    
+    // Check if any have data
+    const hasAnyData = sel.some(o => {
+        const data = dists[o.k];
+        return data && Object.keys(data).length > 0;
+    });
+    
+    if (!hasAnyData) {
+        legendArea.innerHTML = '';
+        document.getElementById('dist-chart-area').innerHTML = '<p class="no-data"><em>Data not available: this sample was not presented with these questions</em></p>';
+        document.getElementById('dist-table-container').innerHTML = '';
+        return;
+    }
+    
+    // Helper to strip parenthetical content from labels (for compact display)
+    const stripParens = (label) => label.replace(/\s*\([^)]*\)\s*$/, '').trim();
+    
+    // Check if all are experience levels (for unified legend)
+    const allLevels = sources.length === 0;
+    if (allLevels) {
+        legendArea.innerHTML = buildRatingLegend('experience', 'Experience Level');
+    } else {
+        legendArea.innerHTML = '';  // Per-chart legends will be shown
+    }
+    
+    // Determine layout strategy
+    // Map experience keys to their corresponding source keys
+    const expToSource = {
+        'exp_ai_exp': 'expsrc_ai_source',
+        'exp_animal_exp': 'expsrc_animal_types',
+        'exp_consciousness_exp': 'expsrc_consciousness_source',
+        'exp_ethics_exp': 'expsrc_ethics_source'
+    };
+    
+    // Check which layout to use
+    let layoutMode = 'simple';  // Default
+    
+    if (allLevels) {
+        // Only levels - use cols-4 for up to 4
+        layoutMode = 'levels-only';
+    } else if (levels.length > 0 && sources.length > 0) {
+        // Both levels and sources - check if paired
+        const hasPairedItems = levels.some(l => sources.some(s => expToSource[l.k] === s.k));
+        if (hasPairedItems) {
+            layoutMode = 'paired';  // Experience with source below
+        } else {
+            layoutMode = 'mixed';  // Mixed, use simple grid
+        }
+    }
+    
+    const chartArea = document.getElementById('dist-chart-area');
+    
+    if (layoutMode === 'levels-only') {
+        // All levels only - max 4 per row
+        const gridCols = Math.min(levels.length, 4);
+        chartArea.innerHTML = `<div class="chart-grid cols-${gridCols}" id="cgrid" style="gap:1.5rem;"></div>`;
+        const grid = document.getElementById('cgrid');
+        
+        // Create charts for all levels
+        levels.forEach((o, i) => {
+            const cell = document.createElement('div');
+            cell.className = 'chart-cell';
+            cell.style.minHeight = '200px';
+            cell.id = `c-cell-${i}`;
+            grid.appendChild(cell);
+            createExperienceChart(o, cell, dists, respondentCounts, stripParens, sel.length, allLevels);
+        });
+    } else if (layoutMode === 'paired') {
+        // Create paired layout: levels on top, sources below
+        let html = '<div id="cgrid">';
+        
+        // Group by experience type
+        const pairs = [];
+        levels.forEach(l => {
+            const srcKey = expToSource[l.k];
+            const src = sources.find(s => s.k === srcKey);
+            pairs.push({ level: l, source: src || null });
+        });
+        
+        // Add unpaired sources
+        sources.forEach(s => {
+            if (!pairs.some(p => p.source?.k === s.k)) {
+                pairs.push({ level: null, source: s });
+            }
+        });
+        
+        // Calculate grid columns (max 4)
+        const numPairs = pairs.length;
+        const gridCols = Math.min(numPairs, 4);
+        
+        // Create level row
+        html += `<div class="chart-grid cols-${gridCols}" style="gap:1rem;margin-bottom:0.5rem;">`;
+        pairs.forEach((p, i) => {
+            if (p.level) {
+                html += `<div class="chart-cell" id="pair-level-${i}" style="min-height:200px;"></div>`;
+            } else {
+                html += `<div class="chart-cell empty-cell"></div>`;
+            }
+        });
+        html += '</div>';
+        
+        // Create source row
+        html += `<div class="chart-grid cols-${gridCols}" style="gap:1rem;">`;
+        pairs.forEach((p, i) => {
+            if (p.source) {
+                html += `<div class="chart-cell" id="pair-source-${i}" style="min-height:260px;"></div>`;
+            } else {
+                html += `<div class="chart-cell empty-cell"></div>`;
+            }
+        });
+        html += '</div>';
+        
+        html += '</div>';
+        chartArea.innerHTML = html;
+        
+        // Now create charts in the cells
+        pairs.forEach((p, i) => {
+            if (p.level) {
+                const cell = document.getElementById(`pair-level-${i}`);
+                createExperienceChart(p.level, cell, dists, respondentCounts, stripParens, sel.length, allLevels);
+            }
+            if (p.source) {
+                const cell = document.getElementById(`pair-source-${i}`);
+                createExperienceChart(p.source, cell, dists, respondentCounts, stripParens, sel.length, allLevels);
+            }
+        });
+    } else {
+        // Simple or mixed layout - cols-3 for flexibility
+        const gridCols = sel.length <= 2 ? 2 : 3;
+        chartArea.innerHTML = `<div class="chart-grid cols-${gridCols}" id="cgrid" style="gap:1.5rem;"></div>`;
+        const grid = document.getElementById('cgrid');
+        
+        sel.forEach((o, i) => {
+            const cell = document.createElement('div');
+            cell.className = 'chart-cell';
+            cell.style.minHeight = '240px';
+            cell.id = `c-cell-${i}`;
+            grid.appendChild(cell);
+            createExperienceChart(o, cell, dists, respondentCounts, stripParens, sel.length, allLevels);
+        });
+    }
+    
+    document.getElementById('dist-table-container').innerHTML = '<p class="no-data">Select individual questions for detailed tables</p>';
+}
+
+// Helper function to create individual experience charts
+function createExperienceChart(o, cell, dists, respondentCounts, stripParens, totalSelected, allLevels) {
+    const data = dists[o.k];
+    if (!data) {
+        cell.innerHTML = '<p class="no-data">No data</p>';
+        return;
+    }
+    
+    const isLevel = o.k.startsWith('exp_');
+    const isAnimalTypes = o.k.includes('animal_types');
+    const isSource = !isLevel;
+    
+    const displayLabel = totalSelected > 1 ? stripParens(o.l) : o.l;
+    const respN = isSource ? (respondentCounts?.[o.k] || null) : null;
+    
+    // Helper to wrap labels
+    const wrapLabel = (label, maxWidth = 18) => {
+        if (label.length <= maxWidth) return label;
+        const words = label.split(' ');
+        const lines = [];
+        let currentLine = '';
+        for (const word of words) {
+            if ((currentLine + ' ' + word).trim().length <= maxWidth) {
+                currentLine = (currentLine + ' ' + word).trim();
+            } else {
+                if (currentLine) lines.push(currentLine);
+                currentLine = word;
+            }
+        }
+        if (currentLine) lines.push(currentLine);
+        return lines;
+    };
+    
+    const chartId = `c-exp-${Math.random().toString(36).substr(2, 9)}`;
+    
+    if (isLevel) {
+        // Donut chart for levels
+        const isNumeric = Object.keys(data).every(k => !isNaN(parseFloat(k)));
+        let sortedKeys = Object.keys(data);
+        if (isNumeric) {
+            sortedKeys = sortedKeys.sort((a, b) => parseFloat(a) - parseFloat(b));
+        }
+        
+        const toIntStr = l => String(parseInt(parseFloat(l)));
+        const labels = sortedKeys.map(l => ELab(toIntStr(l)));
+        const values = sortedKeys.map(k => typeof data[k] === 'number' ? data[k] : 0);
+        
+        let cellLegend = '';
+        if (!allLevels) {
+            cellLegend = `<div class="chart-cell-legend" style="font-size:0.95rem;">${buildChartCellLegend(data, 'experience').replace('<div class="chart-cell-legend">', '').replace('</div>', '')}</div>`;
+        }
+        
+        cell.innerHTML = `<h4 style="font-size:1.15rem;">${displayLabel}</h4>${cellLegend}<canvas id="${chartId}"></canvas>`;
+        
+        const total = values.reduce((a, b) => a + b, 0);
+        charts[chartId] = new Chart(document.getElementById(chartId).getContext('2d'), {
+            type: 'doughnut',
+            data: {labels, datasets: [{data: values, backgroundColor: getColors(sortedKeys, 'experience'), borderWidth: 0}]},
+            options: {responsive: true, plugins: {legend: {display: false}, tooltip: {callbacks: {label: ctx => `${ctx.label}: ${ctx.raw} (${((ctx.raw/total)*100).toFixed(1)}%)`}}}}
+        });
+    } else {
+        // Bar chart for sources
+        const sortedEntries = Object.entries(data)
+            .filter(([k, v]) => typeof v === 'number')
+            .sort((a, b) => b[1] - a[1]);
+        
+        const rawLabels = sortedEntries.map(([k]) => k);
+        // For ethics source, ALWAYS strip ALL parenthetical content (even when displayed alone)
+        const isEthicsSource = o.k.includes('ethics_source');
+        const stripAllParens = (label) => label.replace(/\s*\([^)]*\)/g, '').trim();
+        const labels = isEthicsSource ? rawLabels.map(l => stripAllParens(l)) : 
+                       (totalSelected > 1 ? rawLabels.map(l => stripParens(l)) : rawLabels);
+        const wrappedLabels = labels.map(l => wrapLabel(l));
+        const values = sortedEntries.map(([, v]) => v);
+        const totalSelections = values.reduce((a, b) => a + b, 0);
+        const maxVal = Math.max(...values);
+        const percentBase = respN || totalSelections;
+        
+        // Calculate tight x-axis max (round up to nearest 50)
+        const xMax = Math.ceil(maxVal / 50) * 50;  // No extra padding
+        const numLabels = labels.length;
+        
+        if (isAnimalTypes) {
+            const colorMap = DATA.metadata.colors?.animal_types || {};
+            const defaultColors = ['#58a6ff','#f78166','#7ee787','#d2a8ff','#ffa657','#79c0ff','#ff7b72','#a5d6ff'];
+            const colors = labels.map((l, idx) => colorMap[rawLabels[idx]] || defaultColors[idx % defaultColors.length]);
+            
+            cell.innerHTML = `<h4 style="font-size:1.15rem;">${displayLabel}</h4><canvas id="${chartId}"></canvas>`;
+            
+            const shouldTilt = totalSelected > 1;
+            charts[chartId] = new Chart(document.getElementById(chartId).getContext('2d'), {
+                type: 'bar',
+                data: {labels: wrappedLabels, datasets: [{data: values, backgroundColor: colors, borderWidth: 0}]},
+                options: {responsive: true, plugins: {legend: {display: false}, tooltip: {callbacks: {title: ctx => rawLabels[ctx[0].dataIndex], label: ctx => `${ctx.raw} (${((ctx.raw/percentBase)*100).toFixed(1)}%)`}}}, scales: {x: {grid: {display: false}, ticks: {color: '#e6edf3', maxRotation: shouldTilt ? 45 : 0, minRotation: shouldTilt ? 30 : 0, autoSkip: false, font: {size: 12}}}, y: {beginAtZero: true, max: xMax, grid: {color: '#30363d'}, ticks: {color: '#e6edf3', font: {size: 14}, stepSize: 50}}}}
+            });
+        } else {
+            // For horizontal bar charts (sources), ensure proper height based on labels
+            const isEthicsSource = o.k.includes('ethics_source');
+            const baseFontSize = isEthicsSource ? 11 : 13;
+            const sourceFontSize = numLabels > 8 ? 10 : (totalSelected > 1 ? Math.min(baseFontSize, 12) : baseFontSize);
+            
+            // Set cell height based on number of labels - always do this for horizontal bars
+            const labelHeight = isEthicsSource ? 32 : 28;  // Ethics needs more space per label
+            const minCellHeight = Math.max(260, numLabels * labelHeight);
+            cell.style.minHeight = minCellHeight + 'px';
+            
+            // Add N to title for sources
+            const nDisplay = respN ? ` (N=${respN})` : '';
+            cell.innerHTML = `<h4 style="font-size:1.15rem;">${displayLabel}${nDisplay}</h4><canvas id="${chartId}"></canvas>`;
+            
+            charts[chartId] = new Chart(document.getElementById(chartId).getContext('2d'), {
+                type: 'bar',
+                data: {labels: wrappedLabels, datasets: [{data: values, backgroundColor: '#4a9b9e', borderWidth: 0}]},
+                options: {indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: {legend: {display: false}, tooltip: {callbacks: {title: ctx => rawLabels[ctx[0].dataIndex], label: ctx => `${ctx.raw} (${((ctx.raw/percentBase)*100).toFixed(1)}%)`}}}, scales: {x: {beginAtZero: true, max: xMax, grid: {color: '#30363d'}, ticks: {color: '#e6edf3', font: {size: 12}, stepSize: 50}}, y: {grid: {display: false}, ticks: {color: '#e6edf3', autoSkip: false, font: {size: sourceFontSize}}}}}
+            });
+        }
+    }
+}
+
+function showCross() {
+    destroyCharts();
+    const v1 = document.getElementById('cross-var1').value, v2 = document.getElementById('cross-var2').value;
+    document.getElementById('cross-chart-container').style.display = 'none';
+    document.getElementById('cross-table-container').innerHTML = '';
+    if (!v1 || !v2) { document.getElementById('cross-title').textContent = 'Please select both variables'; return; }
+    if (v1 === v2) { document.getElementById('cross-title').textContent = 'Please select two different variables'; return; }
+    const o1 = document.getElementById('cross-var1').selectedOptions[0], o2 = document.getElementById('cross-var2').selectedOptions[0];
+    document.getElementById('cross-title').textContent = `${o1.dataset.f || o1.textContent} × ${o2.dataset.f || o2.textContent}`;
+    let key = `${v1}__${v2}`, data = DATA.crosstabs[key], sw = false;
+    if (!data) { key = `${v2}__${v1}`; data = DATA.crosstabs[key]; sw = true; }
+    if (!data) { document.getElementById('cross-table-container').innerHTML = '<p class="no-data">Data not available (may be restricted for privacy or not pre-computed)</p>'; return; }
+    const rk = Object.keys(data), ck = [...new Set(rk.flatMap(r => Object.keys(data[r])))];
+    const isRS = rk.every(k => ['1','2','3','4','5'].includes(k)) || rk.every(k => ['1','2','3','4'].includes(k));
+    const isCS = ck.every(k => ['1','2','3','4','5'].includes(k)) || ck.every(k => ['1','2','3','4'].includes(k));
+    if (isRS || isCS) { document.getElementById('cross-chart-container').style.display = 'block'; createCrossChart(data, rk, ck, isRS, isCS, sw); }
+    const isRR = rk.every(k => ['1','2','3','4'].includes(k)), isCR = ck.every(k => ['1','2','3','4'].includes(k));
+    let h = '<table class="crosstab-table"><thead><tr><th></th>';
+    ck.forEach(c => h += `<th>${isCR ? RLab(c) : c}</th>`);
+    h += '<th>Total</th></tr></thead><tbody>';
+    rk.forEach(r => { h += `<tr><td><strong>${isRR ? RLab(r) : r}</strong></td>`; let rt = 0; ck.forEach(c => { const v = data[r][c], sup = typeof v === 'string'; if (!sup) rt += v; h += `<td class="${sup?'suppressed':''}">${v??0}</td>`; }); h += `<td><strong>${rt}</strong></td></tr>`; });
+    document.getElementById('cross-table-container').innerHTML = h + '</tbody></table>';
+}
+
+function createCrossChart(data, rk, ck, isRS, isCS, sw) {
+    const ctx = document.getElementById('cross-chart').getContext('2d');
+    if (isRS && isCS) {
+        const pts = []; Object.entries(data).forEach(([r, cols]) => Object.entries(cols).forEach(([c, cnt]) => { if (typeof cnt === 'number' && cnt > 0) for (let i = 0; i < Math.min(cnt, 150); i++) pts.push({x: parseInt(sw?c:r)+(Math.random()-0.5)*0.5, y: parseInt(sw?r:c)+(Math.random()-0.5)*0.5}); }));
+        charts.cross = new Chart(ctx, {type: 'scatter', data: {datasets: [{data: pts, backgroundColor: 'rgba(88,166,255,0.4)', pointRadius: 3}]}, options: {responsive: true, maintainAspectRatio: false, plugins: {legend: {display: false}}, scales: {x: {min: 0.5, max: Math.max(...rk.map(k=>parseInt(k)))+0.5, ticks: {stepSize: 1, color: '#8b949e'}, grid: {color: '#30363d'}}, y: {min: 0.5, max: Math.max(...ck.map(k=>parseInt(k)))+0.5, ticks: {stepSize: 1, color: '#8b949e'}, grid: {color: '#30363d'}}}}});
+    } else if (isCS) {
+        const sorted = [...ck].sort((a,b)=>parseInt(a)-parseInt(b));
+        const ds = sorted.map((c,i) => ({label: RLab(c), data: rk.map(r => typeof data[r][c]==='number' ? data[r][c] : 0), backgroundColor: getColors(sorted)[i]}));
+        charts.cross = new Chart(ctx, {type: 'bar', data: {labels: rk, datasets: ds}, options: {responsive: true, maintainAspectRatio: false, plugins: {legend: {position: 'top', labels: {color: '#e6edf3'}}}, scales: {x: {stacked: true, ticks: {color: '#8b949e'}, grid: {color: '#30363d'}}, y: {stacked: true, ticks: {color: '#8b949e'}, grid: {color: '#30363d'}}}}});
+    } else if (isRS) {
+        const sorted = [...rk].sort((a,b)=>parseInt(a)-parseInt(b));
+        const ds = sorted.map((r,i) => ({label: RLab(r), data: ck.map(c => typeof data[r][c]==='number' ? data[r][c] : 0), backgroundColor: getColors(sorted)[i]}));
+        charts.cross = new Chart(ctx, {type: 'bar', data: {labels: ck, datasets: ds}, options: {responsive: true, maintainAspectRatio: false, plugins: {legend: {position: 'top', labels: {color: '#e6edf3'}}}, scales: {x: {ticks: {color: '#8b949e'}, grid: {color: '#30363d'}}, y: {ticks: {color: '#8b949e'}, grid: {color: '#30363d'}}}}});
+    }
+}
+
+let curFT = [];
+function showFreetext() {
+    const k = document.getElementById('freetext-question').value;
+    if (!k) { document.getElementById('freetext-title').textContent = 'Select a question'; document.getElementById('freetext-list').innerHTML = ''; return; }
+    const d = DATA.freetext[k];
+    if (!d) { document.getElementById('freetext-title').textContent = 'No responses'; document.getElementById('freetext-list').innerHTML = '<p class="no-data">No responses</p>'; return; }
+    const opt = document.getElementById('freetext-question').selectedOptions[0];
+    curFT = [...d.responses].sort(() => Math.random() - 0.5);
+    document.getElementById('freetext-title').innerHTML = `${opt.dataset.f || opt.textContent} <span class="response-count">${d.response_count}</span>`;
+    renderFT(curFT);
+}
+function renderFT(r) { const c = document.getElementById('freetext-list'); if (!r.length) { c.innerHTML = '<p class="no-data">No matching</p>'; return; } c.innerHTML = r.slice(0,200).map(x => `<div class="free-text-item">${escHTML(x)}</div>`).join('') + (r.length > 200 ? `<p class="no-data">Showing 200 of ${r.length}</p>` : ''); }
+function filterFreetext() { const s = document.getElementById('freetext-search').value.toLowerCase(); renderFT(s ? curFT.filter(r => r.toLowerCase().includes(s)) : curFT); }
+function escHTML(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+// Display free text responses in the distributions panel
+function showDistFreeText(filterKey) {
+    const ftArea = document.getElementById('dist-freetext-area');
+    const ftContainer = document.getElementById('free-text-container');
+    
+    // Get selected free text questions from the free-text-container (not variable-container)
+    const ftChecks = ftContainer ? Array.from(ftContainer.querySelectorAll('#ft-box input:checked')) : [];
+    
+    console.log('[showDistFreeText] filterKey:', filterKey, 'ftChecks:', ftChecks.length);
+    
+    if (ftChecks.length === 0) {
+        ftArea.style.display = 'none';
+        ftArea.innerHTML = '';
+        return;
+    }
+    
+    // Get filter state to check for follow-up exclusion
+    const box = document.getElementById('sample-filter-box');
+    const isAllSelected = document.getElementById('f-none')?.checked;
+    const followUpCheckbox = box?.querySelector('input[data-v="follow-up"]');
+    const isFollowUpChecked = followUpCheckbox?.checked || false;
+    const sampleCheckboxes = box?.querySelectorAll('input[data-t="sample"]:checked') || [];
+    const isFollowUpOnly = isFollowUpChecked && sampleCheckboxes.length === 1 && 
+        Array.from(sampleCheckboxes).every(cb => cb.dataset.v === 'follow-up');
+    const includesFollowUp = isAllSelected || isFollowUpChecked;
+    
+    // Get filtered free text data - need to properly merge if multiple filters
+    let ftData = {};
+    
+    // If filterKey contains '+', it's a merged filter - need to merge freetext data
+    if (filterKey && filterKey.includes('+')) {
+        const keys = filterKey.split('+');
+        console.log('[showDistFreeText] Merging freetext from keys:', keys);
+        
+        // Merge responses from each filter
+        ftChecks.forEach(cb => {
+            const ftKey = cb.dataset.ftKey;
+            let mergedResponses = [];
+            let mergedCount = 0;
+            
+            keys.forEach(k => {
+                const keyData = DATA.freetext?.[k]?.[ftKey];
+                if (keyData && keyData.responses) {
+                    mergedResponses = mergedResponses.concat(keyData.responses);
+                    mergedCount += keyData.response_count;
+                }
+            });
+            
+            if (mergedResponses.length > 0) {
+                ftData[ftKey] = {
+                    responses: mergedResponses,
+                    response_count: mergedCount
+                };
+            }
+        });
+    } else {
+        // Single filter - look up directly
+        ftData = DATA.freetext?.[filterKey] || DATA.freetext?.['all'] || {};
+    }
+    
+    console.log('[showDistFreeText] ftData keys:', Object.keys(ftData));
+    
+    let html = '<div class="free-text-results" style="border-top:1px solid var(--border);padding-top:1.5rem;margin-top:1rem;">';
+    html += '<h4 style="margin-bottom:1rem;color:var(--text-primary);font-size:1.1rem;">Free Text Responses</h4>';
+    
+    // Check which free text questions weren't asked in follow-up
+    const notInFollowup = DATA.metadata.not_in_followup || [];
+    
+    ftChecks.forEach((cb, idx) => {
+        const key = cb.dataset.ftKey;
+        const label = cb.dataset.ftLabel;
+        const data = ftData[key];
+        const sectionId = `ft-section-${idx}`;
+        const listId = `ft-list-${idx}`;
+        
+        // Check if this free text question's topic was not in follow-up
+        const ftByTopic = DATA.metadata.free_text_by_topic || {};
+        let questionNotInFollowup = false;
+        
+        // Free text keys that are NOT in follow-up (either by topic or specifically)
+        const ftKeysNotInFollowup = [
+            // ICS topic (all)
+            'goals_without_consciousness_example',
+            'consciousness_without_goals_example',
+            'sensations_without_consciousness_example',
+            'consciousness_without_sensations_example',
+            // C&I topic (all)
+            'consciousness_intelligence_common',
+            // Moral Cons specific questions (the "What characterizes..." follow-ups)
+            'higher_moral_status_people',
+            'higher_moral_status_animals',
+            // Kill test
+            'no_kill_other'
+        ];
+        
+        if (ftKeysNotInFollowup.includes(key)) {
+            questionNotInFollowup = true;
+        }
+        
+        console.log('[showDistFreeText] Looking for key:', key, 'found:', !!data, 'notInFollowup:', questionNotInFollowup);
+        
+        if (data && data.responses && data.responses.length > 0) {
+            const shuffled = [...data.responses].sort(() => Math.random() - 0.5);
+            const totalCount = shuffled.length;
+            
+            html += `<div class="ft-question-section" id="${sectionId}" style="margin-bottom:1.5rem;" data-all-responses='${JSON.stringify(shuffled).replace(/'/g, "&#39;")}' data-showing="100">`;
+            html += `<h5 style="margin-bottom:0.75rem;color:#e6edf3;font-size:1.05rem;">${escHTML(label)} <span class="filter-badge" style="font-weight:normal;font-size:0.9rem;">N=${data.response_count}</span></h5>`;
+            
+            // Add follow-up exclusion note if relevant (display:block to ensure vertical stacking)
+            if (questionNotInFollowup && includesFollowUp && !isFollowUpOnly) {
+                html += `<div class="filter-note" style="display:block;margin-bottom:0.5rem;margin-left:0;">NOTE: Data excludes Follow-up sample (not asked this question)</div>`;
+            }
+            
+            html += `<div class="filter-note" style="display:block;margin-bottom:0.75rem;margin-left:0;background:rgba(88,166,255,0.15);color:#58a6ff;font-size:0.9rem;">Responses are shown verbatim and in random order</div>`;
+            html += `<div class="free-text-list" id="${listId}" style="max-height:400px;overflow-y:auto;background:var(--bg-secondary);border-radius:6px;padding:0.5rem;">`;
+            shuffled.slice(0, 100).forEach(r => {
+                html += `<div class="free-text-item" style="padding:0.5rem 0.75rem;border-bottom:1px solid var(--border);font-size:0.95rem;color:#c9d1d9;">${escHTML(r)}</div>`;
+            });
+            html += `</div>`;
+            if (totalCount > 100) {
+                html += `<div style="margin-top:0.6rem;display:flex;align-items:center;gap:0.75rem;">`;
+                html += `<span style="color:var(--text-muted);font-size:0.9rem;" id="${listId}-count">Showing 100 of ${totalCount} responses</span>`;
+                html += `<span style="color:#8b949e;font-size:0.9rem;font-weight:600;cursor:pointer;text-decoration:underline;" onclick="toggleShowAll('${sectionId}', '${listId}', ${totalCount})" id="${listId}-toggle">Show all</span>`;
+                html += `</div>`;
+            }
+            html += `</div>`;
+        } else {
+            html += `<div class="ft-question-section" style="margin-bottom:1rem;">`;
+            html += `<h5 style="margin-bottom:0.5rem;color:#e6edf3;font-size:1.05rem;">${escHTML(label)} <span class="filter-badge" style="font-weight:normal;font-size:0.9rem;">N=0</span></h5>`;
+            if (isFollowUpOnly && questionNotInFollowup) {
+                html += `<p class="no-data" style="font-size:0.95rem;">This question was not asked in the Follow-up sample</p>`;
+            } else {
+                html += `<p class="no-data" style="font-size:0.95rem;">No responses for this filter</p>`;
+            }
+            html += `</div>`;
+        }
+    });
+    
+    html += '</div>';
+    ftArea.innerHTML = html;
+    ftArea.style.display = 'block';
+}
+
+// Toggle showing all free text responses
+function toggleShowAll(sectionId, listId, totalCount) {
+    const section = document.getElementById(sectionId);
+    const list = document.getElementById(listId);
+    const countSpan = document.getElementById(`${listId}-count`);
+    const toggleSpan = document.getElementById(`${listId}-toggle`);
+    
+    if (!section || !list) return;
+    
+    const allResponses = JSON.parse(section.dataset.allResponses || '[]');
+    const currentlyShowing = parseInt(section.dataset.showing) || 100;
+    
+    if (currentlyShowing >= totalCount) {
+        // Currently showing all, switch to 100
+        list.innerHTML = allResponses.slice(0, 100).map(r => 
+            `<div class="free-text-item" style="padding:0.5rem 0.75rem;border-bottom:1px solid var(--border);font-size:0.95rem;color:#c9d1d9;">${escHTML(r)}</div>`
+        ).join('');
+        section.dataset.showing = '100';
+        if (countSpan) countSpan.textContent = `Showing 100 of ${totalCount} responses`;
+        if (toggleSpan) toggleSpan.textContent = 'Show all';
+        list.style.maxHeight = '400px';
+    } else {
+        // Currently showing 100, switch to all
+        list.innerHTML = allResponses.map(r => 
+            `<div class="free-text-item" style="padding:0.5rem 0.75rem;border-bottom:1px solid var(--border);font-size:0.95rem;color:#c9d1d9;">${escHTML(r)}</div>`
+        ).join('');
+        section.dataset.showing = String(totalCount);
+        if (countSpan) countSpan.textContent = `Showing all ${totalCount} responses`;
+        if (toggleSpan) toggleSpan.textContent = 'Show less';
+        list.style.maxHeight = '600px';
+    }
+}
+
+// Download charts as PNG with attribution
+async function downloadCharts() {
+    const chartArea = document.getElementById('dist-chart-area');
+    const legendArea = document.getElementById('dist-legend-area');
+    const title = document.getElementById('dist-title');
+    
+    if (!chartArea) return;
+    
+    // Find all chart canvases
+    const canvases = chartArea.querySelectorAll('canvas');
+    if (canvases.length === 0) {
+        alert('No charts to download');
+        return;
+    }
+    
+    // Create a temporary canvas to combine everything
+    const tempCanvas = document.createElement('canvas');
+    const ctx = tempCanvas.getContext('2d');
+    
+    // Calculate dimensions
+    const padding = 30;
+    const titleHeight = 50;
+    const legendHeight = legendArea && legendArea.innerHTML ? 60 : 0;
+    const attributionHeight = 40;
+    
+    // Get chart area dimensions
+    const chartAreaRect = chartArea.getBoundingClientRect();
+    const totalWidth = Math.max(chartAreaRect.width, 800) + padding * 2;
+    
+    // Calculate total height based on chart grid
+    let chartsHeight = 0;
+    const chartContainers = chartArea.querySelectorAll('.chart-container, .chart-cell');
+    if (chartContainers.length > 0) {
+        const containerRect = chartArea.getBoundingClientRect();
+        chartsHeight = containerRect.height;
+    } else {
+        chartsHeight = 400; // Default single chart height
+    }
+    
+    const totalHeight = titleHeight + legendHeight + chartsHeight + attributionHeight + padding * 2;
+    
+    tempCanvas.width = totalWidth;
+    tempCanvas.height = totalHeight;
+    
+    // Fill background
+    ctx.fillStyle = '#0d1117';
+    ctx.fillRect(0, 0, totalWidth, totalHeight);
+    
+    // Draw title (strip HTML tags)
+    ctx.fillStyle = '#e6edf3';
+    ctx.font = 'bold 18px "DM Sans", sans-serif';
+    const titleText = title.textContent || 'Chart';
+    ctx.fillText(titleText, padding, padding + 25);
+    
+    // Draw legend if present
+    let yOffset = titleHeight + padding;
+    if (legendArea && legendArea.innerHTML) {
+        ctx.font = '14px "DM Sans", sans-serif';
+        const legendText = legendArea.textContent || '';
+        ctx.fillText(legendText, padding, yOffset + 20);
+        yOffset += legendHeight;
+    }
+    
+    // For single canvas, draw it directly
+    if (canvases.length === 1) {
+        const canvas = canvases[0];
+        const scale = Math.min((totalWidth - padding * 2) / canvas.width, (chartsHeight) / canvas.height);
+        const scaledWidth = canvas.width * scale;
+        const scaledHeight = canvas.height * scale;
+        const xPos = (totalWidth - scaledWidth) / 2;
+        ctx.drawImage(canvas, xPos, yOffset, scaledWidth, scaledHeight);
+    } else {
+        // For multiple charts, use html2canvas approach or draw each
+        // Simple approach: draw each canvas in a grid
+        const cols = Math.min(canvases.length, 4);
+        const rows = Math.ceil(canvases.length / cols);
+        const cellWidth = (totalWidth - padding * 2) / cols;
+        const cellHeight = chartsHeight / rows;
+        
+        canvases.forEach((canvas, i) => {
+            const col = i % cols;
+            const row = Math.floor(i / cols);
+            const x = padding + col * cellWidth;
+            const y = yOffset + row * cellHeight;
+            
+            const scale = Math.min(cellWidth / canvas.width, cellHeight / canvas.height) * 0.9;
+            const scaledWidth = canvas.width * scale;
+            const scaledHeight = canvas.height * scale;
+            const xPos = x + (cellWidth - scaledWidth) / 2;
+            const yPos = y + (cellHeight - scaledHeight) / 2;
+            
+            ctx.drawImage(canvas, xPos, yPos, scaledWidth, scaledHeight);
+        });
+    }
+    
+    // Draw attribution at bottom
+    ctx.fillStyle = '#c9d1d9';
+    ctx.font = '14px "DM Sans", sans-serif';
+    const attribution = '© 2025 ronyhirsch.github.io/minds-matter — Use with attribution: doi.org/10.17605/OSF.IO/XXXXX';
+    const attrY = totalHeight - padding;
+    ctx.fillText(attribution, padding, attrY);
+    
+    // Get topic name for filename
+    const catSelect = document.getElementById('dist-category');
+    const topicName = catSelect?.selectedOptions[0]?.textContent || 'chart';
+    const safeName = topicName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+    
+    // Download
+    const link = document.createElement('a');
+    link.download = `minds-matter-${safeName}.png`;
+    link.href = tempCanvas.toDataURL('image/png');
+    link.click();
+}
+
+// Show/hide download button based on chart presence
+function updateDownloadButton() {
+    const btn = document.getElementById('download-chart-btn');
+    const chartArea = document.getElementById('dist-chart-area');
+    if (btn && chartArea) {
+        const hasCharts = chartArea.querySelectorAll('canvas').length > 0;
+        btn.style.display = hasCharts ? 'block' : 'none';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', loadData);
+</script>
+</body>
+</html>
