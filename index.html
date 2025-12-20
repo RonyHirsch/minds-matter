@@ -10,6 +10,7 @@
         :root { --bg-primary:#0d1117; --bg-secondary:#161b22; --bg-tertiary:#21262d; --text-primary:#e6edf3; --text-secondary:#8b949e; --text-muted:#6e7681; --border:#30363d; --accent:#58a6ff; --accent-subtle:#1f6feb; }
         * { margin:0; padding:0; box-sizing:border-box; }
         body { font-family:'DM Sans',sans-serif; background:var(--bg-primary); color:var(--text-primary); line-height:1.6; }
+        h4 { font-weight:400; }
         .hamburger { position:fixed; top:1rem; right:1rem; z-index:1000; background:var(--bg-secondary); border:1px solid var(--border); border-radius:8px; padding:0.75rem; cursor:pointer; display:flex; flex-direction:column; gap:4px; }
         .hamburger span { display:block; width:20px; height:2px; background:var(--text-primary); transition:0.3s; }
         .hamburger.active span:nth-child(1) { transform:rotate(45deg) translate(4px,4px); }
@@ -58,21 +59,19 @@
         .btn:hover { background:var(--accent); }
         .results { background:var(--bg-secondary); border-radius:12px; border:1px solid var(--border); overflow:hidden; }
         .results-header { padding:1rem 1.5rem; background:var(--bg-tertiary); border-bottom:1px solid var(--border); }
-        .results-header h3 { font-weight:600; font-size:1rem; }
+        .results-header h3 { font-weight:500; font-size:1rem; }
         .results-body { padding:1.5rem; }
         .chart-container { position:relative; height:500px; margin-bottom:1.5rem; }
         .chart-grid { display:grid; gap:1rem; margin-bottom:1.5rem; width:100%; max-width:100%; overflow:hidden; }
         .chart-grid.cols-2 { grid-template-columns:repeat(2,minmax(0,1fr)); }
         .chart-grid.cols-3 { grid-template-columns:repeat(3,minmax(0,1fr)); }
         .chart-grid.cols-4 { grid-template-columns:repeat(4,minmax(0,1fr)); }
-        .chart-cell { overflow:hidden; min-width:0; width:100%; box-sizing:border-box; }
-        .chart-cell canvas { max-width:100%; }
-        .chart-cell { background:var(--bg-tertiary); border-radius:8px; padding:0.75rem; display:flex; flex-direction:column; }
-        .chart-cell h4 { font-size:0.95rem; margin-bottom:0.5rem; color:var(--text-secondary); text-align:center; white-space:normal; word-wrap:break-word; overflow-wrap:break-word; line-height:1.3; min-height:2.6em; display:flex; align-items:center; justify-content:center; }
+        .chart-cell { overflow:hidden; min-width:0; width:100%; box-sizing:border-box; background:var(--bg-tertiary); border-radius:8px; padding:0.75rem; display:flex; flex-direction:column; }
+        .chart-cell h4 { font-size:0.95rem; margin-bottom:0.5rem; color:var(--text-secondary); text-align:center; white-space:normal; word-wrap:break-word; overflow-wrap:break-word; line-height:1.3; min-height:3.9em; max-height:3.9em; overflow:hidden; display:flex; align-items:flex-start; justify-content:center; font-weight:400 !important; }
+        .chart-cell-legend { font-size:0.75rem; display:flex; flex-wrap:wrap; gap:0.3rem; justify-content:center; margin-bottom:0.5rem; padding:0.3rem; background:var(--bg-secondary); border-radius:4px; min-height:3.6em; max-height:3.6em; overflow:hidden; align-items:flex-start; }
         .chart-cell canvas { max-height:180px; flex:1; }
-        .chart-cell-legend { font-size:0.8rem; display:flex; flex-wrap:wrap; gap:0.4rem; justify-content:center; margin-bottom:0.5rem; padding:0.4rem; background:var(--bg-secondary); border-radius:4px; min-height:1.8em; align-items:center; }
-        .chart-cell-legend .legend-item { display:flex; align-items:center; gap:0.2rem; }
-        .chart-cell-legend .legend-color { width:12px; height:12px; border-radius:2px; }
+        .chart-cell-legend .legend-item { display:flex; align-items:center; gap:0.2rem; line-height:1.4; }
+        .chart-cell-legend .legend-color { width:10px; height:10px; border-radius:2px; flex-shrink:0; }
         table { width:100%; border-collapse:collapse; font-size:0.9rem; }
         th, td { padding:0.5rem 0.75rem; text-align:left; border-bottom:1px solid var(--border); }
         th { background:var(--bg-tertiary); font-weight:600; color:var(--text-secondary); }
@@ -2181,6 +2180,7 @@ function showCombinedScatter(entities, entityStats, badge, legendArea, displayMo
     
     // Collect datasets based on display mode
     const countMap = {};
+    const entityNMap = {};  // Track total N per entity
     const datasets = [];
     
     // Individual data points (for 'individual' and 'both' modes)
@@ -2190,6 +2190,8 @@ function showCombinedScatter(entities, entityStats, badge, legendArea, displayMo
         entities.forEach(e => {
             const stats = entityStats[e.entity];
             if (stats?.scatter_data?.length) {
+                // Store total N for this entity
+                entityNMap[e.entity] = stats.scatter_data.length;
                 stats.scatter_data.forEach(([c, ms]) => {
                     const cInt = Math.round(parseFloat(c));
                     const msInt = Math.round(parseFloat(ms));
@@ -2345,7 +2347,9 @@ function showCombinedScatter(entities, entityStats, badge, legendArea, displayMo
                                 ];
                             }
                             const count = countMap[`${pt.entityKey}_${pt.cOrig}_${pt.msOrig}`] || 1;
-                            return `${pt.entity}: ${count}`;
+                            const entityTotal = entityNMap[pt.entityKey] || count;
+                            const pct = ((count / entityTotal) * 100).toFixed(1);
+                            return `${pt.entity}: ${count} (${pct}%)`;
                         },
                         // Deduplicate labels for same entity at same position
                         afterBody: (items) => {
@@ -2547,16 +2551,10 @@ function showMultiDist(sel, dists, badge, gridClass, legendArea, category = '') 
             titleStyle = 'font-size:0.85rem;';
         }
         
-        // Moral Considerations: add spacing for PRIOS_Q_PEOPLE (shorter title) when all 4 selected
-        if (category === 'moral_cons' && sel.length === 4) {
-            if (plotTitle.includes('people') && !plotTitle.includes('animals')) {
-                extraSpacing = '<div style="height:1.3em;"></div>';
-            }
-        }
-        
-        // Graded Consciousness: add spacing for shorter titles when all 4 selected
-        // Only for Q_GRADED_EQUAL and Q_GRADED_MATTERMORE, NOT for Unequal/Incomparable
+        // Graded Consciousness: add spacing for shorter titles (Equal, Matters More) when all 4 selected
         if (category === 'graded_c' && sel.length === 4) {
+            // Q_GRADED_EQUAL: "equally conscious" without "not"
+            // Q_GRADED_MATTERMORE: "matter more" or "Matters More"
             const isEqual = plotTitle.includes('equally conscious') && !plotTitle.includes('not equally');
             const isMattersMore = plotTitle.includes('matter more') || plotTitle.includes('Matters More');
             if (isEqual || isMattersMore) {
@@ -3604,42 +3602,112 @@ function toggleShowAll(sectionId, listId, totalCount) {
 async function downloadCharts() {
     const chartArea = document.getElementById('dist-chart-area');
     const legendArea = document.getElementById('dist-legend-area');
-    const title = document.getElementById('dist-title');
+    const tableContainer = document.getElementById('dist-table-container');
+    const distTitle = document.getElementById('dist-title');
     
     if (!chartArea) return;
     
-    // Find all chart canvases
+    // Find all chart cells/containers
+    const chartCells = chartArea.querySelectorAll('.chart-cell, .chart-container');
     const canvases = chartArea.querySelectorAll('canvas');
     if (canvases.length === 0) {
         alert('No charts to download');
         return;
     }
     
-    // Create a temporary canvas to combine everything
+    // Create a temporary canvas
     const tempCanvas = document.createElement('canvas');
     const ctx = tempCanvas.getContext('2d');
     
-    // Calculate dimensions
-    const padding = 30;
-    const titleHeight = 50;
-    const legendHeight = legendArea && legendArea.innerHTML ? 60 : 0;
-    const attributionHeight = 40;
-    
-    // Get chart area dimensions
-    const chartAreaRect = chartArea.getBoundingClientRect();
-    const totalWidth = Math.max(chartAreaRect.width, 800) + padding * 2;
-    
-    // Calculate total height based on chart grid
-    let chartsHeight = 0;
-    const chartContainers = chartArea.querySelectorAll('.chart-container, .chart-cell');
-    if (chartContainers.length > 0) {
-        const containerRect = chartArea.getBoundingClientRect();
-        chartsHeight = containerRect.height;
-    } else {
-        chartsHeight = 400; // Default single chart height
+    // Determine grid layout
+    const chartGrid = chartArea.querySelector('.chart-grid');
+    let cols = 1;
+    if (chartGrid) {
+        if (chartGrid.classList.contains('cols-4')) cols = 4;
+        else if (chartGrid.classList.contains('cols-3')) cols = 3;
+        else if (chartGrid.classList.contains('cols-2')) cols = 2;
+    } else if (canvases.length > 1) {
+        cols = Math.min(canvases.length, 4);
     }
     
-    const totalHeight = titleHeight + legendHeight + chartsHeight + attributionHeight + padding * 2;
+    const numCharts = chartCells.length || canvases.length;
+    const rows = Math.ceil(numCharts / cols);
+    
+    // Get filter info for header
+    const filterBox = document.getElementById('sample-filter-box');
+    const isAllSelected = document.getElementById('f-none')?.checked;
+    let filterText = 'All respondents';
+    if (!isAllSelected && filterBox) {
+        const checkedFilters = filterBox.querySelectorAll('input:checked');
+        const filterLabels = Array.from(checkedFilters).map(cb => {
+            const label = cb.nextElementSibling;
+            return label?.textContent?.trim() || cb.dataset.v;
+        }).filter(Boolean);
+        if (filterLabels.length > 0) {
+            filterText = filterLabels.join(' + ');
+        }
+    }
+    
+    // Get N from title
+    const nMatch = distTitle?.textContent?.match(/N=(\d+)/);
+    const nValue = nMatch ? nMatch[1] : '?';
+    
+    // Calculate dimensions
+    const padding = 15;
+    const headerHeight = 35;  // For N and filter info
+    const cellWidth = numCharts === 1 ? 500 : 300;
+    const titleHeight = 85;   // Fixed title area (5 lines max for long titles)
+    const chartSize = numCharts === 1 ? 180 : 140;
+    const statsHeight = 35;   // Stats below chart
+    const cellHeight = titleHeight + chartSize + statsHeight;
+    const legendRowHeight = 20;
+    const attributionHeight = 25;
+    
+    // Collect unique legends first to calculate legend section height
+    const uniqueLegends = new Map();
+    const cellsArray = chartCells.length > 0 ? Array.from(chartCells) : Array.from(canvases).map(c => c.parentElement);
+    
+    cellsArray.forEach(cell => {
+        const cellLegendEl = cell.querySelector('.chart-cell-legend');
+        if (cellLegendEl) {
+            const legendItems = cellLegendEl.querySelectorAll('.legend-item');
+            const legendKey = Array.from(legendItems).map(item => item.textContent.trim()).join('|');
+            if (!uniqueLegends.has(legendKey)) {
+                const items = [];
+                legendItems.forEach(item => {
+                    const colorBox = item.querySelector('.legend-color');
+                    const label = item.textContent.trim();
+                    const bgColor = colorBox?.style.backgroundColor || '#58a6ff';
+                    items.push({ color: bgColor, label });
+                });
+                uniqueLegends.set(legendKey, items);
+            }
+        }
+    });
+    
+    // Also include global legend
+    if (legendArea && legendArea.innerHTML.trim()) {
+        const legendItems = legendArea.querySelectorAll('.legend-item');
+        if (legendItems.length > 0) {
+            const items = [];
+            legendItems.forEach(item => {
+                const colorBox = item.querySelector('.legend-color');
+                const label = item.textContent.trim();
+                const bgColor = colorBox?.style.backgroundColor || '#58a6ff';
+                items.push({ color: bgColor, label });
+            });
+            const key = items.map(i => i.label).join('|');
+            if (!uniqueLegends.has(key)) {
+                uniqueLegends.set(key, items);
+            }
+        }
+    }
+    
+    const legendSectionHeight = uniqueLegends.size > 0 ? (uniqueLegends.size * legendRowHeight + 10) : 0;
+    
+    const totalWidth = cols * cellWidth + padding * 2;
+    const chartsHeight = rows * cellHeight;
+    const totalHeight = padding + headerHeight + chartsHeight + legendSectionHeight + attributionHeight;
     
     tempCanvas.width = totalWidth;
     tempCanvas.height = totalHeight;
@@ -3648,58 +3716,178 @@ async function downloadCharts() {
     ctx.fillStyle = '#0d1117';
     ctx.fillRect(0, 0, totalWidth, totalHeight);
     
-    // Draw title (strip HTML tags)
+    // Draw header with N and filter info
     ctx.fillStyle = '#e6edf3';
-    ctx.font = 'bold 18px "DM Sans", sans-serif';
-    const titleText = title.textContent || 'Chart';
-    ctx.fillText(titleText, padding, padding + 25);
+    ctx.font = 'bold 14px "DM Sans", sans-serif';
+    ctx.fillText(`N=${nValue}`, padding, padding + 18);
+    ctx.font = '12px "DM Sans", sans-serif';
+    ctx.fillStyle = '#8b949e';
+    ctx.fillText(`Filter: ${filterText}`, padding + 80, padding + 18);
     
-    // Draw legend if present
-    let yOffset = titleHeight + padding;
-    if (legendArea && legendArea.innerHTML) {
-        ctx.font = '14px "DM Sans", sans-serif';
-        const legendText = legendArea.textContent || '';
-        ctx.fillText(legendText, padding, yOffset + 20);
-        yOffset += legendHeight;
-    }
+    let yOffset = padding + headerHeight;
     
-    // For single canvas, draw it directly
-    if (canvases.length === 1) {
-        const canvas = canvases[0];
-        const scale = Math.min((totalWidth - padding * 2) / canvas.width, (chartsHeight) / canvas.height);
+    // Get stats from table - handle multiple formats
+    const tableRows = tableContainer?.querySelectorAll('tbody tr') || [];
+    const statsMap = new Map();
+    const tableHeaders = tableContainer?.querySelectorAll('thead th') || [];
+    const numTableCols = tableHeaders.length;
+    
+    tableRows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length >= 3) {
+            if (numTableCols === 7) {
+                // Binary choice format: Question | Option1 | Count | % | Option2 | Count | %
+                const question = cells[0]?.textContent?.trim() || '';
+                const opt1 = cells[1]?.textContent?.trim() || '';
+                const count1 = cells[2]?.textContent?.trim() || '';
+                const pct1 = cells[3]?.textContent?.trim() || '';
+                const opt2 = cells[4]?.textContent?.trim() || '';
+                const count2 = cells[5]?.textContent?.trim() || '';
+                const pct2 = cells[6]?.textContent?.trim() || '';
+                if (!statsMap.has(question)) statsMap.set(question, []);
+                statsMap.get(question).push({ value: opt1, count: count1, pct: pct1 });
+                statsMap.get(question).push({ value: opt2, count: count2, pct: pct2 });
+            } else if (numTableCols === 4) {
+                // Standard format: Question | Value | Count | %
+                const question = cells[0]?.textContent?.trim() || '';
+                const value = cells[1]?.textContent?.trim() || '';
+                const count = cells[2]?.textContent?.trim() || '';
+                const pct = cells[3]?.textContent?.trim() || '';
+                if (!statsMap.has(question)) statsMap.set(question, []);
+                statsMap.get(question).push({ value, count, pct });
+            } else if (numTableCols === 3) {
+                // Single chart format: Label | Count | %
+                const value = cells[0]?.textContent?.trim() || '';
+                const count = cells[1]?.textContent?.trim() || '';
+                const pct = cells[2]?.textContent?.trim() || '';
+                if (!statsMap.has('')) statsMap.set('', []);
+                statsMap.get('').push({ value, count, pct });
+            } else if (numTableCols === 5) {
+                // Yes/No format: Question | Yes | % Yes | No | % No
+                const question = cells[0]?.textContent?.trim() || '';
+                const yesCount = cells[1]?.textContent?.trim() || '';
+                const yesPct = cells[2]?.textContent?.trim() || '';
+                const noCount = cells[3]?.textContent?.trim() || '';
+                const noPct = cells[4]?.textContent?.trim() || '';
+                if (!statsMap.has(question)) statsMap.set(question, []);
+                statsMap.get(question).push({ value: 'Yes', count: yesCount, pct: yesPct });
+                statsMap.get(question).push({ value: 'No', count: noCount, pct: noPct });
+            }
+            // Skip other formats
+        }
+    });
+    
+    // Draw each chart
+    cellsArray.forEach((cell, i) => {
+        const canvas = cell.querySelector('canvas') || (cell.tagName === 'CANVAS' ? cell : null);
+        if (!canvas) return;
+        
+        const col = i % cols;
+        const row = Math.floor(i / cols);
+        const x = padding + col * cellWidth;
+        const y = yOffset + row * cellHeight;
+        
+        // Get title
+        const titleEl = cell.querySelector('h4');
+        let plotTitle = titleEl?.textContent?.trim() || '';
+        if (!plotTitle && numCharts === 1) {
+            if (distTitle) {
+                plotTitle = distTitle.textContent.replace(/N=\d+/g, '').replace(/NOTE:.*/g, '').replace(/\d+ Questions? Selected/g, '').trim();
+            }
+        }
+        
+        // Draw title with word wrap (max 5 lines)
+        ctx.fillStyle = '#e6edf3';
+        ctx.font = numCharts === 1 ? '14px "DM Sans", sans-serif' : '11px "DM Sans", sans-serif';
+        const maxTitleWidth = cellWidth - 16;
+        const words = plotTitle.split(' ');
+        let line = '';
+        let lineY = y + 12;
+        let lineCount = 0;
+        const lineHeight = numCharts === 1 ? 16 : 13;
+        const maxLines = 5;
+        
+        words.forEach(word => {
+            const testLine = line + word + ' ';
+            if (ctx.measureText(testLine).width > maxTitleWidth && line) {
+                if (lineCount < maxLines) {
+                    ctx.fillText(line.trim(), x + 8, lineY);
+                    line = word + ' ';
+                    lineY += lineHeight;
+                    lineCount++;
+                }
+            } else {
+                line = testLine;
+            }
+        });
+        if (lineCount < maxLines) {
+            ctx.fillText(line.trim(), x + 8, lineY);
+        }
+        
+        // Draw chart (fixed position after title area)
+        const chartY = y + titleHeight;
+        const scale = Math.min((cellWidth - 40) / canvas.width, chartSize / canvas.height) * 0.95;
         const scaledWidth = canvas.width * scale;
         const scaledHeight = canvas.height * scale;
-        const xPos = (totalWidth - scaledWidth) / 2;
-        ctx.drawImage(canvas, xPos, yOffset, scaledWidth, scaledHeight);
-    } else {
-        // For multiple charts, use html2canvas approach or draw each
-        // Simple approach: draw each canvas in a grid
-        const cols = Math.min(canvases.length, 4);
-        const rows = Math.ceil(canvases.length / cols);
-        const cellWidth = (totalWidth - padding * 2) / cols;
-        const cellHeight = chartsHeight / rows;
+        const chartX = x + (cellWidth - scaledWidth) / 2;
+        ctx.drawImage(canvas, chartX, chartY, scaledWidth, scaledHeight);
         
-        canvases.forEach((canvas, i) => {
-            const col = i % cols;
-            const row = Math.floor(i / cols);
-            const x = padding + col * cellWidth;
-            const y = yOffset + row * cellHeight;
+        // Draw stats below chart (fixed position)
+        const stats = statsMap.get(plotTitle) || statsMap.get('') || [];
+        if (stats.length > 0) {
+            const statY = chartY + chartSize + 10;
+            ctx.font = numCharts === 1 ? '10px "DM Sans", sans-serif' : '9px "DM Sans", sans-serif';
+            ctx.fillStyle = '#c9d1d9';
             
-            const scale = Math.min(cellWidth / canvas.width, cellHeight / canvas.height) * 0.9;
-            const scaledWidth = canvas.width * scale;
-            const scaledHeight = canvas.height * scale;
-            const xPos = x + (cellWidth - scaledWidth) / 2;
-            const yPos = y + (cellHeight - scaledHeight) / 2;
+            let statX = x + 5;
+            let currentStatY = statY;
+            const maxStatsWidth = cellWidth - 10;
             
-            ctx.drawImage(canvas, xPos, yPos, scaledWidth, scaledHeight);
+            stats.slice(0, 4).forEach(stat => {  // Limit to 4 stats
+                // Truncate long value labels
+                let shortValue = stat.value;
+                if (shortValue.length > 20) {
+                    shortValue = shortValue.substring(0, 18) + '...';
+                }
+                const statText = `${shortValue}: ${stat.count} (${stat.pct})`;
+                const statWidth = ctx.measureText(statText).width + 8;
+                
+                if (statX + statWidth > x + maxStatsWidth && statX > x + 5) {
+                    statX = x + 5;
+                    currentStatY += 11;
+                }
+                
+                ctx.fillText(statText, statX, currentStatY);
+                statX += statWidth;
+            });
+        }
+    });
+    
+    // Draw legends section (each unique legend on its own row)
+    if (uniqueLegends.size > 0) {
+        const legendStartY = yOffset + chartsHeight + 3;
+        let legendY = legendStartY;
+        ctx.font = '10px "DM Sans", sans-serif';
+        
+        uniqueLegends.forEach((items, key) => {
+            let legendX = padding;
+            items.forEach(item => {
+                ctx.fillStyle = item.color;
+                ctx.fillRect(legendX, legendY, 8, 8);
+                legendX += 10;
+                ctx.fillStyle = '#c9d1d9';
+                ctx.fillText(item.label, legendX, legendY + 7);
+                legendX += ctx.measureText(item.label).width + 12;
+            });
+            legendY += legendRowHeight;
         });
     }
     
-    // Draw attribution at bottom
-    ctx.fillStyle = '#c9d1d9';
-    ctx.font = '14px "DM Sans", sans-serif';
+    // Draw attribution at very bottom
+    const attrY = totalHeight - 8;
+    ctx.fillStyle = '#6e7681';
+    ctx.font = '10px "DM Sans", sans-serif';
     const attribution = '© 2025 ronyhirsch.github.io/minds-matter — Use with attribution: doi.org/10.17605/OSF.IO/XXXXX';
-    const attrY = totalHeight - padding;
     ctx.fillText(attribution, padding, attrY);
     
     // Get topic name for filename
