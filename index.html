@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-0VYPT117FS"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-0VYPT117FS');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minds Matter</title>
@@ -81,27 +89,33 @@
         .split-group-title { font-size:0.9rem; font-weight:600; color:var(--text-primary); margin-bottom:0.75rem; padding-bottom:0.5rem; border-bottom:1px solid var(--border); }
         .btn { padding:0.7rem 1.5rem; background:var(--accent-subtle); color:var(--text-primary); border:none; border-radius:8px; cursor:pointer; font-family:inherit; font-size:0.95rem; font-weight:500; transition:0.2s; align-self:flex-end; margin-top:auto; }
         .btn:hover { background:var(--accent); }
-        .results { background:var(--bg-secondary); border-radius:12px; border:1px solid var(--border); overflow:hidden; }
-        .results-header { padding:1rem 1.5rem; background:var(--bg-tertiary); border-bottom:1px solid var(--border); }
+        .results { background:var(--bg-secondary); border-radius:12px; border:1px solid var(--border); overflow:visible; }
+        .results-header { padding:1rem 1.5rem; background:var(--bg-tertiary); border-bottom:1px solid var(--border); border-radius:12px 12px 0 0; }
         .results-header h3 { font-weight:500; font-size:1rem; }
-        .results-body { padding:1.5rem; }
+        .results-body { padding:1.5rem; overflow:visible; }
         .chart-container { position:relative; height:500px; margin-bottom:1.5rem; }
-        .chart-grid { display:grid; gap:1rem; margin-bottom:1.5rem; width:100%; max-width:100%; overflow:hidden; }
+        .chart-grid { display:grid; gap:1rem; margin-bottom:1.5rem; width:100%; max-width:100%; overflow:visible; }
         .chart-grid.cols-1 { grid-template-columns:1fr; max-width:500px; margin:0 auto 1.5rem; }
         .chart-grid.cols-2 { grid-template-columns:repeat(2,minmax(0,1fr)); }
         .chart-grid.cols-3 { grid-template-columns:repeat(3,minmax(0,1fr)); }
         .chart-grid.cols-4 { grid-template-columns:repeat(4,minmax(0,1fr)); }
-        .chart-cell { overflow:hidden; min-width:0; width:100%; box-sizing:border-box; background:var(--bg-tertiary); border-radius:8px; padding:0.75rem; display:flex; flex-direction:column; }
-        .chart-cell h4 { font-size:0.95rem; margin-bottom:0.5rem; color:var(--text-secondary); text-align:center; white-space:normal; word-wrap:break-word; overflow-wrap:break-word; line-height:1.3; min-height:2.6em; display:flex; align-items:flex-start; justify-content:center; font-weight:400 !important; }
-        .chart-grid.cols-4 .chart-cell h4, .chart-grid.cols-3 .chart-cell h4 { min-height:3.9em; }  /* More title height when multiple items */
+        .chart-cell { overflow:visible; min-width:0; width:100%; box-sizing:border-box; background:var(--bg-tertiary); border-radius:8px; padding:0.75rem; display:flex; flex-direction:column; position:relative; }
+        .chart-cell h4 { font-size:1.15rem; margin-bottom:0.5rem; color:var(--text-secondary); text-align:center; white-space:normal; word-wrap:break-word; overflow-wrap:break-word; line-height:1.3; min-height:1.6em; display:flex; align-items:flex-start; justify-content:center; font-weight:400 !important; }
+        .chart-grid.cols-4 .chart-cell h4, .chart-grid.cols-3 .chart-cell h4 { min-height:2.6em; }  /* More title height when multiple items */
         .chart-cell.single-item h4 { min-height:auto; margin-bottom:0.25rem; }  /* No min-height for single items */
         .chart-cell.single-item .chart-cell-legend { margin-bottom:0.25rem; }  /* Tighter legend spacing */
-        .chart-cell-legend { font-size:0.75rem; display:flex; flex-wrap:wrap; gap:0.3rem; justify-content:center; margin-bottom:0.5rem; padding:0.3rem; background:var(--bg-secondary); border-radius:4px; min-height:1.8em; align-items:center; align-content:center; }
+        .chart-cell-legend { font-size:0.9rem; display:flex; flex-wrap:wrap; gap:0.4rem; justify-content:center; margin-bottom:0.5rem; padding:0.4rem; background:var(--bg-secondary); border-radius:4px; min-height:1.8em; align-items:center; align-content:center; }
+        .chart-cell-legend .legend-color { width:12px; height:12px; border-radius:2px; flex-shrink:0; }
         .chart-cell canvas { max-height:180px; flex:1; margin-top:auto; }
         .chart-cell[data-bar-height] canvas { max-height:none !important; height:100% !important; }
-        .hbar-canvas-wrapper { position:relative; }
-        .chart-cell-legend .legend-item { display:flex; align-items:center; gap:0.2rem; line-height:1.4; }
-        .chart-cell-legend .legend-color { width:10px; height:10px; border-radius:2px; flex-shrink:0; }
+        .hbar-canvas-wrapper { position:relative; overflow:visible; }
+        .split-question-row { overflow:visible; }
+        #dist-chart-area { overflow:visible; }
+        .chart-cell-legend .legend-item { display:flex; align-items:center; gap:0.3rem; line-height:1.4; }
+        /* External tooltip for split charts */
+        #chartjs-tooltip { position:absolute; background:rgba(0,0,0,0.9); color:#fff; border-radius:6px; padding:8px 12px; font-size:0.85rem; pointer-events:none; z-index:9999; white-space:nowrap; box-shadow:0 2px 8px rgba(0,0,0,0.3); transition:opacity 0.15s ease; }
+        #chartjs-tooltip .tooltip-title { font-weight:600; margin-bottom:4px; }
+        #chartjs-tooltip .tooltip-body { line-height:1.4; }
         table { width:100%; border-collapse:collapse; font-size:0.9rem; }
         th, td { padding:0.5rem 0.75rem; text-align:left; border-bottom:1px solid var(--border); }
         th { background:var(--bg-tertiary); font-weight:600; color:var(--text-secondary); }
@@ -556,7 +570,16 @@ function syncFilterHeights() {
             // Also apply to vbox if it exists and has scrollable class
             const vbox = varContainer.querySelector('.checkbox-group.scrollable');
             if (vbox) {
-                vbox.style.maxHeight = `${filterHeight}px`;
+                // Check if there's a display-mode-selector (for combined_attr)
+                const displayModeSelector = varContainer.querySelector('.display-mode-selector');
+                if (displayModeSelector) {
+                    // Adjust max-height to account for display mode selector
+                    const selectorHeight = displayModeSelector.offsetHeight + 16; // +16 for margin
+                    const adjustedHeight = Math.max(100, filterHeight - selectorHeight);
+                    vbox.style.maxHeight = `${adjustedHeight}px`;
+                } else {
+                    vbox.style.maxHeight = `${filterHeight}px`;
+                }
             }
         }
     }, 50);
@@ -1430,7 +1453,8 @@ function updateVariableUI() {
         if (cat === 'earth_danger') {
             scenarioHtml = '<div class="scenario-text" style="font-size:0.87rem;color:var(--text-secondary);line-height:1.5;padding:0.6rem;background:var(--bg-secondary);border-radius:6px;margin-bottom:1rem;">';
             scenarioHtml += '<p style="margin:0 0 0.5rem;"><strong>Imagine the following scenario:</strong></p>';
-            scenarioHtml += '<p style="margin:0;">Earth is in danger and will cease to exist. Luckily, you can evacuate safely, and you must choose only one creature/system you can save. <strong><em>Which one you choose?</em></strong></p>';
+            scenarioHtml += '<p style="margin:0 0 0.5rem;">Earth is in danger and will cease to exist. Luckily, you can evacuate safely, and you must choose only one creature/system you can save.</p>';
+            scenarioHtml += '<p style="margin:0;"><strong><em>Who would you save?</em></strong></p>';
             scenarioHtml += '</div>';
         } else if (cat === 'kill_test') {
             scenarioHtml = '<div class="scenario-text" style="font-size:0.87rem;color:var(--text-secondary);line-height:1.5;padding:0.6rem;background:var(--bg-secondary);border-radius:6px;margin-bottom:1rem;">';
@@ -1611,9 +1635,8 @@ function updateVariableUI() {
             // Add prefix text for specific categories
             if (cat === 'ics') {
                 h += '<div class="checkbox-prefix" style="font-size:0.95rem;color:var(--text-secondary);padding:0.5rem 0 0.25rem;font-style:italic;">Do you think a creature/system can...</div>';
-            } else if (cat === 'earth_danger') {
-                h += '<div class="checkbox-prefix" style="font-size:0.95rem;color:var(--text-secondary);padding:0.5rem 0 0.25rem;font-style:italic;">Who would you save?</div>';
             }
+            // Note: earth_danger no longer has a checkbox prefix - the question is in the scenario text
             
             // Special handling for moral_cons - indent PRIOS_Q_CONS and add note
             if (cat === 'moral_cons') {
@@ -1962,7 +1985,63 @@ function setupEvents() {
     document.getElementById('freetext-search').addEventListener('input', filterFreetext);
 }
 
-function destroyCharts() { Object.values(charts).forEach(c => c?.destroy()); charts = {}; }
+function destroyCharts() { 
+    Object.values(charts).forEach(c => c?.destroy()); 
+    charts = {}; 
+    // Hide external tooltip when charts are destroyed
+    const tooltipEl = document.getElementById('chartjs-tooltip');
+    if (tooltipEl) tooltipEl.style.opacity = 0;
+}
+
+// External tooltip handler for split charts (avoids clipping by container)
+function getOrCreateTooltip(chart) {
+    let tooltipEl = document.getElementById('chartjs-tooltip');
+    if (!tooltipEl) {
+        tooltipEl = document.createElement('div');
+        tooltipEl.id = 'chartjs-tooltip';
+        document.body.appendChild(tooltipEl);
+    }
+    return tooltipEl;
+}
+
+function externalTooltipHandler(context) {
+    const {chart, tooltip} = context;
+    const tooltipEl = getOrCreateTooltip(chart);
+    
+    // Hide if no tooltip
+    if (tooltip.opacity === 0) {
+        tooltipEl.style.opacity = 0;
+        return;
+    }
+    
+    // Set tooltip content
+    if (tooltip.body) {
+        const titleLines = tooltip.title || [];
+        const bodyLines = tooltip.body.map(b => b.lines);
+        
+        let innerHtml = '';
+        if (titleLines.length > 0) {
+            innerHtml += `<div class="tooltip-title">${titleLines.join('<br>')}</div>`;
+        }
+        innerHtml += '<div class="tooltip-body">';
+        bodyLines.forEach(lines => {
+            lines.forEach(line => {
+                innerHtml += `<div>${line}</div>`;
+            });
+        });
+        innerHtml += '</div>';
+        tooltipEl.innerHTML = innerHtml;
+    }
+    
+    // Position tooltip - use page coordinates to avoid container clipping
+    const canvasRect = chart.canvas.getBoundingClientRect();
+    const tooltipX = canvasRect.left + window.scrollX + tooltip.caretX;
+    const tooltipY = canvasRect.top + window.scrollY + tooltip.caretY;
+    
+    tooltipEl.style.opacity = 1;
+    tooltipEl.style.left = tooltipX + 'px';
+    tooltipEl.style.top = tooltipY + 'px';
+}
 
 // Helper to capitalize labels for certain categories (EiD Cluster, ICS Group)
 function capitalizeLabel(label) {
@@ -2451,7 +2530,7 @@ function showDist() {
             });
         });
         
-        // Create horizontal bar chart for No Kill Reasons
+        // Create horizontal bar chart for No Kill Reasons (always stacked when exclusive data available)
         if (noKillData) {
             const sortedEntries = Object.entries(noKillData)
                 .filter(([k, v]) => typeof v === 'number')
@@ -2459,17 +2538,64 @@ function showDist() {
             const labels = sortedEntries.map(([k]) => k);
             const values = sortedEntries.map(([, v]) => v);
             
-            charts['c-nokill'] = new Chart(document.getElementById('c-nokill').getContext('2d'), {
-                type: 'bar',
-                data: {labels, datasets: [{data: values, backgroundColor: '#4a9b9e', borderWidth: 0}]},
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {legend: {display: false}, tooltip: {callbacks: {label: ctx => `${ctx.raw} (${((ctx.raw/noKillN)*100).toFixed(1)}%)`}}},
-                    scales: {x: {beginAtZero: true, grid: {color: '#30363d'}, ticks: {color: '#8b949e', font: {size: 13}}}, y: {grid: {display: false}, ticks: {color: '#e6edf3', autoSkip: false, font: {size: 14}}}}
-                }
-            });
+            // Get exclusive data for stacked bars
+            const exclusiveData = dists['multiselect_no_kill_reason_exclusive'] || {};
+            const hasExclusiveData = Object.keys(exclusiveData).length > 0 && 
+                Object.values(exclusiveData).some(v => typeof v === 'number' && v > 0);
+            
+            if (hasExclusiveData) {
+                // Stacked bar chart
+                const exclusiveValues = labels.map(k => exclusiveData[k] || 0);
+                const nonExclusiveValues = values.map((v, i) => Math.max(0, v - exclusiveValues[i]));
+                
+                charts['c-nokill'] = new Chart(document.getElementById('c-nokill').getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels, 
+                        datasets: [
+                            {label: 'Only this option', data: exclusiveValues, backgroundColor: '#4a9b9e', borderWidth: 0},
+                            {label: 'With other options', data: nonExclusiveValues, backgroundColor: 'rgba(74,155,158,0.4)', borderWidth: 0}
+                        ]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {display: false}, 
+                            tooltip: {callbacks: {
+                                label: ctx => {
+                                    const total = values[ctx.dataIndex];
+                                    const exclusive = exclusiveValues[ctx.dataIndex];
+                                    if (ctx.datasetIndex === 0) {
+                                        return `Only this: ${exclusive} (${((exclusive/noKillN)*100).toFixed(1)}%)`;
+                                    } else {
+                                        return `With others: ${total - exclusive} (${((total - exclusive)/noKillN*100).toFixed(1)}%)`;
+                                    }
+                                },
+                                afterBody: ctx => `Total: ${values[ctx[0].dataIndex]} (${((values[ctx[0].dataIndex]/noKillN)*100).toFixed(1)}%)`
+                            }}
+                        },
+                        scales: {
+                            x: {stacked: true, beginAtZero: true, grid: {color: '#30363d'}, ticks: {color: '#8b949e', font: {size: 13}}}, 
+                            y: {stacked: true, grid: {display: false}, ticks: {color: '#e6edf3', autoSkip: false, font: {size: 14}}}
+                        }
+                    }
+                });
+            } else {
+                // Standard bar chart (fallback)
+                charts['c-nokill'] = new Chart(document.getElementById('c-nokill').getContext('2d'), {
+                    type: 'bar',
+                    data: {labels, datasets: [{data: values, backgroundColor: '#4a9b9e', borderWidth: 0}]},
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {legend: {display: false}, tooltip: {callbacks: {label: ctx => `${ctx.raw} (${((ctx.raw/noKillN)*100).toFixed(1)}%)`}}},
+                        scales: {x: {beginAtZero: true, grid: {color: '#30363d'}, ticks: {color: '#8b949e', font: {size: 13}}}, y: {grid: {display: false}, ticks: {color: '#e6edf3', autoSkip: false, font: {size: 14}}}}
+                    }
+                });
+            }
         }
         
         tableArea.innerHTML = '<p class="no-data">Select individual questions for detailed tables</p>';
@@ -3051,7 +3177,8 @@ function showDist() {
         if (regularItems.length > 0) {
             const hasSpecialItems = specialItems.length > 0;
             // When single donut with Employment/Country below, use cols-1 to center it
-            let gridClass = regularItems.length === 1 ? 'cols-1' : (regularItems.length <= 2 ? 'cols-2' : 'cols-4');
+            // Max cols-3 for Gender/Age/Education (only 3 possible items)
+            let gridClass = regularItems.length === 1 ? 'cols-1' : (regularItems.length <= 2 ? 'cols-2' : 'cols-3');
             
             let gridHtml = `<div class="chart-grid ${gridClass}" id="cgrid-regular">`;
             regularItems.forEach((cb, i) => {
@@ -3074,13 +3201,25 @@ function showDist() {
         
         // Country, employment, and education topic as separate horizontal bar charts
         // Calculate height based on number of items for proper spacing
+        const MAX_SPECIAL_ITEMS = 10;
         specialItems.forEach((cb, i) => {
             const title = cb.nextElementSibling.textContent;
             const data = dists[cb.dataset.k];
             const numItems = data ? Object.keys(data).filter(k => typeof data[k] === 'number').length : 10;
-            const itemHeight = 36; // pixels per bar - increased further
-            const chartHeight = Math.max(numItems * itemHeight + 80, 300); // minimum 300px
-            htmlParts.push(`<div class="special-demo-section"><h4 style="text-align:center;margin:1.5rem 0 0.75rem;color:var(--text-secondary);font-size:1.15rem;">${title}</h4><div class="chart-container" style="height:${chartHeight}px"><canvas id="c-s-${i}"></canvas></div></div>`);
+            const displayItems = Math.min(numItems, MAX_SPECIAL_ITEMS);
+            const hasMoreItems = numItems > MAX_SPECIAL_ITEMS;
+            const itemHeight = 36; // pixels per bar
+            const chartHeight = Math.max(displayItems * itemHeight + 80, 300);
+            
+            let toggleHtml = '';
+            if (hasMoreItems) {
+                toggleHtml = `<div style="text-align:left;margin-top:-0.25rem;margin-bottom:0.5rem;">
+                    <span style="color:var(--text-muted);font-size:0.85rem;">Showing top ${MAX_SPECIAL_ITEMS} of ${numItems}</span>
+                    <span style="color:#8b949e;font-size:0.9rem;font-weight:600;cursor:pointer;text-decoration:underline;margin-left:0.75rem;" onclick="toggleSpecialChart(${i}, true)" id="toggle-special-${i}">Show all</span>
+                </div>`;
+            }
+            
+            htmlParts.push(`<div class="special-demo-section" id="special-section-${i}" data-key="${cb.dataset.k}" data-title="${title}" data-num-items="${numItems}"><h4 style="text-align:center;margin:1.5rem 0 0.75rem;color:var(--text-secondary);font-size:1.15rem;">${title}</h4><div class="chart-container" id="chart-container-s-${i}" style="height:${chartHeight}px"><canvas id="c-s-${i}"></canvas></div>${toggleHtml}</div>`);
         });
         
         chartArea.innerHTML = htmlParts.join('');
@@ -3144,7 +3283,10 @@ function showDist() {
             });
         });
         
-        // Create horizontal bar charts for country/employment
+        // Create horizontal bar charts for country/employment (show limited items initially)
+        // MAX_SPECIAL_ITEMS already declared above
+        window._specialChartData = {};  // Store data for toggle
+        
         specialItems.forEach((cb, i) => {
             const data = dists[cb.dataset.k];
             if (!data) return;
@@ -3153,9 +3295,17 @@ function showDist() {
                 .filter(([k, v]) => typeof v === 'number')
                 .sort((a, b) => b[1] - a[1]);
             
-            const labels = sortedEntries.map(([k]) => k);
-            const values = sortedEntries.map(([, v]) => v);
-            const total = values.reduce((a, b) => a + b, 0);
+            const allLabels = sortedEntries.map(([k]) => k);
+            const allValues = sortedEntries.map(([, v]) => v);
+            const total = allValues.reduce((a, b) => a + b, 0);
+            
+            // Store data for toggle
+            window._specialChartData[i] = { allLabels, allValues, total, key: cb.dataset.k };
+            
+            // Show limited items initially
+            const displayCount = Math.min(allLabels.length, MAX_SPECIAL_ITEMS);
+            const labels = allLabels.slice(0, displayCount);
+            const values = allValues.slice(0, displayCount);
             const maxVal = Math.max(...values);
             
             charts[`c-s-${i}`] = new Chart(document.getElementById(`c-s-${i}`).getContext('2d'), {
@@ -4031,7 +4181,8 @@ function showMultiDistSplit(cat, splitDatasets, followUpNote = '') {
                                         title: ctx => stripTooltipParens(sortedKeys[ctx[0].dataIndex]),
                                         label: ctx => {
                                             const pct = respondentN > 0 ? ((ctx.raw / respondentN) * 100).toFixed(1) : '0.0';
-                                            return `${ctx.dataset.label}: ${ctx.raw} (${pct}%)`;
+                                            // Multi-line format for narrow columns: label on first line, count on second
+                                            return [ctx.dataset.label + ':', ctx.raw + ' (' + pct + '%)'];
                                         }
                                     }
                                 }
@@ -4910,7 +5061,7 @@ function showCombinedAttrSplit(splitDatasets, checkedInputs) {
                     data: points,
                     backgroundColor: ds.baseColor + (displayMode === 'both' ? '55' : '99'),
                     borderColor: ds.baseColor,
-                    pointRadius: displayMode === 'both' ? 3 : 4,
+                    pointRadius: 4,
                     order: 2
                 });
             });
@@ -5289,7 +5440,9 @@ function showEntityDonuts(entities, type, dists, badge, legendArea) {
             if (!data) return;
             
             const cell = document.createElement('div'); cell.className = 'chart-cell';
-            cell.innerHTML = `<h4 style="font-size:1.1rem;">${e.short}</h4><canvas id="c-${i}"></canvas>`;
+            // Reduce spacing: smaller min-height on h4, tighter padding
+            cell.innerHTML = `<h4 style="font-size:1.1rem;min-height:auto;margin-bottom:0.25rem;">${e.short}</h4><canvas id="c-${i}"></canvas>`;
+            cell.style.padding = '0.5rem';
             grid.appendChild(cell);
             
             // Sort keys numerically for rating scale (1,2,3,4) - handles floats
@@ -5438,7 +5591,7 @@ function showCombinedScatter(entities, entityStats, badge, legendArea, displayMo
                     data: points,
                     backgroundColor: color + (displayMode === 'both' ? '55' : '99'),
                     borderColor: color,
-                    pointRadius: displayMode === 'both' ? 3 : 4,
+                    pointRadius: 4,
                     order: 2
                 });
             }
@@ -6404,7 +6557,7 @@ function showMoralFeaturesCombinedSplit(splitDatasets, legendArea, chartArea, ta
     html += '</div>';
     
     // Chart row with question label + tick labels + chart panels
-    html += `<div class="split-question-row" style="display:grid; grid-template-columns: ${questionLabelWidth} ${tickColWidth} repeat(${numSplits}, 1fr); gap:0.25rem; margin-bottom:1rem; align-items:stretch;">`;
+    html += `<div class="split-question-row" style="display:grid; grid-template-columns: ${questionLabelWidth} ${tickColWidth} repeat(${numSplits}, 1fr); gap:0.25rem; margin-bottom:1rem; align-items:stretch; overflow:visible;">`;
     
     // Question label
     html += `<div class="split-question-label" style="font-size:0.95rem; padding:0.5rem; color:var(--text-secondary); display:flex; align-items:center; line-height:1.3;">Combined (Important + Most Important)</div>`;
@@ -6418,8 +6571,8 @@ function showMoralFeaturesCombinedSplit(splitDatasets, legendArea, chartArea, ta
     
     // Chart panels
     splitDatasets.forEach((ds, sIdx) => {
-        html += `<div class="chart-cell" style="width:100%;height:${totalBarHeight}px;">`;
-        html += `<div class="hbar-canvas-wrapper" style="width:100%;height:${totalBarHeight}px;position:relative;"><canvas id="mf-split-${sIdx}" style="position:absolute;top:0;left:0;width:100%;height:100%;"></canvas></div>`;
+        html += `<div class="chart-cell" style="width:100%;height:${totalBarHeight}px;overflow:visible;">`;
+        html += `<div class="hbar-canvas-wrapper" style="width:100%;height:${totalBarHeight}px;position:relative;overflow:visible;"><canvas id="mf-split-${sIdx}" style="position:absolute;top:0;left:0;width:100%;height:100%;"></canvas></div>`;
         html += `</div>`;
     });
     html += '</div>';
@@ -6571,187 +6724,204 @@ function showHorizontalBarChart(data, qName, respondentN = null, exclusiveData =
         .sort((a, b) => b[1] - a[1]);
     
     // Transform labels using EXP_SOURCE_LABEL_MAP (for AI experience source "Practical" prefix)
-    const labels = sortedEntries.map(([k]) => transformExpSourceLabel(k));
-    const originalLabels = sortedEntries.map(([k]) => k);  // Keep originals for data lookup
-    const values = sortedEntries.map(([, v]) => v);
-    const totalSelections = values.reduce((a, b) => a + b, 0);
+    const allLabels = sortedEntries.map(([k]) => transformExpSourceLabel(k));
+    const allOriginalLabels = sortedEntries.map(([k]) => k);  // Keep originals for data lookup
+    const allValues = sortedEntries.map(([, v]) => v);
+    const totalSelections = allValues.reduce((a, b) => a + b, 0);
     // Use respondentN for percentage if provided (for multiselect), otherwise use totalSelections
     const percentBase = respondentN || totalSelections;
     
-    // Helper to wrap long labels
-    const wrapLabel = (label, maxWidth = 35) => {
-        if (label.length <= maxWidth) return label;
-        const words = label.split(' ');
-        const lines = [];
-        let currentLine = '';
-        for (const word of words) {
-            if ((currentLine + ' ' + word).trim().length <= maxWidth) {
-                currentLine = (currentLine + ' ' + word).trim();
-            } else {
-                if (currentLine) lines.push(currentLine);
-                currentLine = word;
-            }
-        }
-        if (currentLine) lines.push(currentLine);
-        return lines;
+    // Show all/show less logic for chart - only for Country and Employment (more than 10 items typically)
+    const MAX_CHART_ITEMS = 10;
+    const totalItems = sortedEntries.length;
+    const hasMoreItems = totalItems > MAX_CHART_ITEMS;
+    
+    // Store data globally for toggle
+    window._hbarChartData = {
+        allLabels, allOriginalLabels, allValues, percentBase, qName, exclusiveData, totalItems
     };
     
-    const wrappedLabels = labels.map(l => wrapLabel(l));
-    
-    // Adjust height based on number of items
-    const chartHeight = Math.max(300, sortedEntries.length * 40);
-    
-    chartArea.innerHTML = `<div class="chart-container" style="height:${chartHeight}px;"><canvas id="dist-chart"></canvas></div>`;
-    
-    // Check if exclusive data exists and has any non-zero values
-    // Be more robust: check if any key from exclusiveData matches labels
-    let hasExclusiveData = false;
-    if (exclusiveData && Object.keys(exclusiveData).length > 0) {
-        // Check both ways: use originalLabels for data lookup
-        const exclusiveSum = Object.values(exclusiveData).reduce((sum, v) => sum + (typeof v === 'number' ? v : 0), 0);
-        hasExclusiveData = exclusiveSum > 0 && originalLabels.some(k => (exclusiveData[k] || 0) > 0);
-        console.log('[showHorizontalBarChart] exclusiveSum:', exclusiveSum, 'labels:', labels.slice(0, 3), 'exclusiveKeys:', Object.keys(exclusiveData).slice(0, 3));
-    }
-    
-    console.log('[showHorizontalBarChart] exclusiveData:', exclusiveData, 'hasExclusiveData:', hasExclusiveData);
-    
-    // If exclusive data is provided with non-zero values, create stacked bar chart
-    if (hasExclusiveData) {
-        const exclusiveValues = originalLabels.map(k => exclusiveData[k] || 0);  // Use originalLabels for lookup
-        const nonExclusiveValues = values.map((v, i) => v - exclusiveValues[i]);
+    // Function to render chart with given number of items
+    const renderHBarChart = (showAll) => {
+        const numItems = showAll ? totalItems : Math.min(MAX_CHART_ITEMS, totalItems);
+        const labels = allLabels.slice(0, numItems);
+        const originalLabels = allOriginalLabels.slice(0, numItems);
+        const values = allValues.slice(0, numItems);
         
-        // Show legend for stacked bars
-        legendArea.innerHTML = `
-            <div style="display:flex;gap:1.5rem;justify-content:center;margin-bottom:0.5rem;flex-wrap:wrap;">
-                <div style="display:flex;align-items:center;gap:0.4rem;">
-                    <div style="width:16px;height:16px;background:#4a9b9e;border-radius:2px;"></div>
-                    <span style="font-size:0.85rem;color:#c9d1d9;">Selected this option only</span>
-                </div>
-                <div style="display:flex;align-items:center;gap:0.4rem;">
-                    <div style="width:16px;height:16px;background:rgba(74,155,158,0.4);border-radius:2px;"></div>
-                    <span style="font-size:0.85rem;color:#c9d1d9;">Selected with other options</span>
-                </div>
-            </div>`;
-        
-        charts.main = new Chart(document.getElementById('dist-chart').getContext('2d'), {
-            type: 'bar',
-            data: {
-                labels: wrappedLabels,
-                datasets: [
-                    {
-                        label: 'Only this option',
-                        data: exclusiveValues,
-                        backgroundColor: '#4a9b9e',
-                        borderWidth: 0
-                    },
-                    {
-                        label: 'With other options',
-                        data: nonExclusiveValues,
-                        backgroundColor: 'rgba(74,155,158,0.4)',
-                        borderWidth: 0
-                    }
-                ]
-            },
-            options: {
-                indexAxis: 'y',
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {display: false},
-                    tooltip: {
-                        callbacks: {
-                            title: ctx => stripTooltipParens(labels[ctx[0].dataIndex]),
-                            label: ctx => {
-                                const total = values[ctx.dataIndex];
-                                const exclusive = exclusiveValues[ctx.dataIndex];
-                                const pct = ((total/percentBase)*100).toFixed(1);
-                                const exclusivePct = ((exclusive/percentBase)*100).toFixed(1);
-                                if (ctx.datasetIndex === 0) {
-                                    return `Only this: ${exclusive} (${exclusivePct}%)`;
-                                } else {
-                                    return `With others: ${total - exclusive} (${((total - exclusive)/percentBase*100).toFixed(1)}%)`;
-                                }
-                            },
-                            afterBody: ctx => {
-                                const total = values[ctx[0].dataIndex];
-                                const pct = ((total/percentBase)*100).toFixed(1);
-                                return `Total: ${total} (${pct}%)`;
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        stacked: true,
-                        beginAtZero: true,
-                        grid: {color: '#30363d'},
-                        ticks: {color: '#e6edf3', font: {size: 13}, maxRotation: 0, minRotation: 0},
-                        title: {display: true, text: 'Count', color: '#e6edf3', font: {size: 14}}
-                    },
-                    y: {
-                        stacked: true,
-                        grid: {display: false},
-                        ticks: {color: '#e6edf3', autoSkip: false, font: {size: 13}}
-                    }
+        // Helper to wrap long labels
+        const wrapLabel = (label, maxWidth = 35) => {
+            if (label.length <= maxWidth) return label;
+            const words = label.split(' ');
+            const lines = [];
+            let currentLine = '';
+            for (const word of words) {
+                if ((currentLine + ' ' + word).trim().length <= maxWidth) {
+                    currentLine = (currentLine + ' ' + word).trim();
+                } else {
+                    if (currentLine) lines.push(currentLine);
+                    currentLine = word;
                 }
             }
-        });
+            if (currentLine) lines.push(currentLine);
+            return lines;
+        };
         
-        // Build table with exclusive column
-        let h = `<table><thead><tr><th>${qName}</th><th>Only This</th><th>Total</th><th>%</th></tr></thead><tbody>`;
-        sortedEntries.forEach(([k, v], idx) => {
-            const excl = exclusiveData[k] || 0;
-            const displayLabel = transformExpSourceLabel(k);  // Transform for display
-            h += `<tr><td>${displayLabel}</td><td>${excl}</td><td>${v}</td><td>${((v/percentBase)*100).toFixed(1)}%</td></tr>`;
-        });
-        Object.entries(data).filter(([k, v]) => typeof v === 'string').forEach(([k, v]) => {
-            const displayLabel = transformExpSourceLabel(k);
-            h += `<tr><td>${displayLabel}</td><td class="suppressed">—</td><td class="suppressed">${v}</td><td class="suppressed">—</td></tr>`;
-        });
-        document.getElementById('dist-table-container').innerHTML = h + '</tbody></table>';
-        return;
-    }
-    
-    // Standard (non-stacked) horizontal bar chart
-    legendArea.innerHTML = '';  // No legend needed
-    
-    charts.main = new Chart(document.getElementById('dist-chart').getContext('2d'), {
-        type: 'bar',
-        data: {
-            labels: wrappedLabels,
-            datasets: [{
-                data: values,
-                backgroundColor: '#4a9b9e',
-                borderWidth: 0
-            }]
-        },
-        options: {
-            indexAxis: 'y',  // Horizontal bars
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {display: false},
-                tooltip: {
-                    callbacks: {
-                        title: ctx => stripTooltipParens(labels[ctx[0].dataIndex]),  // Show full label in tooltip
-                        label: ctx => `${ctx.raw} (${((ctx.raw/percentBase)*100).toFixed(1)}%)`
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    beginAtZero: true,
-                    grid: {color: '#30363d'},
-                    ticks: {color: '#e6edf3', font: {size: 13}, maxRotation: 0, minRotation: 0},
-                    title: {display: true, text: 'Count', color: '#e6edf3', font: {size: 14}}
-                },
-                y: {
-                    grid: {display: false},
-                    ticks: {color: '#e6edf3', autoSkip: false, font: {size: 13}}
-                }
+        const wrappedLabels = labels.map(l => wrapLabel(l));
+        
+        // Adjust height based on number of items
+        const chartHeight = Math.max(300, numItems * 40);
+        
+        // Build toggle control HTML
+        let toggleHtml = '';
+        if (hasMoreItems) {
+            if (showAll) {
+                toggleHtml = `<div style="text-align:left;margin-top:-0.25rem;margin-bottom:0.5rem;">
+                    <span style="color:#8b949e;font-size:0.9rem;font-weight:600;cursor:pointer;text-decoration:underline;" onclick="toggleHBarChart(false)">Show less</span>
+                </div>`;
+            } else {
+                toggleHtml = `<div style="text-align:left;margin-top:-0.25rem;margin-bottom:0.5rem;">
+                    <span style="color:var(--text-muted);font-size:0.85rem;">Showing top ${MAX_CHART_ITEMS} of ${totalItems}</span>
+                    <span style="color:#8b949e;font-size:0.9rem;font-weight:600;cursor:pointer;text-decoration:underline;margin-left:0.75rem;" onclick="toggleHBarChart(true)">Show all</span>
+                </div>`;
             }
         }
-    });
+        
+        chartArea.innerHTML = `<div class="chart-container" style="height:${chartHeight}px;"><canvas id="dist-chart"></canvas></div>${toggleHtml}`;
+        
+        // Check if exclusive data exists and has any non-zero values
+        let hasExclusiveData = false;
+        if (exclusiveData && Object.keys(exclusiveData).length > 0) {
+            const exclusiveSum = Object.values(exclusiveData).reduce((sum, v) => sum + (typeof v === 'number' ? v : 0), 0);
+            hasExclusiveData = exclusiveSum > 0 && originalLabels.some(k => (exclusiveData[k] || 0) > 0);
+        }
+        
+        // If exclusive data is provided with non-zero values, create stacked bar chart
+        if (hasExclusiveData) {
+            const exclusiveValues = originalLabels.map(k => exclusiveData[k] || 0);
+            const nonExclusiveValues = values.map((v, i) => v - exclusiveValues[i]);
+            
+            // Show legend for stacked bars
+            legendArea.innerHTML = `
+                <div style="display:flex;gap:1.5rem;justify-content:center;margin-bottom:0.5rem;flex-wrap:wrap;">
+                    <div style="display:flex;align-items:center;gap:0.4rem;">
+                        <div style="width:16px;height:16px;background:#4a9b9e;border-radius:2px;"></div>
+                        <span style="font-size:0.85rem;color:#c9d1d9;">Selected this option only</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:0.4rem;">
+                        <div style="width:16px;height:16px;background:rgba(74,155,158,0.4);border-radius:2px;"></div>
+                        <span style="font-size:0.85rem;color:#c9d1d9;">Selected with other options</span>
+                    </div>
+                </div>`;
+            
+            charts.main = new Chart(document.getElementById('dist-chart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: wrappedLabels,
+                    datasets: [
+                        {
+                            label: 'Only this option',
+                            data: exclusiveValues,
+                            backgroundColor: '#4a9b9e',
+                            borderWidth: 0
+                        },
+                        {
+                            label: 'With other options',
+                            data: nonExclusiveValues,
+                            backgroundColor: 'rgba(74,155,158,0.4)',
+                            borderWidth: 0
+                        }
+                    ]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {display: false},
+                        tooltip: {
+                            callbacks: {
+                                title: ctx => stripTooltipParens(labels[ctx[0].dataIndex]),
+                                label: ctx => {
+                                    const total = values[ctx.dataIndex];
+                                    const exclusive = exclusiveValues[ctx.dataIndex];
+                                    const pct = ((total/percentBase)*100).toFixed(1);
+                                    const exclusivePct = ((exclusive/percentBase)*100).toFixed(1);
+                                    if (ctx.datasetIndex === 0) {
+                                        return `Only this: ${exclusive} (${exclusivePct}%)`;
+                                    } else {
+                                        return `With others: ${total - exclusive} (${((total - exclusive)/percentBase*100).toFixed(1)}%)`;
+                                    }
+                                },
+                                afterBody: ctx => {
+                                    const total = values[ctx[0].dataIndex];
+                                    const pct = ((total/percentBase)*100).toFixed(1);
+                                    return `Total: ${total} (${pct}%)`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            stacked: true,
+                            beginAtZero: true,
+                            grid: {color: '#30363d'},
+                            ticks: {color: '#e6edf3', font: {size: 13}, maxRotation: 0, minRotation: 0},
+                            title: {display: true, text: 'Count', color: '#e6edf3', font: {size: 14}}
+                        },
+                        y: {
+                            stacked: true,
+                            grid: {display: false},
+                            ticks: {color: '#e6edf3', autoSkip: false, font: {size: 13}}
+                        }
+                    }
+                }
+            });
+        } else {
+            // Standard (non-stacked) horizontal bar chart
+            legendArea.innerHTML = '';  // No legend needed
+            
+            charts.main = new Chart(document.getElementById('dist-chart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: wrappedLabels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: '#4a9b9e',
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',  // Horizontal bars
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {display: false},
+                        tooltip: {
+                            callbacks: {
+                                title: ctx => stripTooltipParens(labels[ctx[0].dataIndex]),
+                                label: ctx => `${ctx.raw} (${((ctx.raw/percentBase)*100).toFixed(1)}%)`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            grid: {color: '#30363d'},
+                            ticks: {color: '#e6edf3', font: {size: 13}, maxRotation: 0, minRotation: 0},
+                            title: {display: true, text: 'Count', color: '#e6edf3', font: {size: 14}}
+                        },
+                        y: {
+                            grid: {display: false},
+                            ticks: {color: '#e6edf3', autoSkip: false, font: {size: 13}}
+                        }
+                    }
+                }
+            });
+        }
+    };
+    
+    // Initial render with limited items
+    renderHBarChart(false);
     
     // Build table with row limit for large datasets (matching standard table styling)
     const MAX_ROWS = 10;
@@ -6784,6 +6954,170 @@ function showHorizontalBarChart(data, qName, respondentN = null, exclusiveData =
         tableHtml += '</tbody></table>';
     }
     document.getElementById('dist-table-container').innerHTML = tableHtml;
+}
+
+// Toggle function for horizontal bar chart show all/show less
+function toggleHBarChart(showAll) {
+    const d = window._hbarChartData;
+    if (!d) return;
+    
+    const chartArea = document.getElementById('dist-chart-area');
+    const legendArea = document.getElementById('dist-legend-area');
+    const MAX_CHART_ITEMS = 10;
+    
+    const numItems = showAll ? d.totalItems : Math.min(MAX_CHART_ITEMS, d.totalItems);
+    const labels = d.allLabels.slice(0, numItems);
+    const originalLabels = d.allOriginalLabels.slice(0, numItems);
+    const values = d.allValues.slice(0, numItems);
+    
+    const wrapLabel = (label, maxWidth = 35) => {
+        if (label.length <= maxWidth) return label;
+        const words = label.split(' ');
+        const lines = [];
+        let currentLine = '';
+        for (const word of words) {
+            if ((currentLine + ' ' + word).trim().length <= maxWidth) {
+                currentLine = (currentLine + ' ' + word).trim();
+            } else {
+                if (currentLine) lines.push(currentLine);
+                currentLine = word;
+            }
+        }
+        if (currentLine) lines.push(currentLine);
+        return lines;
+    };
+    
+    const wrappedLabels = labels.map(l => wrapLabel(l));
+    const chartHeight = Math.max(300, numItems * 40);
+    
+    let toggleHtml = '';
+    if (d.totalItems > MAX_CHART_ITEMS) {
+        if (showAll) {
+            toggleHtml = `<div style="text-align:left;margin-top:-0.25rem;margin-bottom:0.5rem;">
+                <span style="color:#8b949e;font-size:0.9rem;font-weight:600;cursor:pointer;text-decoration:underline;" onclick="toggleHBarChart(false)">Show less</span>
+            </div>`;
+        } else {
+            toggleHtml = `<div style="text-align:left;margin-top:-0.25rem;margin-bottom:0.5rem;">
+                <span style="color:var(--text-muted);font-size:0.85rem;">Showing top ${MAX_CHART_ITEMS} of ${d.totalItems}</span>
+                <span style="color:#8b949e;font-size:0.9rem;font-weight:600;cursor:pointer;text-decoration:underline;margin-left:0.75rem;" onclick="toggleHBarChart(true)">Show all</span>
+            </div>`;
+        }
+    }
+    
+    chartArea.innerHTML = `<div class="chart-container" style="height:${chartHeight}px;"><canvas id="dist-chart"></canvas></div>${toggleHtml}`;
+    
+    // Check for exclusive data
+    let hasExclusiveData = false;
+    if (d.exclusiveData && Object.keys(d.exclusiveData).length > 0) {
+        const exclusiveSum = Object.values(d.exclusiveData).reduce((sum, v) => sum + (typeof v === 'number' ? v : 0), 0);
+        hasExclusiveData = exclusiveSum > 0 && originalLabels.some(k => (d.exclusiveData[k] || 0) > 0);
+    }
+    
+    if (hasExclusiveData) {
+        const exclusiveValues = originalLabels.map(k => d.exclusiveData[k] || 0);
+        const nonExclusiveValues = values.map((v, i) => v - exclusiveValues[i]);
+        
+        charts.main = new Chart(document.getElementById('dist-chart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: wrappedLabels,
+                datasets: [
+                    {label: 'Only this option', data: exclusiveValues, backgroundColor: '#4a9b9e', borderWidth: 0},
+                    {label: 'With other options', data: nonExclusiveValues, backgroundColor: 'rgba(74,155,158,0.4)', borderWidth: 0}
+                ]
+            },
+            options: {
+                indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+                plugins: {legend: {display: false}, tooltip: {callbacks: {
+                    title: ctx => stripTooltipParens(labels[ctx[0].dataIndex]),
+                    label: ctx => {
+                        const total = values[ctx.dataIndex];
+                        const exclusive = exclusiveValues[ctx.dataIndex];
+                        if (ctx.datasetIndex === 0) return `Only this: ${exclusive} (${((exclusive/d.percentBase)*100).toFixed(1)}%)`;
+                        return `With others: ${total - exclusive} (${((total - exclusive)/d.percentBase*100).toFixed(1)}%)`;
+                    },
+                    afterBody: ctx => `Total: ${values[ctx[0].dataIndex]} (${((values[ctx[0].dataIndex]/d.percentBase)*100).toFixed(1)}%)`
+                }}},
+                scales: {
+                    x: {stacked: true, beginAtZero: true, grid: {color: '#30363d'}, ticks: {color: '#e6edf3', font: {size: 13}}, title: {display: true, text: 'Count', color: '#e6edf3', font: {size: 14}}},
+                    y: {stacked: true, grid: {display: false}, ticks: {color: '#e6edf3', autoSkip: false, font: {size: 13}}}
+                }
+            }
+        });
+    } else {
+        charts.main = new Chart(document.getElementById('dist-chart').getContext('2d'), {
+            type: 'bar',
+            data: {labels: wrappedLabels, datasets: [{data: values, backgroundColor: '#4a9b9e', borderWidth: 0}]},
+            options: {
+                indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+                plugins: {legend: {display: false}, tooltip: {callbacks: {
+                    title: ctx => stripTooltipParens(labels[ctx[0].dataIndex]),
+                    label: ctx => `${ctx.raw} (${((ctx.raw/d.percentBase)*100).toFixed(1)}%)`
+                }}},
+                scales: {
+                    x: {beginAtZero: true, grid: {color: '#30363d'}, ticks: {color: '#e6edf3', font: {size: 13}, maxRotation: 0, minRotation: 0}, title: {display: true, text: 'Count', color: '#e6edf3', font: {size: 14}}},
+                    y: {grid: {display: false}, ticks: {color: '#e6edf3', autoSkip: false, font: {size: 13}}}
+                }
+            }
+        });
+    }
+}
+
+// Toggle function for special chart (Country/Employment in multi-demo view) show all/show less
+function toggleSpecialChart(idx, showAll) {
+    const d = window._specialChartData?.[idx];
+    if (!d) return;
+    
+    const MAX_ITEMS = 10;
+    const section = document.getElementById(`special-section-${idx}`);
+    const chartContainer = document.getElementById(`chart-container-s-${idx}`);
+    if (!section || !chartContainer) return;
+    
+    const numItems = showAll ? d.allLabels.length : Math.min(MAX_ITEMS, d.allLabels.length);
+    const labels = d.allLabels.slice(0, numItems);
+    const values = d.allValues.slice(0, numItems);
+    const maxVal = Math.max(...values);
+    
+    // Update chart height
+    const itemHeight = 36;
+    const chartHeight = Math.max(numItems * itemHeight + 80, 300);
+    chartContainer.style.height = chartHeight + 'px';
+    
+    // Destroy old chart
+    if (charts[`c-s-${idx}`]) {
+        charts[`c-s-${idx}`].destroy();
+    }
+    
+    // Create new chart
+    charts[`c-s-${idx}`] = new Chart(document.getElementById(`c-s-${idx}`).getContext('2d'), {
+        type: 'bar',
+        data: {labels, datasets: [{data: values, backgroundColor: '#4a9b9e', borderWidth: 0}]},
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {legend: {display: false}, tooltip: {callbacks: {label: ctx => `${ctx.raw} (${((ctx.raw/d.total)*100).toFixed(1)}%)`}}},
+            scales: {x: {beginAtZero: true, max: Math.ceil(maxVal * 1.1 / 50) * 50, grid: {color: '#30363d'}, ticks: {color: '#e6edf3', font: {size: 15}, stepSize: 50}}, y: {grid: {display: false}, ticks: {color: '#e6edf3', autoSkip: false, font: {size: 15}}}}
+        }
+    });
+    
+    // Update toggle text
+    const toggleEl = document.getElementById(`toggle-special-${idx}`);
+    if (toggleEl) {
+        const toggleContainer = toggleEl.parentElement;
+        if (showAll) {
+            toggleContainer.style.textAlign = 'left';
+            toggleContainer.style.marginTop = '-0.25rem';
+            toggleContainer.style.marginBottom = '0.5rem';
+            toggleContainer.innerHTML = `<span style="color:#8b949e;font-size:0.9rem;font-weight:600;cursor:pointer;text-decoration:underline;" onclick="toggleSpecialChart(${idx}, false)" id="toggle-special-${idx}">Show less</span>`;
+        } else {
+            toggleContainer.style.textAlign = 'left';
+            toggleContainer.style.marginTop = '-0.25rem';
+            toggleContainer.style.marginBottom = '0.5rem';
+            toggleContainer.innerHTML = `<span style="color:var(--text-muted);font-size:0.85rem;">Showing top ${MAX_ITEMS} of ${d.allLabels.length}</span>
+                <span style="color:#8b949e;font-size:0.9rem;font-weight:600;cursor:pointer;text-decoration:underline;margin-left:0.75rem;" onclick="toggleSpecialChart(${idx}, true)" id="toggle-special-${idx}">Show all</span>`;
+        }
+    }
 }
 
 function showExperienceMixed(sel, dists, badge, gridClass, legendArea, respondentCounts = {}) {
@@ -7074,7 +7408,11 @@ function createExperienceChart(o, cell, dists, respondentCounts, stripParens, to
             const labelHeight = 28;
             const minCellHeight = Math.max(260, 6 * labelHeight);  // Same as other sources (at least 6 rows)
             cell.style.minHeight = minCellHeight + 'px';
-            cell.innerHTML = `<h4 style="font-size:1.15rem;font-family:'DM Sans',sans-serif;">${displayLabel}</h4><canvas id="${chartId}"></canvas>`;
+            
+            // Add N to title for animal types (like other sources)
+            const animalN = respN || percentBase;
+            const nDisplay = animalN ? ` (N=${animalN})` : '';
+            cell.innerHTML = `<h4 style="font-size:1.15rem;font-family:'DM Sans',sans-serif;">${displayLabel}${nDisplay}</h4><canvas id="${chartId}"></canvas>`;
             
             const shouldTilt = totalSelected > 1;
             const xTickFontSize = totalSelected > 1 ? 10 : 11;
@@ -7106,19 +7444,74 @@ function createExperienceChart(o, cell, dists, respondentCounts, stripParens, to
             
             const xTickLabels = labels.map(l => wrapXLabel(l));
             
-            charts[chartId] = new Chart(document.getElementById(chartId).getContext('2d'), {
-                type: 'bar',
-                data: {labels: xTickLabels, datasets: [{data: values, backgroundColor: colors, borderWidth: 0}]},
-                options: {
-                    responsive: true, 
-                    maintainAspectRatio: false,
-                    plugins: {legend: {display: false}, tooltip: {callbacks: {title: ctx => stripTooltipParens(rawLabels[ctx[0].dataIndex]), label: ctx => `${ctx.raw} (${((ctx.raw/percentBase)*100).toFixed(1)}%)`}}}, 
-                    scales: {
-                        x: {grid: {display: false}, ticks: {color: '#e6edf3', maxRotation: shouldTilt ? 45 : 0, minRotation: shouldTilt ? 30 : 0, autoSkip: false, font: {size: xTickFontSize}}}, 
-                        y: {beginAtZero: true, max: xMax, grid: {color: '#30363d'}, ticks: {color: '#e6edf3', font: {size: 12}, stepSize: Math.ceil(xMax / 4)}}
+            // Check for exclusive data (stacked bars) - Animal Types should always be stacked when data available
+            const exclusiveKey = `${o.k}_exclusive`;
+            const exclusiveData = dists[exclusiveKey] || {};
+            const hasExclusiveData = Object.keys(exclusiveData).length > 0 && 
+                Object.values(exclusiveData).some(v => typeof v === 'number' && v > 0);
+            
+            if (hasExclusiveData) {
+                // Stacked vertical bar chart for Animal Types
+                const exclusiveValues = rawLabels.map(k => exclusiveData[k] || 0);
+                const nonExclusiveValues = values.map((v, i) => Math.max(0, v - exclusiveValues[i]));
+                
+                charts[chartId] = new Chart(document.getElementById(chartId).getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: xTickLabels, 
+                        datasets: [
+                            {label: 'Only this', data: exclusiveValues, backgroundColor: colors.map(c => c), borderWidth: 0},
+                            {label: 'With others', data: nonExclusiveValues, backgroundColor: colors.map(c => c + '66'), borderWidth: 0}
+                        ]
+                    },
+                    options: {
+                        responsive: true, 
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {display: false}, 
+                            tooltip: {
+                                callbacks: {
+                                    title: ctx => stripTooltipParens(rawLabels[ctx[0].dataIndex]), 
+                                    label: ctx => {
+                                        const total = values[ctx.dataIndex];
+                                        const exclusive = exclusiveValues[ctx.dataIndex];
+                                        const pct = percentBase > 0 ? ((ctx.raw / percentBase) * 100).toFixed(1) : '0.0';
+                                        if (ctx.datasetIndex === 0) {
+                                            return `Only this: ${exclusive} (${pct}%)`;
+                                        } else {
+                                            return `With others: ${total - exclusive} (${pct}%)`;
+                                        }
+                                    },
+                                    afterBody: ctx => {
+                                        const total = values[ctx[0].dataIndex];
+                                        const pct = percentBase > 0 ? ((total / percentBase) * 100).toFixed(1) : '0.0';
+                                        return `Total: ${total} (${pct}%)`;
+                                    }
+                                }
+                            }
+                        }, 
+                        scales: {
+                            x: {stacked: true, grid: {display: false}, ticks: {color: '#e6edf3', maxRotation: shouldTilt ? 45 : 0, minRotation: shouldTilt ? 30 : 0, autoSkip: false, font: {size: xTickFontSize}}}, 
+                            y: {stacked: true, beginAtZero: true, max: xMax, grid: {color: '#30363d'}, ticks: {color: '#e6edf3', font: {size: 12}, stepSize: Math.ceil(xMax / 4)}}
+                        }
                     }
-                }
-            });
+                });
+            } else {
+                // Standard vertical bar chart (fallback)
+                charts[chartId] = new Chart(document.getElementById(chartId).getContext('2d'), {
+                    type: 'bar',
+                    data: {labels: xTickLabels, datasets: [{data: values, backgroundColor: colors, borderWidth: 0}]},
+                    options: {
+                        responsive: true, 
+                        maintainAspectRatio: false,
+                        plugins: {legend: {display: false}, tooltip: {callbacks: {title: ctx => stripTooltipParens(rawLabels[ctx[0].dataIndex]), label: ctx => `${ctx.raw} (${((ctx.raw/percentBase)*100).toFixed(1)}%)`}}}, 
+                        scales: {
+                            x: {grid: {display: false}, ticks: {color: '#e6edf3', maxRotation: shouldTilt ? 45 : 0, minRotation: shouldTilt ? 30 : 0, autoSkip: false, font: {size: xTickFontSize}}}, 
+                            y: {beginAtZero: true, max: xMax, grid: {color: '#30363d'}, ticks: {color: '#e6edf3', font: {size: 12}, stepSize: Math.ceil(xMax / 4)}}
+                        }
+                    }
+                });
+            }
         } else {
             // For horizontal bar charts (sources), ensure proper height based on labels
             const isEthicsSource = o.k.includes('ethics_source');
