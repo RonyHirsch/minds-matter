@@ -38,7 +38,11 @@
         .container { max-width:1400px; margin:0 auto; padding:2rem; }
         header { text-align:center; margin-bottom:2rem; padding-bottom:2rem; border-bottom:1px solid var(--border); }
         h1 { font-size:2.5rem; font-weight:700; margin-bottom:0.5rem; color:var(--accent); }
-        .subtitle { color:var(--text-secondary); font-size:1.1rem; }
+        .subtitle { color:var(--text-secondary); font-size:1.1rem; margin:0; }
+        .citation-box { background:var(--bg-tertiary); padding:0.75rem 1.25rem; border-radius:8px; margin:1.25rem 0 0; font-size:0.95rem; color:var(--text-secondary); border:1px solid var(--border); text-align:center; }
+        .citation-box a { color:var(--accent); text-decoration:none; display:block; margin-top:0.25rem; }
+        .citation-box a:hover { text-decoration:underline; }
+        .subtitle-wrapper { display:inline-block; text-align:center; }
         .stats-bar { display:flex; justify-content:center; gap:2rem; margin-top:1.5rem; flex-wrap:wrap; }
         .stat { background:var(--bg-secondary); padding:0.75rem 1.5rem; border-radius:8px; border:1px solid var(--border); }
         .stat-value { font-size:1.5rem; font-weight:700; color:var(--accent); }
@@ -59,6 +63,9 @@
         select option { font-weight:400; color:var(--text-primary); }
         .checkbox-group { background:var(--bg-tertiary); border:1px solid var(--border); border-radius:8px; padding:0.5rem; max-height:none; overflow-y:visible; }
         .checkbox-group.scrollable { max-height:var(--filter-box-height, 220px); overflow-y:auto; }
+        .checkbox-group.scrollable.entity-grid { display:grid !important; grid-template-columns:repeat(6, 1fr); gap:0.25rem 0.75rem; }
+        .checkbox-group.scrollable.entity-grid .checkbox-item { padding:0.2rem 0.25rem; }
+        .checkbox-group.scrollable.entity-grid .checkbox-item.select-all { grid-column: 1 / -1; }
         .control-row { display:flex; gap:1rem; }
         .control-row .control-group { display:flex; flex-direction:column; }
         .control-row .control-group:first-child { flex:1; }
@@ -157,7 +164,10 @@
     <div class="container">
         <header>
             <h1>Minds Matter</h1>
-            <p class="subtitle">An explorer of results from a survey about the relationship between consciousness and moral status</p>
+            <div class="subtitle-wrapper">
+                <p class="subtitle">An explorer of results from a survey about the relationship between consciousness and moral status</p>
+                <div class="citation-box">Hirschhorn, R., Negro, N., &amp; Mudrik, L. (2026). The perceived role of consciousness in moral status attributions. <a href="https://doi.org/10.17605/OSF.IO/XXXXX" target="_blank">doi.org/10.17605/OSF.IO/XXXXX</a></div>
+            </div>
             <div class="stats-bar">
                 <div class="stat"><div class="stat-value" id="total-respondents">—</div><div class="stat-label">Respondents</div></div>
                 <div class="stat"><div class="stat-value" id="total-questions">&gt;100</div><div class="stat-label">Questions</div></div>
@@ -1463,6 +1473,33 @@ function updateVariableUI() {
             scenarioHtml += '<p style="margin:0 0 0.5rem;">Luckily, you have the option to kill a creature/system to be 100% sure that you will pass the test.</p>';
             scenarioHtml += '<p style="margin:0;font-weight:600;"><em>Would you kill these entities to pass an important test?</em></p>';
             scenarioHtml += '</div>';
+        } else if (cat === 'ms_attr') {
+            scenarioHtml = '<div class="scenario-text" style="font-size:0.85rem;color:var(--text-secondary);line-height:1.5;padding:0.6rem;background:var(--bg-secondary);border-radius:6px;margin-bottom:1rem;">';
+            scenarioHtml += '<p style="margin:0 0 0.5rem;"><strong>[Survey instructions]</strong></p>';
+            scenarioHtml += '<p style="margin:0 0 0.5rem;">In this section, we ask you to indicate whether you think each of the following creatures has <strong>moral status</strong></p>';
+            scenarioHtml += '<p style="margin:0 0 0.5rem;"><strong>Has moral status:</strong> these creatures should be treated with respect based on their own interests - we should take them into account with respect to moral issues (e.g., discussions about what is right or wrong, or what should or should not be done).</p>';
+            scenarioHtml += '<p style="margin:0 0 0.5rem;font-style:italic;">For example: "the zirb-zorb* has moral status, therefore we should consider its well-being when we make decisions".</p>';
+            scenarioHtml += '<p style="margin:0 0 0.5rem;font-size:0.8rem;color:var(--text-muted);">*Zirb-zorbs are something we invented for the sake of this example, replace it with the considered item in each question</p>';
+            scenarioHtml += '<p style="margin:0;"><strong>Scale:</strong> 1 = does not have moral status, 2 = probably doesn\'t have moral status, 3 = probably has moral status, 4 = has moral status</p>';
+            scenarioHtml += '</div>';
+        } else if (cat === 'c_attr') {
+            scenarioHtml = '<div class="scenario-text" style="font-size:0.85rem;color:var(--text-secondary);line-height:1.5;padding:0.6rem;background:var(--bg-secondary);border-radius:6px;margin-bottom:1rem;">';
+            scenarioHtml += '<p style="margin:0 0 0.5rem;"><strong>[Survey instructions]</strong></p>';
+            scenarioHtml += '<p style="margin:0 0 0.5rem;">In this section, we ask you to indicate whether you think each of the following creatures has <strong>consciousness</strong></p>';
+            scenarioHtml += '<p style="margin:0 0 0.5rem;"><strong>Consciousness:</strong> based on what consciousness means to you.</p>';
+            scenarioHtml += '<p style="margin:0 0 0.5rem;"><strong>Has consciousness:</strong> can be conscious, based on what consciousness means to you, even if there are cases when they are not (for example: "the zirb-zorb* is conscious in the mornings, but unconscious at nighttime") or some items in the group are not (for example: "not all zirb-zorbs are conscious, but some of them are"). In both cases, the zirb-zorb has consciousness.</p>';
+            scenarioHtml += '<p style="margin:0 0 0.5rem;font-size:0.8rem;color:var(--text-muted);">*Zirb-zorbs are something we invented for the sake of this example, replace it with the considered item in each question</p>';
+            scenarioHtml += '<p style="margin:0;"><strong>Scale:</strong> 1 = does not have consciousness, 2 = probably doesn\'t have consciousness, 3 = probably has consciousness, 4 = has consciousness</p>';
+            scenarioHtml += '</div>';
+        } else if (cat === 'combined_attr') {
+            scenarioHtml = '<div class="scenario-text" style="font-size:0.85rem;color:var(--text-secondary);line-height:1.5;padding:0.6rem;background:var(--bg-secondary);border-radius:6px;margin-bottom:1rem;">';
+            scenarioHtml += '<p style="margin:0;">This section combines both attribution sections of the survey, presenting for each of the 24 entities their attributions of consciousness and moral status.</p>';
+            scenarioHtml += '</div>';
+        } else if (cat === 'graded_c') {
+            scenarioHtml = '<div class="scenario-text" style="font-size:0.85rem;color:var(--text-secondary);line-height:1.5;padding:0.6rem;background:var(--bg-secondary);border-radius:6px;margin-bottom:1rem;">';
+            scenarioHtml += '<p style="margin:0 0 0.5rem;">We asked people to rate how much they agree with the following statements about consciousness</p>';
+            scenarioHtml += '<p style="margin:0;font-style:italic;">(Based on whatever consciousness means to them)</p>';
+            scenarioHtml += '</div>';
         }
         if (scenarioHtml) {
             scenarioContainer.innerHTML = scenarioHtml;
@@ -1479,7 +1516,7 @@ function updateVariableUI() {
     
     // MS Attributions - checkbox list of entities
     if (cat === 'ms_attr') {
-        let h = '<div class="checkbox-group scrollable" id="vbox">';
+        let h = '<div class="checkbox-group scrollable entity-grid" id="vbox">';
         h += '<div class="checkbox-item select-all"><input type="checkbox" id="v-all"><label for="v-all">Select All</label></div>';
         sortedEntities.forEach(e => h += `<div class="checkbox-item"><input type="checkbox" id="v-ms-${e.key}" data-entity="${e.key}" data-type="ms"><label for="v-ms-${e.key}">${e.short}</label></div>`);
         h += '</div>';
@@ -1490,7 +1527,7 @@ function updateVariableUI() {
     
     // C Attributions - checkbox list of entities
     if (cat === 'c_attr') {
-        let h = '<div class="checkbox-group scrollable" id="vbox">';
+        let h = '<div class="checkbox-group scrollable entity-grid" id="vbox">';
         h += '<div class="checkbox-item select-all"><input type="checkbox" id="v-all"><label for="v-all">Select All</label></div>';
         sortedEntities.forEach(e => h += `<div class="checkbox-item"><input type="checkbox" id="v-c-${e.key}" data-entity="${e.key}" data-type="c"><label for="v-c-${e.key}">${e.short}</label></div>`);
         h += '</div>';
@@ -1501,7 +1538,7 @@ function updateVariableUI() {
     
     // Combined Attributions - checkbox list of entities for scatter plot
     if (cat === 'combined_attr') {
-        let h = '<div class="checkbox-group scrollable" id="vbox">';
+        let h = '<div class="checkbox-group scrollable entity-grid" id="vbox">';
         h += '<div class="checkbox-item select-all"><input type="checkbox" id="v-all"><label for="v-all">Select All</label></div>';
         sortedEntities.forEach(e => h += `<div class="checkbox-item"><input type="checkbox" id="v-comb-${e.key}" data-entity="${e.key}" data-type="combined"><label for="v-comb-${e.key}">${e.short}</label></div>`);
         h += '</div>';
@@ -4861,25 +4898,63 @@ function showCombinedAttrSplit(splitDatasets, checkedInputs) {
         legendHtml += '</div>';
         legendArea.innerHTML = legendHtml;
         
-        // Create split layout like other split views
+        // For double-split (5 panels), use 2 rows: 3 on top, 2 on bottom
+        const isDoubleSplit = numSplits >= 5;
+        
         let html = '<div class="split-container">';
         
-        // Header row with split labels (split colors)
-        html += '<div class="split-header-row" style="display:grid; grid-template-columns: repeat(' + numSplits + ', 1fr); gap:0.5rem; margin-bottom:0.5rem;">';
-        splitDatasets.forEach(ds => {
-            html += `<div class="split-column-header" style="background:${ds.baseColor}; color:white; padding:0.75rem; text-align:center; border-radius:6px;">${ds.label}<br><small>N=${ds.data.n}</small></div>`;
-        });
-        html += '</div>';
+        if (isDoubleSplit) {
+            // Row 1: First 3 panels (Pre-registered + Follow-up)
+            html += '<div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:0.5rem; margin-bottom:0.75rem;">';
+            [0, 1, 4].forEach(idx => {  // Pre-reg/Free, Pre-reg/Prolific, Follow-up/Prolific
+                if (splitDatasets[idx]) {
+                    const ds = splitDatasets[idx];
+                    html += `<div>`;
+                    html += `<div class="split-column-header" style="background:${ds.baseColor}; color:white; padding:0.5rem; text-align:center; border-radius:6px 6px 0 0;">${ds.label}<br><small>N=${ds.data.n}</small></div>`;
+                    html += `<div class="chart-cell" style="background:var(--bg-tertiary); border-radius:0 0 8px 8px; padding:0.4rem;">`;
+                    html += `<canvas id="split-scatter-${idx}"></canvas>`;
+                    html += `</div></div>`;
+                }
+            });
+            html += '</div>';
+            
+            // Row 2: Exploratory panels - left-aligned with first 2 columns
+            html += '<div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:0.5rem;">';
+            [2, 3].forEach(idx => {  // Exploratory/Free, Exploratory/Prolific
+                if (splitDatasets[idx]) {
+                    const ds = splitDatasets[idx];
+                    html += `<div>`;
+                    html += `<div class="split-column-header" style="background:${ds.baseColor}; color:white; padding:0.5rem; text-align:center; border-radius:6px 6px 0 0;">${ds.label}<br><small>N=${ds.data.n}</small></div>`;
+                    html += `<div class="chart-cell" style="background:var(--bg-tertiary); border-radius:0 0 8px 8px; padding:0.4rem;">`;
+                    html += `<canvas id="split-scatter-${idx}"></canvas>`;
+                    html += `</div></div>`;
+                }
+            });
+            html += '<div></div>';  // Empty third column
+            html += '</div>';
+        } else {
+            // Single row layout for 2-3 splits
+            html += '<div style="display:grid; grid-template-columns: repeat(' + numSplits + ', 1fr); gap:0.5rem;">';
+            splitDatasets.forEach((ds, sIdx) => {
+                html += `<div>`;
+                html += `<div class="split-column-header" style="background:${ds.baseColor}; color:white; padding:0.5rem; text-align:center; border-radius:6px 6px 0 0;">${ds.label}<br><small>N=${ds.data.n}</small></div>`;
+                html += `<div class="chart-cell" style="background:var(--bg-tertiary); border-radius:0 0 8px 8px; padding:0.4rem;">`;
+                html += `<canvas id="split-scatter-${sIdx}"></canvas>`;
+                html += `</div></div>`;
+            });
+            html += '</div>';
+        }
         
-        // Chart row - each panel is a scatter with entity means
-        html += '<div style="display:grid; grid-template-columns: repeat(' + numSplits + ', 1fr); gap:0.5rem; align-items:stretch; margin-bottom:1.5rem;">';
-        splitDatasets.forEach((ds, sIdx) => {
-            html += `<div class="chart-cell" style="background:var(--bg-tertiary); border-radius:8px; padding:0.5rem; display:flex; flex-direction:column;">`;
-            html += `<div style="flex:1; min-height:350px; position:relative;"><canvas id="split-scatter-${sIdx}"></canvas></div>`;
-            html += `</div>`;
-        });
-        html += '</div></div>';
+        html += '</div>';
         chartArea.innerHTML = html;
+        
+        // Abbreviated labels for X-axis (no tilt, use short forms)
+        const xTickLabels = {
+            1: numSplits >= 3 ? "Doesn't\nHave" : 'Does Not Have',
+            2: numSplits >= 3 ? "Prob.\nDoesn't" : "Probably Doesn't Have",
+            3: numSplits >= 3 ? 'Prob.\nHas' : 'Probably Has',
+            4: 'Has'
+        };
         
         // Render scatter charts for Mean mode
         splitDatasets.forEach((ds, sIdx) => {
@@ -4890,7 +4965,8 @@ function showCombinedAttrSplit(splitDatasets, checkedInputs) {
             const entityStats = ds.data.e || {};
             const datasets = [];
             
-            // Mean points for all entities in entity colors - smaller dots for split view
+            // Mean points for all entities in entity colors - adjust dot size based on splits
+            const dotSize = numSplits <= 2 ? 10 : (numSplits <= 3 ? 9 : 8);
             entities.forEach(e => {
                 const stats = entityStats[e.entity];
                 if (stats?.c_mean != null && stats?.ms_mean != null) {
@@ -4912,7 +4988,7 @@ function showCombinedAttrSplit(splitDatasets, checkedInputs) {
                         backgroundColor: color,
                         borderColor: darkBorderColor,
                         borderWidth: 1.5,
-                        pointRadius: 8,
+                        pointRadius: dotSize,
                         pointStyle: 'circle'
                     });
                 }
@@ -4923,7 +4999,9 @@ function showCombinedAttrSplit(splitDatasets, checkedInputs) {
                 data: {datasets},
                 options: {
                     responsive: true, 
-                    maintainAspectRatio: false,
+                    maintainAspectRatio: true,
+                    aspectRatio: 1.1,  // Slightly wider than tall to account for x-axis labels
+                    layout: { padding: { top: 5, right: 5, bottom: 0, left: 0 } },
                     plugins: {
                         legend: {display: false},
                         tooltip: {
@@ -4943,19 +5021,22 @@ function showCombinedAttrSplit(splitDatasets, checkedInputs) {
                     scales: {
                         x: {
                             min: 0.7, max: 4.3,
-                            title: {display: true, text: 'Consciousness', color: '#e6edf3', font: {size: 10, weight: '500'}},
+                            title: {display: true, text: 'Consciousness', color: '#e6edf3', font: {size: 12, weight: '500'}},
                             ticks: {
-                                stepSize: 1, color: '#e6edf3', font: {size: 8},
-                                callback: v => (v >= 1 && v <= 4 && Number.isInteger(v)) ? RL[v] : ''
+                                stepSize: 1, color: '#e6edf3', 
+                                font: {size: 10},
+                                maxRotation: 0, minRotation: 0,
+                                callback: v => (v >= 1 && v <= 4 && Number.isInteger(v)) ? xTickLabels[v] : ''
                             },
                             grid: {color: '#30363d'},
                             afterBuildTicks: axis => { axis.ticks = [1,2,3,4].map(v => ({value: v})); }
                         },
                         y: {
                             min: 0.7, max: 4.3,
-                            title: {display: true, text: 'Moral Status', color: '#e6edf3', font: {size: 10, weight: '500'}},
+                            title: {display: true, text: 'Moral Status', color: '#e6edf3', font: {size: 12, weight: '500'}},
                             ticks: {
-                                stepSize: 1, color: '#e6edf3', font: {size: 8},
+                                stepSize: 1, color: '#e6edf3', 
+                                font: {size: 10},
                                 callback: v => (v >= 1 && v <= 4 && Number.isInteger(v)) ? RL[v] : ''
                             },
                             grid: {color: '#30363d'},
@@ -4973,23 +5054,42 @@ function showCombinedAttrSplit(splitDatasets, checkedInputs) {
         // No global legend - each entity scatter has its own split legend
         legendArea.innerHTML = '';
         
+        // Determine split type for filename
+        const splitFilenamePart = splitType.includes('&') ? 'split-both' : (splitDatasets[0]?.sampleKey ? 'split-sample' : 'split-recruitment');
+        
+        // Adjust chart height based on number of splits - larger when fewer
+        const scatterHeight = numSplits <= 2 ? 500 : (numSplits <= 3 ? 450 : 400);
+        
         // Create one full-size scatter per entity, stacked vertically
         let html = '';
         entities.forEach((e, eIdx) => {
             // Build split legend for this entity
-            let splitLegendHtml = '<div class="legend-bar">';
+            let splitLegendHtml = '<div class="legend-bar" style="margin-bottom:0.5rem;">';
             splitDatasets.forEach(ds => {
                 splitLegendHtml += `<span class="legend-item"><span class="legend-color" style="background:${ds.baseColor}"></span>${ds.label}</span>`;
             });
             splitLegendHtml += '</div>';
             
-            html += `<div style="margin-bottom:2rem;">`;
-            html += `<h4 style="font-size:1.15rem; text-align:center; margin-bottom:0.5rem; color:var(--text-secondary);">${e.short}</h4>`;
+            html += `<div class="entity-scatter-section" data-entity="${e.entity}" data-entity-short="${e.short}" style="margin-bottom:2rem; background:var(--bg-tertiary); border-radius:10px; padding:1rem;">`;
+            html += `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">`;
+            html += `<h4 style="font-size:1.15rem; margin:0; color:var(--text-secondary);">${e.short}</h4>`;
+            html += `<button class="download-entity-btn btn" data-entity-idx="${eIdx}" style="padding:0.3rem 0.6rem; font-size:0.8rem;">⬇ Download PNG</button>`;
+            html += `</div>`;
             html += splitLegendHtml;
-            html += `<div class="chart-container" style="height:400px;"><canvas id="entity-scatter-${eIdx}"></canvas></div>`;
+            html += `<div class="chart-container" style="height:${scatterHeight}px;"><canvas id="entity-scatter-${eIdx}"></canvas></div>`;
             html += `</div>`;
         });
         chartArea.innerHTML = html;
+        
+        // Add click handlers for per-entity download buttons
+        chartArea.querySelectorAll('.download-entity-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const idx = this.dataset.entityIdx;
+                const section = this.closest('.entity-scatter-section');
+                const entityShort = section?.dataset?.entityShort || 'entity';
+                downloadEntityScatter(idx, entityShort, splitFilenamePart);
+            });
+        });
         
         // Render scatter chart for each entity
         entities.forEach((e, eIdx) => {
@@ -5178,7 +5278,7 @@ function showCombinedAttrSplit(splitDatasets, checkedInputs) {
     if (tableSplitCluster) tableHeaders += '<th>Cluster</th>';
     tableHeaders += '<th>C Mean</th><th>C SEM</th><th>MS Mean</th><th>MS SEM</th><th>N</th>';
     
-    let tableHtml = `<table><thead><tr>${tableHeaders}</tr></thead><tbody>`;
+    let tableHtml = `<div style="margin-top:1.5rem;"><table><thead><tr>${tableHeaders}</tr></thead><tbody>`;
     
     const allRows = [];
     entities.forEach(e => {
@@ -5212,12 +5312,15 @@ function showCombinedAttrSplit(splitDatasets, checkedInputs) {
         tableHtml += `<span style="color:#8b949e;font-size:0.9rem;font-weight:600;cursor:pointer;text-decoration:underline;" onclick="toggleTableRows(this, ${totalRows}, 'show-all')" data-action="show-all" data-all-rows='${JSON.stringify(allRows).replace(/'/g, "&#39;")}'>Show all</span>`;
         tableHtml += `<span style="color:#6e7681;">|</span>`;
         tableHtml += `<span style="color:#8b949e;font-size:0.9rem;font-weight:600;cursor:pointer;text-decoration:underline;" onclick="toggleTableRows(this.previousElementSibling.previousElementSibling, ${totalRows}, 'hide-all')">Hide all</span>`;
-        tableHtml += `</div>`;
+        tableHtml += `</div></div>`;
     } else {
         tableHtml += allRows.join('');
-        tableHtml += '</tbody></table>';
+        tableHtml += '</tbody></table></div>';
     }
     tableArea.innerHTML = tableHtml;
+    
+    // Update download button visibility
+    setTimeout(updateDownloadButton, 100);
 }
 
 // Show split view for single question
@@ -5898,12 +6001,20 @@ function showMultiDist(sel, dists, badge, gridClass, legendArea, category = '') 
             }
         }
         
-        // ICS: smaller font when all 4 selected
+        // ICS: larger font when all 4 selected (user request)
         if (category === 'ics' && sel.length === 4) {
-            titleStyle = 'font-size:0.85rem;';
+            titleStyle = 'font-size:1.1rem;';  // Larger font for question titles
         }
         
-        cell.innerHTML = `<h4 style="${titleStyle}">${plotTitle}</h4>${cellLegend}<canvas id="c-${i}"></canvas>`;
+        // Add consistent legend height for categories with multiple questions and per-cell legends
+        let legendStyle = '';
+        if ((category === 'moral_cons' || category === 'ics') && sel.length > 1 && (!allRating || !allSameScale)) {
+            legendStyle = 'min-height:2.2em;display:flex;align-items:center;justify-content:center;';  // Consistent legend height
+        }
+        
+        const legendWithStyle = cellLegend ? cellLegend.replace('class="chart-cell-legend"', `class="chart-cell-legend" style="${legendStyle}"`) : '';
+        
+        cell.innerHTML = `<h4 style="${titleStyle}">${plotTitle}</h4>${legendWithStyle}<canvas id="c-${i}"></canvas>`;
         grid.appendChild(cell);
         
         const toIntStr = l => String(parseInt(parseFloat(l)));
@@ -8168,306 +8279,1413 @@ function toggleTableRows(toggleEl, totalRows, action = null) {
     }
 }
 
-// Download charts as PNG with attribution
+// Download charts as PNG with attribution - High DPI version
 async function downloadCharts() {
     const chartArea = document.getElementById('dist-chart-area');
     const legendArea = document.getElementById('dist-legend-area');
-    const tableContainer = document.getElementById('dist-table-container');
     const distTitle = document.getElementById('dist-title');
     
     if (!chartArea) return;
     
-    // Find all chart cells/containers
-    const chartCells = chartArea.querySelectorAll('.chart-cell, .chart-container');
+    // Hide any tooltips before capturing
+    const tooltipEl = document.getElementById('chartjs-tooltip');
+    if (tooltipEl) tooltipEl.style.opacity = '0';
+    
+    // Also hide any Chart.js native tooltips
+    if (typeof Chart !== 'undefined' && Chart.instances) {
+        Object.values(Chart.instances).forEach(chart => {
+            if (chart.tooltip) {
+                chart.tooltip.setActiveElements([], {x: 0, y: 0});
+                chart.update('none');
+            }
+        });
+    }
+    
     const canvases = chartArea.querySelectorAll('canvas');
     if (canvases.length === 0) {
         alert('No charts to download');
         return;
     }
     
-    // Create a temporary canvas
+    // HIGH DPI SCALE FACTOR
+    const DPI_SCALE = 2;
+    
+    // Get configuration
+    const { splitBySample, splitBySource, splitByCluster } = getSplitConfig();
+    const isSplitMode = splitBySample || splitBySource || splitByCluster;
+    const catSelect = document.getElementById('dist-category');
+    const topicName = catSelect?.selectedOptions[0]?.textContent || 'chart';
+    const currentCategory = catSelect?.value || '';
+    
+    // Get entity names for title/filename
+    const isEntityView = ['c_attr', 'ms_attr', 'combined_attr'].includes(currentCategory);
+    let entityNames = [];
+    if (isEntityView) {
+        const checkedEntities = document.querySelectorAll('#vbox input[type="checkbox"]:checked:not(#v-all)');
+        entityNames = Array.from(checkedEntities).map(cb => cb.nextElementSibling?.textContent?.trim()).filter(Boolean);
+    }
+    
+    // Get question names - check both select element and checkbox groups
+    const varSelect = document.getElementById('dist-variable');
+    let questionNames = [];
+    if (varSelect) {
+        questionNames = Array.from(varSelect.selectedOptions || []).map(opt => opt.textContent.trim());
+    }
+    
+    // Also check for demographics checkboxes (they use checkbox group, not select)
+    if (currentCategory === 'demo') {
+        const demoBox = document.getElementById('variable-container');
+        const checkedDemos = demoBox?.querySelectorAll('input[type="checkbox"]:checked:not([id="v-all"])');
+        if (checkedDemos && checkedDemos.length > 0) {
+            questionNames = Array.from(checkedDemos).map(cb => cb.nextElementSibling?.textContent?.trim()).filter(Boolean);
+        }
+    }
+    
+    // Also check for experience domains checkboxes
+    if (currentCategory === 'exp_sources') {
+        const expBox = document.getElementById('variable-container');
+        const checkedExp = expBox?.querySelectorAll('input[type="checkbox"]:checked:not([id="v-all"])');
+        if (checkedExp && checkedExp.length > 0) {
+            questionNames = Array.from(checkedExp).map(cb => cb.nextElementSibling?.textContent?.trim()).filter(Boolean);
+        }
+    }
+    
+    // Get filter info
+    const filterBox = document.getElementById('sample-filter-box');
+    let filterParts = [];
+    filterBox?.querySelectorAll('.filter-group input:checked')?.forEach(cb => {
+        const label = cb.nextElementSibling?.textContent?.trim();
+        if (label && label !== 'All' && !label.includes('no filter')) filterParts.push(label);
+    });
+    
+    let splitInfo = [];
+    if (splitBySample) splitInfo.push('Split by Sample Phase');
+    if (splitBySource) splitInfo.push('Split by Recruitment');
+    if (splitByCluster) splitInfo.push('Split by Cluster');
+    
+    const filterText = filterParts.length > 0 ? filterParts.join(' + ') : 'All respondents';
+    const fullFilterText = filterText + (splitInfo.length > 0 ? ' + ' + splitInfo.join(' + ') : '');
+    
+    // Get N and title
+    const nMatch = distTitle?.innerHTML?.match(/N=(\d+)/);
+    const nValue = nMatch ? nMatch[1] : '?';
+    
+    let mainTitle = distTitle?.textContent?.replace(/N=\d+/g, '').replace(/Total N=\d+/g, '').replace(/NOTE:.*/g, '').replace(/\d+ Questions? Selected.*/g, '').trim() || topicName;
+    
+    // Add entity name to title if missing
+    if (isEntityView && entityNames.length > 0 && entityNames.length <= 3) {
+        const entityStr = entityNames.join(', ');
+        if (!mainTitle.toLowerCase().includes(entityStr.toLowerCase())) {
+            mainTitle = mainTitle + ': ' + entityStr;
+        }
+    }
+    
+    const noteMatch = distTitle?.innerHTML?.match(/NOTE:[^<]*/);
+    const noteText = noteMatch ? noteMatch[0] : '';
+    
+    // Detect layout type
+    const splitHeaderRow = chartArea.querySelector('.split-header-row');
+    const splitQuestionRows = chartArea.querySelectorAll('.split-question-row');
+    const chartGrid = chartArea.querySelector('.chart-grid');
+    const chartCells = chartArea.querySelectorAll('.chart-cell');
+    
+    // Detect special demo sections (employment, country, education topic bar charts)
+    const specialDemoSections = chartArea.querySelectorAll('.special-demo-section');
+    const hasSpecialDemoSections = specialDemoSections.length > 0;
+    
+    // Helper function to check if color is light
+    function isLightColor(color) {
+        if (!color) return false;
+        let r, g, b;
+        if (color.startsWith('rgb')) {
+            const match = color.match(/(\d+),\s*(\d+),\s*(\d+)/);
+            if (match) { r = parseInt(match[1]); g = parseInt(match[2]); b = parseInt(match[3]); }
+        } else if (color.startsWith('#')) {
+            const hex = color.slice(1);
+            r = parseInt(hex.substr(0,2), 16);
+            g = parseInt(hex.substr(2,2), 16);
+            b = parseInt(hex.substr(4,2), 16);
+        }
+        if (r !== undefined) {
+            const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+            return luminance > 0.6;
+        }
+        return false;
+    }
+    
+    // Helper function to extract background color from element (handles inline style)
+    function getHeaderBgColor(el, defaultColor = '#3a4149') {
+        if (!el) return defaultColor;
+        // First try inline style attribute (most reliable for dynamically set styles)
+        const styleAttr = el.getAttribute('style') || '';
+        const bgMatch = styleAttr.match(/background(?:-color)?:\s*([^;]+)/i);
+        if (bgMatch) {
+            return bgMatch[1].trim();
+        }
+        // Fall back to computed style
+        const computed = getComputedStyle(el).backgroundColor;
+        if (computed && computed !== 'rgba(0, 0, 0, 0)' && computed !== 'transparent') {
+            return computed;
+        }
+        return defaultColor;
+    }
+    
+    // Create canvas
     const tempCanvas = document.createElement('canvas');
     const ctx = tempCanvas.getContext('2d');
     
-    // Determine grid layout
-    const chartGrid = chartArea.querySelector('.chart-grid');
-    let cols = 1;
-    if (chartGrid) {
-        if (chartGrid.classList.contains('cols-4')) cols = 4;
-        else if (chartGrid.classList.contains('cols-3')) cols = 3;
-        else if (chartGrid.classList.contains('cols-2')) cols = 2;
-    } else if (canvases.length > 1) {
-        cols = Math.min(canvases.length, 4);
-    }
+    // Base dimensions (will be scaled by DPI_SCALE)
+    const padding = 30;
+    const headerHeight = 35;
+    const titleHeight = noteText ? 65 : 35;  // More space when NOTE exists
+    const attributionHeight = 35;
     
-    const numCharts = chartCells.length || canvases.length;
-    const rows = Math.ceil(numCharts / cols);
+    // Calculate legend rows needed
+    let legendRowsNeeded = 1;
+    const legendItems = legendArea?.querySelectorAll('.legend-item') || [];
     
-    // Get filter info for header
-    const filterBox = document.getElementById('sample-filter-box');
-    const isAllSelected = document.getElementById('f-none')?.checked;
-    let filterText = 'All respondents';
-    if (!isAllSelected && filterBox) {
-        const checkedFilters = filterBox.querySelectorAll('input:checked');
-        const filterLabels = Array.from(checkedFilters).map(cb => {
-            const label = cb.nextElementSibling;
-            return label?.textContent?.trim() || cb.dataset.v;
-        }).filter(Boolean);
-        if (filterLabels.length > 0) {
-            filterText = filterLabels.join(' + ');
-        }
-    }
+    let baseWidth, baseHeight;
     
-    // Get N from title
-    const nMatch = distTitle?.textContent?.match(/N=(\d+)/);
-    const nValue = nMatch ? nMatch[1] : '?';
-    
-    // Calculate dimensions
-    const padding = 15;
-    const headerHeight = 35;  // For N and filter info
-    const cellWidth = numCharts === 1 ? 500 : 300;
-    const titleHeight = 85;   // Fixed title area (5 lines max for long titles)
-    const chartSize = numCharts === 1 ? 180 : 140;
-    const statsHeight = 35;   // Stats below chart
-    const cellHeight = titleHeight + chartSize + statsHeight;
-    const legendRowHeight = 20;
-    const attributionHeight = 25;
-    
-    // Collect unique legends first to calculate legend section height
-    const uniqueLegends = new Map();
-    const cellsArray = chartCells.length > 0 ? Array.from(chartCells) : Array.from(canvases).map(c => c.parentElement);
-    
-    cellsArray.forEach(cell => {
-        const cellLegendEl = cell.querySelector('.chart-cell-legend');
-        if (cellLegendEl) {
-            const legendItems = cellLegendEl.querySelectorAll('.legend-item');
-            const legendKey = Array.from(legendItems).map(item => item.textContent.trim()).join('|');
-            if (!uniqueLegends.has(legendKey)) {
-                const items = [];
-                legendItems.forEach(item => {
-                    const colorBox = item.querySelector('.legend-color');
-                    const label = item.textContent.trim();
-                    const bgColor = colorBox?.style.backgroundColor || '#58a6ff';
-                    items.push({ color: bgColor, label });
+    if (splitHeaderRow && splitQuestionRows.length > 0) {
+        // SPLIT VIEW - horizontal bars with headers
+        const numSplits = splitHeaderRow.querySelectorAll('.split-column-header').length;
+        const hasTickLabels = !!chartArea.querySelector('.split-tick-labels');
+        const numEntities = splitQuestionRows.length;
+        
+        // Different layouts based on split count and entity count
+        const isSplitByBoth = numSplits >= 4;  // 4-5 splits = split by both
+        const useMultiBlockLayout = isEntityView && numEntities > 6 && !hasTickLabels;
+        
+        if (useMultiBlockLayout && isSplitByBoth) {
+            // Split-by-both: 2 entities per row (10 donuts per row)
+            const numBlocks = 2;
+            const blockEntityLabelWidth = 60;
+            const blockChartWidth = 75;
+            const blockWidth = blockEntityLabelWidth + (numSplits * blockChartWidth);
+            const gapBetweenBlocks = 25;
+            const rowHeight = 105;  // Increased to prevent overlap
+            const entitiesPerRow = numBlocks;
+            const numRows = Math.ceil(numEntities / entitiesPerRow);
+            
+            baseWidth = numBlocks * blockWidth + gapBetweenBlocks + padding * 2;
+            baseHeight = padding + headerHeight + titleHeight + 55 + (numRows * rowHeight) + (legendRowsNeeded * 25) + 20 + attributionHeight;
+        } else if (useMultiBlockLayout && numSplits <= 3) {
+            // Single split (2-3 splits): 4 entities per row
+            const numBlocks = 4;
+            const blockEntityLabelWidth = 55;
+            const blockChartWidth = 85;
+            const blockWidth = blockEntityLabelWidth + (numSplits * blockChartWidth);
+            const gapBetweenBlocks = 18;
+            const rowHeight = 95;
+            const entitiesPerRow = numBlocks;
+            const numRows = Math.ceil(numEntities / entitiesPerRow);
+            
+            baseWidth = numBlocks * blockWidth + (numBlocks - 1) * gapBetweenBlocks + padding * 2;
+            baseHeight = padding + headerHeight + titleHeight + 45 + (numRows * rowHeight) + (legendRowsNeeded * 25) + 20 + attributionHeight;
+        } else {
+            // Original single-column layout or 2-questions-per-row for donuts
+            const questionLabelWidth = 150;
+            const tickColWidth = hasTickLabels ? 300 : 0;
+            const chartColWidth = 180;
+            
+            // Check if this should be 2 questions per row (donuts without tick labels)
+            const isDonutView = !hasTickLabels;
+            const numQuestions = splitQuestionRows.length;
+            
+            if (isDonutView && numQuestions > 1) {
+                // 2 questions per row layout
+                const questionsPerRow = 2;
+                const qLabelWidth = 100;
+                const donutColWidth = 90;
+                const blockWidth = qLabelWidth + (numSplits * donutColWidth);
+                const gapBetweenBlocks = 30;
+                const rowHeight = 110;  // Increased for multi-line labels
+                const numRows = Math.ceil(numQuestions / questionsPerRow);
+                
+                baseWidth = questionsPerRow * blockWidth + gapBetweenBlocks + padding * 2;
+                baseHeight = padding + headerHeight + titleHeight + 45 + (numRows * rowHeight) + (legendRowsNeeded * 24) + 50;
+            } else {
+                baseWidth = questionLabelWidth + tickColWidth + (numSplits * chartColWidth) + padding * 2;
+                
+                let totalRowHeight = 0;
+                splitQuestionRows.forEach(row => {
+                    // For horizontal bar charts, use data-bar-height if available (more accurate)
+                    const chartCell = row.querySelector('.chart-cell[data-bar-height]');
+                    const barHeight = chartCell ? parseInt(chartCell.dataset.barHeight) : null;
+                    const canvas = row.querySelector('canvas');
+                    // Use barHeight from data attribute, fallback to canvas height, then default
+                    const rowHeight = barHeight || (canvas ? Math.min(canvas.height, 600) : 150);
+                    totalRowHeight += rowHeight + 20;
                 });
-                uniqueLegends.set(legendKey, items);
+                
+                // Tight height calculation - just content + small buffer
+                baseHeight = padding + headerHeight + titleHeight + 55 + totalRowHeight + attributionHeight;
             }
         }
-    });
-    
-    // Also include global legend
-    if (legendArea && legendArea.innerHTML.trim()) {
-        const legendItems = legendArea.querySelectorAll('.legend-item');
-        if (legendItems.length > 0) {
-            const items = [];
-            legendItems.forEach(item => {
-                const colorBox = item.querySelector('.legend-color');
-                const label = item.textContent.trim();
-                const bgColor = colorBox?.style.backgroundColor || '#58a6ff';
-                items.push({ color: bgColor, label });
-            });
-            const key = items.map(i => i.label).join('|');
-            if (!uniqueLegends.has(key)) {
-                uniqueLegends.set(key, items);
+        
+    } else if (chartGrid && chartCells.length > 0) {
+        // GRID VIEW - donuts
+        let cols = chartCells.length;
+        if (chartGrid.classList.contains('cols-5')) cols = Math.min(5, chartCells.length);
+        else if (chartGrid.classList.contains('cols-4')) cols = Math.min(4, chartCells.length);
+        else if (chartGrid.classList.contains('cols-3')) cols = Math.min(3, chartCells.length);
+        else if (chartGrid.classList.contains('cols-2')) cols = Math.min(2, chartCells.length);
+        
+        const rows = Math.ceil(chartCells.length / cols);
+        
+        // Detect if this is a split view (has split-column-header) 
+        const hasSplitHeaders = !!chartCells[0]?.querySelector('.split-column-header');
+        
+        // Detect if cells have per-cell legends (EiD, KPT)
+        const hasPerCellLegends = !!chartCells[0]?.querySelector('.chart-cell-legend');
+        
+        // Calculate max canvas height in the grid
+        let maxCanvasHeight = 0;
+        chartCells.forEach(cell => {
+            const canvas = cell.querySelector('canvas');
+            if (canvas && canvas.height > maxCanvasHeight) {
+                maxCanvasHeight = canvas.height;
             }
+        });
+        
+        // Different dimensions for split vs non-split (non-split needs more for multi-line titles)
+        // Check if demographics with many legend items per cell
+        const firstCellLegend = chartCells[0]?.querySelector('.chart-cell-legend');
+        const legendItemCount = firstCellLegend?.querySelectorAll('span[style*="display:flex"]')?.length || 
+                                firstCellLegend?.querySelectorAll('.legend-item')?.length || 0;
+        const hasManyLegendItems = legendItemCount > 4;
+        const needsMultiLineLegend = legendItemCount > 3;  // Age Group has 7+ items
+        
+        // For demographics with 2-3 donuts (regardless of bar charts below), use larger donuts
+        const isDemographicsLargeDonuts = currentCategory === 'demo' && chartCells.length <= 3 && !hasSplitHeaders;
+        
+        const cellWidth = hasSplitHeaders ? 210 : (isDemographicsLargeDonuts ? 280 : (hasManyLegendItems ? 200 : 180));
+        const titleAreaHeight = hasSplitHeaders ? 48 : 40;
+        // More space for multi-line legends in demographics
+        const perCellLegendHeight = hasPerCellLegends ? (needsMultiLineLegend ? 36 : 18) : 0;
+        const chartTopPadding = 2;  // Minimal padding between legend and chart
+        // Use actual canvas height (scaled) or minimum - larger for small demographics
+        const chartHeight = hasSplitHeaders 
+            ? 150 
+            : (isDemographicsLargeDonuts ? Math.max(180, Math.min(maxCanvasHeight * 0.95, 250)) : Math.max(120, Math.min(maxCanvasHeight * 0.85, 200)));
+        const cellHeight = titleAreaHeight + perCellLegendHeight + chartTopPadding + chartHeight + 8;
+        
+        baseWidth = cols * cellWidth + padding * 2;
+        
+        // Calculate legend wrapping
+        if (legendItems.length > 0) {
+            ctx.font = '12px "DM Sans", sans-serif';
+            let testX = 0;
+            legendItems.forEach(item => {
+                const label = item.textContent.trim();
+                const itemWidth = ctx.measureText(label).width + 32;
+                if (testX + itemWidth > baseWidth - padding * 2) {
+                    legendRowsNeeded++;
+                    testX = itemWidth;
+                } else {
+                    testX += itemWidth;
+                }
+            });
+        }
+        
+        // Tight height calculation - no excessive padding
+        let specialDemoHeight = 0;
+        if (hasSpecialDemoSections) {
+            const maxChartWidth = baseWidth - padding * 2;
+            specialDemoSections.forEach(section => {
+                const canvas = section.querySelector('canvas');
+                if (canvas) {
+                    // Use same scaling as rendering (scale to fit width)
+                    const scale = Math.min(maxChartWidth / canvas.width, 1);
+                    const scaledHeight = canvas.height * scale;
+                    specialDemoHeight += scaledHeight + 45;  // scaled chart + title + spacing
+                }
+            });
+        }
+        // Use tight calculation: content + attribution only
+        baseHeight = padding + headerHeight + titleHeight + (rows * cellHeight) + specialDemoHeight + attributionHeight;
+        
+    } else {
+        // Check if this is Entity Combined Mean mode with multiple scatter charts
+        const splitScatters = chartArea.querySelectorAll('canvas[id^="split-scatter-"]');
+        const splitColumnHeaders = chartArea.querySelectorAll('.split-column-header');
+        
+        if (splitScatters.length > 0 && splitColumnHeaders.length > 0) {
+            // ENTITY COMBINED MEAN MODE dimensions
+            const numSplits = splitScatters.length;
+            const numCols = numSplits >= 5 ? 3 : numSplits;
+            const numRows = Math.ceil(numSplits / numCols);
+            const rowHeight = 300;
+            const headerBarHeight = 50;
+            
+            baseWidth = Math.max(800, 280 * numCols + padding * 2);
+            baseHeight = padding + headerHeight + titleHeight + numRows * (rowHeight + headerBarHeight + 15) + (legendRowsNeeded * 25) + 20 + attributionHeight;
+            
+        } else {
+            // SINGLE CHART - scatter, horizontal bar
+            const canvas = canvases[0];
+            const isEntityCombined = currentCategory === 'combined_attr';
+            const scaleFactor = isEntityCombined ? 1.3 : 1.1;
+            
+            baseWidth = Math.max(700, (canvas?.width || 500) * scaleFactor + padding * 2);
+            
+            // Calculate legend wrapping for entity combined
+            if (legendItems.length > 0) {
+                ctx.font = '12px "DM Sans", sans-serif';
+                let testX = 0;
+                legendItems.forEach(item => {
+                    const label = item.textContent.trim();
+                    const itemWidth = ctx.measureText(label).width + 32;
+                    if (testX + itemWidth > baseWidth - padding * 2) {
+                        legendRowsNeeded++;
+                        testX = itemWidth;
+                    } else {
+                        testX += itemWidth;
+                    }
+                });
+            }
+            
+            // More generous height - include special demo sections if present alone
+            let specialDemoHeight = 0;
+            if (hasSpecialDemoSections && !chartGrid) {
+                const maxChartWidth = baseWidth - padding * 2;
+                specialDemoSections.forEach(section => {
+                    const sectionCanvas = section.querySelector('canvas');
+                    if (sectionCanvas) {
+                        const scale = Math.min(maxChartWidth / sectionCanvas.width, 1);
+                        const scaledHeight = sectionCanvas.height * scale;
+                        specialDemoHeight += scaledHeight + 45;
+                    }
+                });
+            }
+            baseHeight = padding + headerHeight + titleHeight + ((canvas?.height || 300) * scaleFactor) + specialDemoHeight + attributionHeight;
         }
     }
     
-    const legendSectionHeight = uniqueLegends.size > 0 ? (uniqueLegends.size * legendRowHeight + 10) : 0;
-    
-    const totalWidth = cols * cellWidth + padding * 2;
-    const chartsHeight = rows * cellHeight;
-    const totalHeight = padding + headerHeight + chartsHeight + legendSectionHeight + attributionHeight;
-    
-    tempCanvas.width = totalWidth;
-    tempCanvas.height = totalHeight;
+    // Apply DPI scale
+    tempCanvas.width = baseWidth * DPI_SCALE;
+    tempCanvas.height = baseHeight * DPI_SCALE;
+    ctx.scale(DPI_SCALE, DPI_SCALE);
     
     // Fill background
     ctx.fillStyle = '#0d1117';
-    ctx.fillRect(0, 0, totalWidth, totalHeight);
+    ctx.fillRect(0, 0, baseWidth, baseHeight);
     
-    // Draw header with N and filter info
+    // Draw header
+    let yPos = padding;
     ctx.fillStyle = '#e6edf3';
-    ctx.font = 'bold 14px "DM Sans", sans-serif';
-    ctx.fillText(`N=${nValue}`, padding, padding + 18);
-    ctx.font = '12px "DM Sans", sans-serif';
+    ctx.font = 'bold 18px "DM Sans", sans-serif';
+    ctx.fillText(`N=${nValue}`, padding, yPos + 18);
+    
+    ctx.font = '14px "DM Sans", sans-serif';
     ctx.fillStyle = '#8b949e';
-    ctx.fillText(`Filter: ${filterText}`, padding + 80, padding + 18);
+    ctx.fillText(`Filter: ${fullFilterText}`, padding + ctx.measureText(`N=${nValue}`).width + 25, yPos + 18);
     
-    let yOffset = padding + headerHeight;
+    yPos += headerHeight;
     
-    // Get stats from table - handle multiple formats
-    const tableRows = tableContainer?.querySelectorAll('tbody tr') || [];
-    const statsMap = new Map();
-    const tableHeaders = tableContainer?.querySelectorAll('thead th') || [];
-    const numTableCols = tableHeaders.length;
+    // Draw title
+    ctx.fillStyle = '#e6edf3';
+    ctx.font = 'bold 18px "DM Sans", sans-serif';
+    ctx.fillText(mainTitle, padding, yPos + 20);
     
-    tableRows.forEach(row => {
-        const cells = row.querySelectorAll('td');
-        if (cells.length >= 3) {
-            if (numTableCols === 7) {
-                // Binary choice format: Question | Option1 | Count | % | Option2 | Count | %
-                const question = cells[0]?.textContent?.trim() || '';
-                const opt1 = cells[1]?.textContent?.trim() || '';
-                const count1 = cells[2]?.textContent?.trim() || '';
-                const pct1 = cells[3]?.textContent?.trim() || '';
-                const opt2 = cells[4]?.textContent?.trim() || '';
-                const count2 = cells[5]?.textContent?.trim() || '';
-                const pct2 = cells[6]?.textContent?.trim() || '';
-                if (!statsMap.has(question)) statsMap.set(question, []);
-                statsMap.get(question).push({ value: opt1, count: count1, pct: pct1 });
-                statsMap.get(question).push({ value: opt2, count: count2, pct: pct2 });
-            } else if (numTableCols === 4) {
-                // Standard format: Question | Value | Count | %
-                const question = cells[0]?.textContent?.trim() || '';
-                const value = cells[1]?.textContent?.trim() || '';
-                const count = cells[2]?.textContent?.trim() || '';
-                const pct = cells[3]?.textContent?.trim() || '';
-                if (!statsMap.has(question)) statsMap.set(question, []);
-                statsMap.get(question).push({ value, count, pct });
-            } else if (numTableCols === 3) {
-                // Single chart format: Label | Count | %
-                const value = cells[0]?.textContent?.trim() || '';
-                const count = cells[1]?.textContent?.trim() || '';
-                const pct = cells[2]?.textContent?.trim() || '';
-                if (!statsMap.has('')) statsMap.set('', []);
-                statsMap.get('').push({ value, count, pct });
-            } else if (numTableCols === 5) {
-                // Yes/No format: Question | Yes | % Yes | No | % No
-                const question = cells[0]?.textContent?.trim() || '';
-                const yesCount = cells[1]?.textContent?.trim() || '';
-                const yesPct = cells[2]?.textContent?.trim() || '';
-                const noCount = cells[3]?.textContent?.trim() || '';
-                const noPct = cells[4]?.textContent?.trim() || '';
-                if (!statsMap.has(question)) statsMap.set(question, []);
-                statsMap.get(question).push({ value: 'Yes', count: yesCount, pct: yesPct });
-                statsMap.get(question).push({ value: 'No', count: noCount, pct: noPct });
+    if (noteText) {
+        ctx.font = '13px "DM Sans", sans-serif';
+        ctx.fillStyle = '#ffa657';
+        ctx.fillText(noteText, padding, yPos + 40);
+    }
+    
+    yPos += titleHeight;
+    
+    // RENDER BASED ON LAYOUT TYPE
+    if (splitHeaderRow && splitQuestionRows.length > 0) {
+        // SPLIT VIEW
+        const splitHeaders = splitHeaderRow.querySelectorAll('.split-column-header');
+        const numSplits = splitHeaders.length;
+        const hasTickLabels = !!chartArea.querySelector('.split-tick-labels');
+        const numEntities = splitQuestionRows.length;
+        
+        // Different layouts based on split count and entity count
+        const isSplitByBoth = numSplits >= 4;
+        const useMultiBlockLayout = isEntityView && numEntities > 6 && !hasTickLabels;
+        
+        if (useMultiBlockLayout && isSplitByBoth) {
+            // Split-by-both: 2 entities per row (8-10 donuts per row)
+            const numBlocks = 2;
+            const blockEntityLabelWidth = 60;
+            const blockChartWidth = 75;
+            const blockWidth = blockEntityLabelWidth + (numSplits * blockChartWidth);
+            const gapBetweenBlocks = 25;
+            
+            // Draw headers for both blocks
+            for (let blockIdx = 0; blockIdx < numBlocks; blockIdx++) {
+                const blockX = padding + blockIdx * (blockWidth + gapBetweenBlocks);
+                let headerX = blockX + blockEntityLabelWidth;
+                
+                splitHeaders.forEach(header => {
+                    const bgColor = getHeaderBgColor(header);
+                    const text = header.textContent.replace(/\n/g, ' ').trim();
+                    
+                    ctx.fillStyle = bgColor;
+                    ctx.fillRect(headerX + 1, yPos, blockChartWidth - 2, 42);  // Taller header for 3 lines
+                    
+                    ctx.fillStyle = isLightColor(bgColor) ? '#1a1a2e' : '#ffffff';
+                    ctx.textAlign = 'center';
+                    
+                    const parts = text.split(/N=/);
+                    const titlePart = parts[0].trim();
+                    
+                    // Always split into 3 lines for split-by-both: line1 / line2 / N=xxx
+                    if (titlePart.includes(' / ')) {
+                        const [line1, line2] = titlePart.split(' / ');
+                        ctx.font = '6px "DM Sans", sans-serif';
+                        ctx.fillText(line1.trim() + ' /', headerX + blockChartWidth / 2, yPos + 10);
+                        ctx.fillText(line2.trim(), headerX + blockChartWidth / 2, yPos + 20);
+                        if (parts[1]) {
+                            ctx.font = '5.5px "DM Sans", sans-serif';
+                            ctx.fillText('N=' + parts[1].trim(), headerX + blockChartWidth / 2, yPos + 32);
+                        }
+                    } else {
+                        ctx.font = '6.5px "DM Sans", sans-serif';
+                        ctx.fillText(titlePart, headerX + blockChartWidth / 2, yPos + 14);
+                        if (parts[1]) {
+                            ctx.font = '5.5px "DM Sans", sans-serif';
+                            ctx.fillText('N=' + parts[1].trim(), headerX + blockChartWidth / 2, yPos + 28);
+                        }
+                    }
+                    ctx.textAlign = 'left';
+                    headerX += blockChartWidth;
+                });
             }
-            // Skip other formats
-        }
-    });
-    
-    // Draw each chart
-    cellsArray.forEach((cell, i) => {
-        const canvas = cell.querySelector('canvas') || (cell.tagName === 'CANVAS' ? cell : null);
-        if (!canvas) return;
-        
-        const col = i % cols;
-        const row = Math.floor(i / cols);
-        const x = padding + col * cellWidth;
-        const y = yOffset + row * cellHeight;
-        
-        // Get title
-        const titleEl = cell.querySelector('h4');
-        let plotTitle = titleEl?.textContent?.trim() || '';
-        if (!plotTitle && numCharts === 1) {
-            if (distTitle) {
-                plotTitle = distTitle.textContent.replace(/N=\d+/g, '').replace(/NOTE:.*/g, '').replace(/\d+ Questions? Selected/g, '').trim();
-            }
-        }
-        
-        // Draw title with word wrap (max 5 lines)
-        ctx.fillStyle = '#e6edf3';
-        ctx.font = numCharts === 1 ? '14px "DM Sans", sans-serif' : '11px "DM Sans", sans-serif';
-        const maxTitleWidth = cellWidth - 16;
-        const words = plotTitle.split(' ');
-        let line = '';
-        let lineY = y + 12;
-        let lineCount = 0;
-        const lineHeight = numCharts === 1 ? 16 : 13;
-        const maxLines = 5;
-        
-        words.forEach(word => {
-            const testLine = line + word + ' ';
-            if (ctx.measureText(testLine).width > maxTitleWidth && line) {
-                if (lineCount < maxLines) {
-                    ctx.fillText(line.trim(), x + 8, lineY);
-                    line = word + ' ';
-                    lineY += lineHeight;
-                    lineCount++;
+            
+            yPos += 48;  // Increased for taller headers
+            
+            // Draw rows - 2 entities per row with more spacing
+            const entitiesPerRow = numBlocks;
+            const rowArray = Array.from(splitQuestionRows);
+            const rowHeight = 105;  // Increased to prevent overlap
+            const numRows = Math.ceil(numEntities / entitiesPerRow);
+            
+            for (let rowIdx = 0; rowIdx < numRows; rowIdx++) {
+                for (let blockIdx = 0; blockIdx < numBlocks; blockIdx++) {
+                    const entityIdx = rowIdx * entitiesPerRow + blockIdx;
+                    if (entityIdx >= numEntities) continue;
+                    
+                    const row = rowArray[entityIdx];
+                    const questionLabel = row.querySelector('.split-question-label');
+                    const rowCharts = row.querySelectorAll('canvas');
+                    
+                    const blockX = padding + blockIdx * (blockWidth + gapBetweenBlocks);
+                    
+                    // Entity label - right-aligned, closer to donuts
+                    if (questionLabel) {
+                        ctx.fillStyle = '#c9d1d9';
+                        ctx.font = '8px "DM Sans", sans-serif';
+                        const text = questionLabel.textContent.trim();
+                        const displayText = text.length > 10 ? text.substring(0, 8) + '...' : text;
+                        ctx.textAlign = 'right';
+                        ctx.fillText(displayText, blockX + blockEntityLabelWidth - 3, yPos + rowHeight / 2 + 3);
+                        ctx.textAlign = 'left';
+                    }
+                    
+                    // Charts
+                    let chartX = blockX + blockEntityLabelWidth;
+                    rowCharts.forEach(canvas => {
+                        const scale = Math.min((blockChartWidth - 6) / canvas.width, (rowHeight - 6) / canvas.height);
+                        const w = canvas.width * scale, h = canvas.height * scale;
+                        ctx.drawImage(canvas, chartX + (blockChartWidth - w) / 2, yPos + (rowHeight - h) / 2, w, h);
+                        chartX += blockChartWidth;
+                    });
                 }
+                
+                yPos += rowHeight;
+            }
+            
+        } else if (useMultiBlockLayout && numSplits <= 3) {
+            // Single split: 4 entities per row
+            const numBlocks = 4;
+            const blockEntityLabelWidth = 55;
+            const blockChartWidth = 85;
+            const blockWidth = blockEntityLabelWidth + (numSplits * blockChartWidth);
+            const gapBetweenBlocks = 18;
+            
+            // Draw headers for all 4 blocks
+            for (let blockIdx = 0; blockIdx < numBlocks; blockIdx++) {
+                const blockX = padding + blockIdx * (blockWidth + gapBetweenBlocks);
+                let headerX = blockX + blockEntityLabelWidth;
+                
+                splitHeaders.forEach(header => {
+                    const bgColor = getHeaderBgColor(header);
+                    const text = header.textContent.replace(/\n/g, ' ').trim();
+                    
+                    ctx.fillStyle = bgColor;
+                    ctx.fillRect(headerX + 2, yPos, blockChartWidth - 4, 32);
+                    
+                    ctx.fillStyle = isLightColor(bgColor) ? '#1a1a2e' : '#ffffff';
+                    ctx.font = '8px "DM Sans", sans-serif';
+                    ctx.textAlign = 'center';
+                    
+                    const parts = text.split(/N=/);
+                    ctx.fillText(parts[0].trim(), headerX + blockChartWidth / 2, yPos + 11);
+                    if (parts[1]) {
+                        ctx.font = '7px "DM Sans", sans-serif';
+                        ctx.fillText('N=' + parts[1].trim(), headerX + blockChartWidth / 2, yPos + 22);
+                    }
+                    ctx.textAlign = 'left';
+                    headerX += blockChartWidth;
+                });
+            }
+            
+            yPos += 40;
+            
+            // Draw rows - 4 entities per row
+            const entitiesPerRow = numBlocks;
+            const rowArray = Array.from(splitQuestionRows);
+            const rowHeight = 95;
+            const numRows = Math.ceil(numEntities / entitiesPerRow);
+            
+            for (let rowIdx = 0; rowIdx < numRows; rowIdx++) {
+                for (let blockIdx = 0; blockIdx < numBlocks; blockIdx++) {
+                    const entityIdx = rowIdx * entitiesPerRow + blockIdx;
+                    if (entityIdx >= numEntities) continue;
+                    
+                    const row = rowArray[entityIdx];
+                    const questionLabel = row.querySelector('.split-question-label');
+                    const rowCharts = row.querySelectorAll('canvas');
+                    
+                    const blockX = padding + blockIdx * (blockWidth + gapBetweenBlocks);
+                    
+                    // Entity label - right-aligned, close to donuts
+                    if (questionLabel) {
+                        ctx.fillStyle = '#c9d1d9';
+                        ctx.font = '9px "DM Sans", sans-serif';
+                        const text = questionLabel.textContent.trim();
+                        const displayText = text.length > 10 ? text.substring(0, 8) + '...' : text;
+                        ctx.textAlign = 'right';
+                        ctx.fillText(displayText, blockX + blockEntityLabelWidth - 2, yPos + rowHeight / 2 + 3);
+                        ctx.textAlign = 'left';
+                    }
+                    
+                    // Charts
+                    let chartX = blockX + blockEntityLabelWidth;
+                    rowCharts.forEach(canvas => {
+                        const scale = Math.min((blockChartWidth - 6) / canvas.width, (rowHeight - 6) / canvas.height);
+                        const w = canvas.width * scale, h = canvas.height * scale;
+                        ctx.drawImage(canvas, chartX + (blockChartWidth - w) / 2, yPos + (rowHeight - h) / 2, w, h);
+                        chartX += blockChartWidth;
+                    });
+                }
+                
+                yPos += rowHeight;
+            }
+            
+        } else {
+            // Check if this is a donut-only view (no tick labels = donuts)
+            const isDonutView = !hasTickLabels;
+            const numQuestions = splitQuestionRows.length;
+            
+            if (isDonutView && numQuestions > 1) {
+                // 2 QUESTIONS PER ROW layout for KPT, EiD split views with donuts
+                const questionsPerRow = 2;
+                const questionLabelWidth = 100;
+                const blockWidth = questionLabelWidth + (numSplits * 90);
+                const gapBetweenBlocks = 30;
+                const totalWidth = questionsPerRow * blockWidth + gapBetweenBlocks;
+                
+                // Draw headers for both blocks
+                for (let blockIdx = 0; blockIdx < questionsPerRow; blockIdx++) {
+                    const blockX = padding + blockIdx * (blockWidth + gapBetweenBlocks);
+                    let headerX = blockX + questionLabelWidth;
+                    
+                    splitHeaders.forEach(header => {
+                        const bgColor = getHeaderBgColor(header);
+                        const text = header.textContent.replace(/\n/g, ' ').trim();
+                        const chartColWidth = 90;
+                        
+                        ctx.fillStyle = bgColor;
+                        ctx.fillRect(headerX + 2, yPos, chartColWidth - 4, 38);
+                        
+                        ctx.fillStyle = isLightColor(bgColor) ? '#1a1a2e' : '#ffffff';
+                        ctx.font = '10px "DM Sans", sans-serif';
+                        ctx.textAlign = 'center';
+                        
+                        const parts = text.split(/N=/);
+                        ctx.fillText(parts[0].trim(), headerX + chartColWidth / 2, yPos + 12);
+                        if (parts[1]) {
+                            ctx.font = '9px "DM Sans", sans-serif';
+                            ctx.fillText('N=' + parts[1].trim(), headerX + chartColWidth / 2, yPos + 26);
+                        }
+                        ctx.textAlign = 'left';
+                        headerX += chartColWidth;
+                    });
+                }
+                
+                yPos += 45;
+                
+                // Draw rows - 2 questions per row
+                const rowArray = Array.from(splitQuestionRows);
+                const rowHeight = 110;  // Increased for multi-line labels
+                const numRows = Math.ceil(numQuestions / questionsPerRow);
+                
+                for (let rowIdx = 0; rowIdx < numRows; rowIdx++) {
+                    for (let blockIdx = 0; blockIdx < questionsPerRow; blockIdx++) {
+                        const questionIdx = rowIdx * questionsPerRow + blockIdx;
+                        if (questionIdx >= numQuestions) continue;
+                        
+                        const row = rowArray[questionIdx];
+                        const questionLabel = row.querySelector('.split-question-label');
+                        const rowCharts = row.querySelectorAll('canvas');
+                        
+                        const blockX = padding + blockIdx * (blockWidth + gapBetweenBlocks);
+                        const chartColWidth = 90;
+                        
+                        // Question label - word wrap and right-align
+                        if (questionLabel) {
+                            ctx.fillStyle = '#9ca3af';
+                            ctx.font = '7.5px "DM Sans", sans-serif';  // Smaller font to prevent overlap
+                            const text = questionLabel.textContent.trim();
+                            const maxWidth = questionLabelWidth - 10;
+                            
+                            // Word wrap
+                            const words = text.split(' ');
+                            const lines = [];
+                            let currentLine = '';
+                            words.forEach(word => {
+                                const testLine = currentLine ? currentLine + ' ' + word : word;
+                                if (ctx.measureText(testLine).width > maxWidth && currentLine) {
+                                    lines.push(currentLine);
+                                    currentLine = word;
+                                } else {
+                                    currentLine = testLine;
+                                }
+                            });
+                            if (currentLine) lines.push(currentLine);
+                            
+                            // Draw lines right-aligned, centered vertically
+                            const lineHeight = 11;
+                            const totalHeight = lines.length * lineHeight;
+                            const startY = yPos + (rowHeight - totalHeight) / 2 + 8;
+                            
+                            ctx.textAlign = 'right';
+                            lines.forEach((line, i) => {
+                                ctx.fillText(line, blockX + questionLabelWidth - 4, startY + i * lineHeight);
+                            });
+                            ctx.textAlign = 'left';
+                        }
+                        
+                        // Charts
+                        let chartX = blockX + questionLabelWidth;
+                        rowCharts.forEach(canvas => {
+                            const scale = Math.min((chartColWidth - 8) / canvas.width, (rowHeight - 8) / canvas.height) * 0.92;
+                            const w = canvas.width * scale, h = canvas.height * scale;
+                            ctx.drawImage(canvas, chartX + (chartColWidth - w) / 2, yPos + (rowHeight - h) / 2, w, h);
+                            chartX += chartColWidth;
+                        });
+                    }
+                    
+                    yPos += rowHeight;
+                }
+                
             } else {
-                line = testLine;
+                // Original single-column layout (for horizontal bars)
+                const questionLabelWidth = 150;
+                const tickColWidth = hasTickLabels ? 300 : 0;
+                const chartColWidth = (baseWidth - padding * 2 - questionLabelWidth - tickColWidth) / numSplits;
+                
+                // Draw headers
+                let headerX = padding + questionLabelWidth + tickColWidth;
+                splitHeaders.forEach(header => {
+                    const bgColor = getHeaderBgColor(header);
+                    const text = header.textContent.replace(/\n/g, ' ').trim();
+                    
+                    ctx.fillStyle = bgColor;
+                    ctx.fillRect(headerX + 3, yPos, chartColWidth - 6, 45);
+                    
+                    ctx.fillStyle = isLightColor(bgColor) ? '#1a1a2e' : '#ffffff';
+                    ctx.font = '12px "DM Sans", sans-serif';
+                    ctx.textAlign = 'center';
+                    
+                    const parts = text.split(/N=/);
+                    ctx.fillText(parts[0].trim(), headerX + chartColWidth / 2, yPos + 16);
+                    if (parts[1]) {
+                        ctx.font = '11px "DM Sans", sans-serif';
+                        ctx.fillText('N=' + parts[1].trim(), headerX + chartColWidth / 2, yPos + 32);
+                    }
+                    ctx.textAlign = 'left';
+                    headerX += chartColWidth;
+                });
+                
+                yPos += 55;
+                
+                // Draw rows
+                splitQuestionRows.forEach(row => {
+                    const questionLabel = row.querySelector('.split-question-label');
+                    const tickLabels = row.querySelector('.split-tick-labels');
+                    const rowCharts = row.querySelectorAll('canvas');
+                    const firstChart = rowCharts[0];
+                    // Use data-bar-height for accurate row height (especially for country/employment)
+                    const chartCell = row.querySelector('.chart-cell[data-bar-height]');
+                    const barHeight = chartCell ? parseInt(chartCell.dataset.barHeight) : null;
+                    const rowHeight = barHeight || (firstChart ? Math.min(firstChart.height, 600) : 150);
+                    
+                    // Question label
+                    if (questionLabel) {
+                        ctx.fillStyle = '#8b949e';
+                        ctx.font = '12px "DM Sans", sans-serif';
+                        const words = questionLabel.textContent.trim().split(' ');
+                        let line = '', labelY = yPos + 25;
+                        words.forEach(word => {
+                            const test = line + word + ' ';
+                            if (ctx.measureText(test).width > questionLabelWidth - 15 && line) {
+                                ctx.fillText(line.trim(), padding, labelY);
+                                line = word + ' ';
+                                labelY += 15;
+                            } else {
+                                line = test;
+                            }
+                        });
+                        ctx.fillText(line.trim(), padding, labelY);
+                    }
+                    
+                    // Tick labels - align with the actual chart bars
+                    // Must account for chart scaling and centering using same layout as Chart.js
+                    if (tickLabels) {
+                        const ticks = tickLabels.querySelectorAll('div');
+                        const numBars = ticks.length;
+                        
+                        // Get first chart to calculate exact positioning
+                        const firstCanvas = rowCharts[0];
+                        if (firstCanvas) {
+                            const scale = Math.min((chartColWidth - 10) / firstCanvas.width, rowHeight / firstCanvas.height);
+                            const scaledW = firstCanvas.width * scale;
+                            const scaledH = firstCanvas.height * scale;
+                            // Charts are centered vertically
+                            const chartYOffset = yPos + (rowHeight - scaledH) / 2;
+                            
+                            // Use same layout calculation as the HTML/CSS layout (lines 3994-4000)
+                            // Chart.js horizontal bar uses: top padding + bar area + x-axis labels
+                            const xAxisHeightRatio = 28 / firstCanvas.height;  // ~28px for x-axis
+                            const chartTopPadRatio = 10 / firstCanvas.height;  // ~10px top padding
+                            const chartBottomPadRatio = 2 / firstCanvas.height; // ~2px before axis
+                            
+                            const plotAreaStart = chartYOffset + (scaledH * chartTopPadRatio);
+                            const plotAreaEnd = chartYOffset + scaledH - (scaledH * xAxisHeightRatio) - (scaledH * chartBottomPadRatio);
+                            const plotAreaHeight = plotAreaEnd - plotAreaStart;
+                            const categoryHeight = plotAreaHeight / numBars;
+                            // Bar is 85% of category, centered - offset by half remaining space
+                            const barOffsetInCategory = (categoryHeight * 0.15) / 2;
+                            
+                            ctx.fillStyle = '#c9d1d9';
+                            ctx.font = '11px "DM Sans", sans-serif';
+                            ctx.textAlign = 'right';
+                            
+                            ticks.forEach((tick, i) => {
+                                let text = tick.textContent.trim();
+                                // Position each label at the center of its corresponding bar
+                                const tickY = plotAreaStart + barOffsetInCategory + (i * categoryHeight) + (categoryHeight * 0.85 / 2) + 4;
+                                ctx.fillText(text, padding + questionLabelWidth + tickColWidth - 10, tickY);
+                            });
+                            ctx.textAlign = 'left';
+                        }
+                    }
+                    
+                    // Charts - draw at full height
+                    let chartX = padding + questionLabelWidth + tickColWidth;
+                    rowCharts.forEach(canvas => {
+                        // Use full row height for the chart
+                        const scale = Math.min((chartColWidth - 10) / canvas.width, rowHeight / canvas.height);
+                        const w = canvas.width * scale, h = canvas.height * scale;
+                        // Center chart vertically in its space
+                        ctx.drawImage(canvas, chartX + (chartColWidth - w) / 2, yPos + (rowHeight - h) / 2, w, h);
+                        chartX += chartColWidth;
+                    });
+                    
+                    yPos += rowHeight + 20;
+                });
+            }
+        }
+        
+    } else if (chartGrid && chartCells.length > 0) {
+        // GRID VIEW - donuts (Entity Donuts, EiD, KPT, Graded C, etc.)
+        let cols = chartCells.length;
+        if (chartGrid.classList.contains('cols-5')) cols = Math.min(5, chartCells.length);
+        else if (chartGrid.classList.contains('cols-4')) cols = Math.min(4, chartCells.length);
+        else if (chartGrid.classList.contains('cols-3')) cols = Math.min(3, chartCells.length);
+        else if (chartGrid.classList.contains('cols-2')) cols = Math.min(2, chartCells.length);
+        
+        // Detect if this is a split view (has split-column-header) or regular view (has h4)
+        const firstSplitHeader = chartCells[0]?.querySelector('.split-column-header');
+        const hasSplitHeaders = !!firstSplitHeader;
+        
+        // Detect if cells have per-cell legends (EiD, KPT)
+        const hasPerCellLegends = !!chartCells[0]?.querySelector('.chart-cell-legend');
+        
+        // Calculate max canvas height in the grid
+        let maxCanvasHeight = 0;
+        chartCells.forEach(cell => {
+            const canvas = cell.querySelector('canvas');
+            if (canvas && canvas.height > maxCanvasHeight) {
+                maxCanvasHeight = canvas.height;
             }
         });
-        if (lineCount < maxLines) {
-            ctx.fillText(line.trim(), x + 8, lineY);
-        }
         
-        // Draw chart (fixed position after title area)
-        const chartY = y + titleHeight;
-        const scale = Math.min((cellWidth - 40) / canvas.width, chartSize / canvas.height) * 0.95;
-        const scaledWidth = canvas.width * scale;
-        const scaledHeight = canvas.height * scale;
-        const chartX = x + (cellWidth - scaledWidth) / 2;
-        ctx.drawImage(canvas, chartX, chartY, scaledWidth, scaledHeight);
+        const cellWidth = (baseWidth - padding * 2) / cols;
+        // Check if demographics with many legend items per cell
+        const firstCellLegend = chartCells[0]?.querySelector('.chart-cell-legend');
+        const legendItemCount = firstCellLegend?.querySelectorAll('span[style*="display:flex"]')?.length || 
+                                firstCellLegend?.querySelectorAll('.legend-item')?.length || 0;
+        const needsMultiLineLegend = legendItemCount > 3;
+        // Use larger donuts when 2-3 donuts in demographics (regardless of bar charts below)
+        const isDemographicsLargeDonuts = currentCategory === 'demo' && chartCells.length <= 3 && !hasSplitHeaders;
         
-        // Draw stats below chart (fixed position)
-        const stats = statsMap.get(plotTitle) || statsMap.get('') || [];
-        if (stats.length > 0) {
-            const statY = chartY + chartSize + 10;
-            ctx.font = numCharts === 1 ? '10px "DM Sans", sans-serif' : '9px "DM Sans", sans-serif';
-            ctx.fillStyle = '#c9d1d9';
+        // Different heights for split vs non-split (non-split needs more for multi-line titles)
+        const titleAreaHeight = hasSplitHeaders ? 48 : 40;
+        const perCellLegendHeight = hasPerCellLegends ? (needsMultiLineLegend ? 36 : 18) : 0;
+        const chartTopPadding = 2;  // Minimal padding between legend and chart
+        // Use actual canvas height (scaled) or minimum
+        const chartHeight = hasSplitHeaders 
+            ? Math.min(150, cellWidth * 0.7) 
+            : (isDemographicsLargeDonuts ? Math.max(180, Math.min(maxCanvasHeight * 0.95, 250)) : Math.max(120, Math.min(maxCanvasHeight * 0.85, 200)));
+        const cellHeight = titleAreaHeight + perCellLegendHeight + chartTopPadding + chartHeight + 8;
+        
+        chartCells.forEach((cell, idx) => {
+            const col = idx % cols;
+            const row = Math.floor(idx / cols);
+            const cellX = padding + col * cellWidth;
+            const cellY = yPos + row * cellHeight;
             
-            let statX = x + 5;
-            let currentStatY = statY;
-            const maxStatsWidth = cellWidth - 10;
+            // Check for split-column-header inside cell (for split views)
+            const splitHeader = cell.querySelector('.split-column-header');
+            const cellTitle = cell.querySelector('h4');
+            const cellLegend = cell.querySelector('.chart-cell-legend');
             
-            stats.slice(0, 4).forEach(stat => {  // Limit to 4 stats
-                // Truncate long value labels
-                let shortValue = stat.value;
-                if (shortValue.length > 20) {
-                    shortValue = shortValue.substring(0, 18) + '...';
-                }
-                const statText = `${shortValue}: ${stat.count} (${stat.pct})`;
-                const statWidth = ctx.measureText(statText).width + 8;
+            let currentY = cellY;  // Track vertical position within cell
+            
+            if (splitHeader) {
+                // SPLIT VIEW - draw colored header bar
+                const styleAttr = splitHeader.getAttribute('style') || '';
+                let bgMatch = styleAttr.match(/background:\s*([^;]+)/i);
+                if (!bgMatch) bgMatch = styleAttr.match(/background-color:\s*([^;]+)/i);
+                const bgColor = bgMatch ? bgMatch[1].trim() : '#3a4149';
                 
-                if (statX + statWidth > x + maxStatsWidth && statX > x + 5) {
-                    statX = x + 5;
-                    currentStatY += 11;
+                // Get text content
+                const fullText = splitHeader.textContent || '';
+                const parts = fullText.split(/N=/);
+                const titleText = parts[0].replace(/\s+/g, ' ').trim();
+                const nValue = parts[1] ? parts[1].trim() : '';
+                
+                // Draw colored header bar
+                ctx.fillStyle = bgColor;
+                ctx.fillRect(cellX + 3, currentY, cellWidth - 6, titleAreaHeight);
+                
+                // Draw header text (not bold)
+                ctx.fillStyle = isLightColor(bgColor) ? '#1a1a2e' : '#ffffff';
+                ctx.textAlign = 'center';
+                ctx.font = '11px "DM Sans", sans-serif';
+                ctx.fillText(titleText, cellX + cellWidth / 2, currentY + 16);
+                if (nValue) {
+                    ctx.font = '10px "DM Sans", sans-serif';
+                    ctx.fillText('N=' + nValue, cellX + cellWidth / 2, currentY + 32);
+                }
+                ctx.textAlign = 'left';
+                currentY += titleAreaHeight;
+                
+            } else if (cellTitle) {
+                // NON-SPLIT VIEW - just gray text, no background, with word wrapping
+                const titleText = cellTitle.textContent?.trim() || '';
+                
+                ctx.fillStyle = '#9ca3af';  // Gray text
+                ctx.font = '10px "DM Sans", sans-serif';
+                ctx.textAlign = 'center';
+                
+                // Word wrap the title
+                const maxTextWidth = cellWidth - 12;
+                const words = titleText.split(' ');
+                const lines = [];
+                let currentLine = '';
+                
+                words.forEach(word => {
+                    const testLine = currentLine ? currentLine + ' ' + word : word;
+                    if (ctx.measureText(testLine).width > maxTextWidth && currentLine) {
+                        lines.push(currentLine);
+                        currentLine = word;
+                    } else {
+                        currentLine = testLine;
+                    }
+                });
+                if (currentLine) lines.push(currentLine);
+                
+                // Draw lines centered vertically in title area
+                const lineHeight = 12;
+                const totalTextHeight = lines.length * lineHeight;
+                const startY = currentY + (titleAreaHeight - totalTextHeight) / 2 + 10;
+                
+                lines.forEach((line, i) => {
+                    ctx.fillText(line, cellX + cellWidth / 2, startY + i * lineHeight);
+                });
+                ctx.textAlign = 'left';
+                currentY += titleAreaHeight;
+            }
+            
+            // Draw per-cell legend if present (EiD, KPT, Demographics, Experience)
+            if (cellLegend && hasPerCellLegends) {
+                // Check for standard legend-item format first, then inline span format (demographics)
+                let legendItems = cellLegend.querySelectorAll('.legend-item');
+                let itemData = [];
+                
+                if (legendItems.length > 0) {
+                    // Standard format with .legend-item and .legend-color
+                    ctx.font = '8px "DM Sans", sans-serif';
+                    legendItems.forEach(item => {
+                        const colorBox = item.querySelector('.legend-color');
+                        const bgColor = colorBox?.style?.backgroundColor || '#58a6ff';
+                        let label = item.textContent.trim();
+                        // Strip parenthetical suffixes
+                        label = label.replace(/\s*\([^)]*\)\s*$/, '').trim();
+                        const textWidth = ctx.measureText(label).width;
+                        itemData.push({ bgColor, label, textWidth });
+                    });
+                } else {
+                    // Demographics/Experience format - inline spans with color boxes
+                    const spans = cellLegend.querySelectorAll('span[style*="display:flex"]');
+                    ctx.font = '8px "DM Sans", sans-serif';
+                    spans.forEach(span => {
+                        const colorSpan = span.querySelector('span[style*="background"]');
+                        let bgColor = '#58a6ff';
+                        if (colorSpan) {
+                            const styleAttr = colorSpan.getAttribute('style') || '';
+                            const bgMatch = styleAttr.match(/background:\s*([^;]+)/i);
+                            if (bgMatch) bgColor = bgMatch[1].trim();
+                        }
+                        // Get text (excluding color box text)
+                        let label = span.textContent.trim();
+                        label = label.replace(/\s*\([^)]*\)\s*$/, '').trim();
+                        const textWidth = ctx.measureText(label).width;
+                        itemData.push({ bgColor, label, textWidth });
+                    });
                 }
                 
-                ctx.fillText(statText, statX, currentStatY);
-                statX += statWidth;
+                if (itemData.length > 0) {
+                    // Calculate if we need multi-line legend
+                    const itemSpacing = 10 + 3 + 6;  // color box + gaps
+                    let totalWidth = 0;
+                    itemData.forEach(({ textWidth }) => {
+                        totalWidth += itemSpacing + textWidth;
+                    });
+                    totalWidth -= 6;
+                    
+                    const maxLineWidth = cellWidth - 20;
+                    const needsMultiLine = totalWidth > maxLineWidth;
+                    
+                    if (needsMultiLine) {
+                        // Split into multiple lines
+                        let lines = [[]];
+                        let currentLineWidth = 0;
+                        
+                        itemData.forEach(item => {
+                            const itemWidth = itemSpacing + item.textWidth;
+                            if (currentLineWidth + itemWidth > maxLineWidth && lines[lines.length - 1].length > 0) {
+                                lines.push([]);
+                                currentLineWidth = 0;
+                            }
+                            lines[lines.length - 1].push(item);
+                            currentLineWidth += itemWidth;
+                        });
+                        
+                        // Draw each line
+                        const lineHeight = 14;
+                        const startY = currentY + 4;
+                        
+                        lines.forEach((lineItems, lineIdx) => {
+                            let lineWidth = 0;
+                            lineItems.forEach(({ textWidth }) => {
+                                lineWidth += itemSpacing + textWidth;
+                            });
+                            lineWidth -= 6;
+                            
+                            let legX = cellX + (cellWidth - lineWidth) / 2;
+                            const legY = startY + lineIdx * lineHeight;
+                            
+                            lineItems.forEach(({ bgColor, label, textWidth }) => {
+                                ctx.fillStyle = bgColor;
+                                ctx.fillRect(legX, legY, 8, 8);
+                                ctx.fillStyle = '#c9d1d9';
+                                ctx.fillText(label, legX + 11, legY + 7);
+                                legX += itemSpacing + textWidth;
+                            });
+                        });
+                    } else {
+                        // Single line legend
+                        let legX = cellX + (cellWidth - totalWidth) / 2;
+                        const legY = currentY + perCellLegendHeight - 12;
+                        
+                        itemData.forEach(({ bgColor, label, textWidth }) => {
+                            ctx.fillStyle = bgColor;
+                            ctx.fillRect(legX, legY, 8, 8);
+                            ctx.fillStyle = '#c9d1d9';
+                            ctx.fillText(label, legX + 11, legY + 7);
+                            legX += itemSpacing + textWidth;
+                        });
+                    }
+                }
+                currentY += perCellLegendHeight;  // Advance by the allocated space
+            }
+            
+            // Draw chart centered below title/legend area
+            const canvas = cell.querySelector('canvas');
+            if (canvas) {
+                const chartY = currentY + chartTopPadding;
+                const maxChartW = cellWidth - 12;
+                const maxChartH = chartHeight - 6;
+                // Use higher scale factor for large demographics donuts
+                const scaleFactor = isDemographicsLargeDonuts ? 0.98 : 0.94;
+                const scale = Math.min(maxChartW / canvas.width, maxChartH / canvas.height) * scaleFactor;
+                const w = canvas.width * scale, h = canvas.height * scale;
+                ctx.drawImage(canvas, cellX + (cellWidth - w) / 2, chartY + (chartHeight - h) / 2, w, h);
+            }
+        });
+        
+        yPos += Math.ceil(chartCells.length / cols) * cellHeight;
+        
+        // Render special demo sections (employment, country, education topic bar charts) if present
+        if (hasSpecialDemoSections) {
+            specialDemoSections.forEach(section => {
+                const title = section.querySelector('h4')?.textContent?.trim() || '';
+                const canvas = section.querySelector('canvas');
+                
+                if (canvas) {
+                    // Draw section title
+                    ctx.fillStyle = '#8b949e';
+                    ctx.font = '14px "DM Sans", sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(title, baseWidth / 2, yPos + 18);
+                    ctx.textAlign = 'left';
+                    yPos += 30;
+                    
+                    // Draw the bar chart, scaled to fit width
+                    const maxWidth = baseWidth - padding * 2;
+                    const scale = Math.min(maxWidth / canvas.width, 1);
+                    const w = canvas.width * scale;
+                    const h = canvas.height * scale;
+                    const x = padding + (maxWidth - w) / 2;
+                    
+                    ctx.drawImage(canvas, x, yPos, w, h);
+                    yPos += h + 15;  // Reduced spacing
+                }
             });
         }
-    });
+        
+    } else {
+        // Check if this is Entity Combined Mean mode with multiple scatter charts
+        const splitScatters = chartArea.querySelectorAll('canvas[id^="split-scatter-"]');
+        const splitColumnHeaders = chartArea.querySelectorAll('.split-column-header');
+        
+        if (splitScatters.length > 0 && splitColumnHeaders.length > 0) {
+            // ENTITY COMBINED MEAN MODE - Multiple scatter plots in grid
+            const numSplits = splitScatters.length;
+            const numCols = numSplits >= 5 ? 3 : numSplits;
+            const numRows = Math.ceil(numSplits / numCols);
+            const colWidth = (baseWidth - padding * 2) / numCols;
+            const rowHeight = 300;
+            const headerBarHeight = 50;
+            
+            // Sort scatter canvases by index
+            const sortedScatters = Array.from(splitScatters).sort((a, b) => {
+                const idxA = parseInt(a.id.replace('split-scatter-', ''));
+                const idxB = parseInt(b.id.replace('split-scatter-', ''));
+                return idxA - idxB;
+            });
+            
+            // Sort headers too
+            const sortedHeaders = Array.from(splitColumnHeaders);
+            
+            // Draw each scatter plot
+            sortedScatters.forEach((canvas, idx) => {
+                const col = idx % numCols;
+                const row = Math.floor(idx / numCols);
+                const cellX = padding + col * colWidth;
+                const cellY = yPos + row * (rowHeight + headerBarHeight + 15);
+                
+                // Get corresponding header
+                const header = sortedHeaders[idx];
+                const bgColor = getHeaderBgColor(header);
+                const headerText = header?.textContent?.replace(/\n/g, ' ').trim() || '';
+                
+                // Draw header
+                ctx.fillStyle = bgColor;
+                ctx.fillRect(cellX + 5, cellY, colWidth - 10, headerBarHeight);
+                
+                ctx.fillStyle = isLightColor(bgColor) ? '#1a1a2e' : '#ffffff';
+                ctx.font = '12px "DM Sans", sans-serif';
+                ctx.textAlign = 'center';
+                const parts = headerText.split(/N=/);
+                ctx.fillText(parts[0].trim(), cellX + colWidth / 2, cellY + 18);
+                if (parts[1]) {
+                    ctx.font = '11px "DM Sans", sans-serif';
+                    ctx.fillText('N=' + parts[1].trim(), cellX + colWidth / 2, cellY + 35);
+                }
+                ctx.textAlign = 'left';
+                
+                // Draw scatter chart
+                const chartY = cellY + headerBarHeight + 5;
+                const chartSpace = colWidth - 20;
+                const scale = Math.min(chartSpace / canvas.width, (rowHeight - 10) / canvas.height);
+                const w = canvas.width * scale;
+                const h = canvas.height * scale;
+                ctx.drawImage(canvas, cellX + (colWidth - w) / 2, chartY, w, h);
+            });
+            
+            yPos += numRows * (rowHeight + headerBarHeight + 15);
+            
+        } else if (hasSpecialDemoSections && !chartGrid) {
+            // SPECIAL DEMO SECTIONS ONLY (employment/country without other demographics)
+            specialDemoSections.forEach(section => {
+                const title = section.querySelector('h4')?.textContent?.trim() || '';
+                const canvas = section.querySelector('canvas');
+                
+                if (canvas) {
+                    // Draw section title
+                    ctx.fillStyle = '#8b949e';
+                    ctx.font = '14px "DM Sans", sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(title, baseWidth / 2, yPos + 18);
+                    ctx.textAlign = 'left';
+                    yPos += 30;
+                    
+                    // Draw the bar chart, scaled to fit width
+                    const maxWidth = baseWidth - padding * 2;
+                    const scale = Math.min(maxWidth / canvas.width, 1);
+                    const w = canvas.width * scale;
+                    const h = canvas.height * scale;
+                    const x = padding + (maxWidth - w) / 2;
+                    
+                    ctx.drawImage(canvas, x, yPos, w, h);
+                    yPos += h + 15;  // Reduced spacing
+                }
+            });
+            
+        } else {
+            // SINGLE CHART
+            const canvas = canvases[0];
+            if (canvas) {
+                const isEntityCombined = currentCategory === 'combined_attr';
+                const scaleFactor = isEntityCombined ? 1.25 : 1.05;
+                
+                const legendSpace = legendRowsNeeded * 25 + 15;
+                const maxW = baseWidth - padding * 2;
+                const maxH = baseHeight - yPos - attributionHeight - legendSpace - 10;
+                const scale = Math.min(maxW / canvas.width, maxH / canvas.height, scaleFactor);
+                const w = canvas.width * scale, h = canvas.height * scale;
+                
+                ctx.drawImage(canvas, padding + (baseWidth - padding * 2 - w) / 2, yPos, w, h);
+                yPos += h + 15;
+            }
+        }
+    }
     
-    // Draw legends section (each unique legend on its own row)
-    if (uniqueLegends.size > 0) {
-        const legendStartY = yOffset + chartsHeight + 3;
-        let legendY = legendStartY;
-        ctx.font = '10px "DM Sans", sans-serif';
+    // Draw global legend with wrapping (but skip if per-cell legends were drawn)
+    // First check global legend area, then fall back to per-cell legends if needed
+    let effectiveLegendItems = legendItems;
+    let skipGlobalLegend = false;
+    
+    // If grid view has per-cell legends, skip the global legend to avoid redundancy
+    if (chartGrid && chartCells.length > 0) {
+        const hasPerCellLegends = !!chartCells[0]?.querySelector('.chart-cell-legend');
+        if (hasPerCellLegends) {
+            skipGlobalLegend = true;
+        }
+    }
+    
+    if (!skipGlobalLegend && effectiveLegendItems.length > 0) {
+        let legX = padding;
+        let legY = yPos + 10;  // Position relative to content
+        ctx.font = '12px "DM Sans", sans-serif';
         
-        uniqueLegends.forEach((items, key) => {
-            let legendX = padding;
-            items.forEach(item => {
-                ctx.fillStyle = item.color;
-                ctx.fillRect(legendX, legendY, 8, 8);
-                legendX += 10;
-                ctx.fillStyle = '#c9d1d9';
-                ctx.fillText(item.label, legendX, legendY + 7);
-                legendX += ctx.measureText(item.label).width + 12;
-            });
-            legendY += legendRowHeight;
+        effectiveLegendItems.forEach(item => {
+            const colorBox = item.querySelector('.legend-color');
+            const bgColor = colorBox?.style?.backgroundColor || '#58a6ff';
+            let label = item.textContent.trim();
+            // Strip parenthetical suffixes
+            label = label.replace(/\s*\([^)]*\)\s*$/, '').trim();
+            const itemWidth = ctx.measureText(label).width + 32;
+            
+            // Wrap to next line if needed
+            if (legX + itemWidth > baseWidth - padding && legX > padding) {
+                legX = padding;
+                legY += 22;
+            }
+            
+            ctx.fillStyle = bgColor;
+            ctx.fillRect(legX, legY, 12, 12);
+            ctx.fillStyle = '#c9d1d9';
+            ctx.fillText(label, legX + 16, legY + 10);
+            legX += itemWidth;
+        });
+        yPos = legY + 25;  // Update yPos after legend
+    }
+    
+    // Draw attribution - always at bottom left corner with consistent size
+    ctx.fillStyle = '#6e7681';
+    ctx.font = '11px "DM Sans", sans-serif';
+    ctx.fillText('© 2025 ronyhirsch.github.io/minds-matter — Use with attribution: doi.org/10.17605/OSF.IO/XXXXX', padding, baseHeight - 15);
+    
+    // Generate filename
+    let filenameParts = ['minds-matter'];
+    
+    // Special handling for combined_attr
+    if (currentCategory === 'combined_attr') {
+        filenameParts.push('attributions-combined');
+        if (entityNames.length === 1) {
+            filenameParts.push(entityNames[0].toLowerCase().replace(/[^a-z0-9]+/g, '-'));
+        } else if (entityNames.length > 1) {
+            filenameParts.push(`${entityNames.length}-entities`);
+        }
+    } else if (entityNames.length === 1) {
+        filenameParts.push(entityNames[0].toLowerCase().replace(/[^a-z0-9]+/g, '-'));
+    } else if (entityNames.length > 1) {
+        filenameParts.push(topicName.toLowerCase().replace(/[^a-z0-9]+/g, '-'));
+        filenameParts.push(`${entityNames.length}-entities`);
+    } else if (questionNames.length === 1) {
+        // Single question/variable - use the question name
+        filenameParts.push(questionNames[0].toLowerCase().replace(/[^a-z0-9]+/g, '-').substring(0, 40));
+    } else if (questionNames.length > 1) {
+        // Multiple questions - for demographics/experience use topic + count, same as attributions
+        if (currentCategory === 'demo') {
+            filenameParts.push('demographics');
+            filenameParts.push(`${questionNames.length}-variables`);
+        } else if (currentCategory === 'exp_sources') {
+            filenameParts.push('experience-domains');
+            filenameParts.push(`${questionNames.length}-variables`);
+        } else {
+            filenameParts.push(topicName.toLowerCase().replace(/[^a-z0-9]+/g, '-'));
+            filenameParts.push(`${questionNames.length}-variables`);
+        }
+    } else {
+        filenameParts.push(topicName.toLowerCase().replace(/[^a-z0-9]+/g, '-'));
+    }
+    
+    if (splitBySample && splitBySource) filenameParts.push('split-both');
+    else if (splitBySample) filenameParts.push('split-sample');
+    else if (splitBySource) filenameParts.push('split-recruitment');
+    else if (splitByCluster) filenameParts.push('split-cluster');
+    
+    const filename = filenameParts.join('_').replace(/-+/g, '-').replace(/_+/g, '_').replace(/^[-_]+|[-_]+$/g, '') + '.png';
+    
+    const link = document.createElement('a');
+    link.download = filename;
+    link.href = tempCanvas.toDataURL('image/png');
+    link.click();
+}
+
+// Download a single entity's scatter plot (for split views)
+function downloadEntityScatter(entityIdx, entityShort, splitPart) {
+    const canvas = document.getElementById(`entity-scatter-${entityIdx}`);
+    if (!canvas) return;
+    
+    const section = canvas.closest('.entity-scatter-section');
+    const legendBar = section?.querySelector('.legend-bar');
+    
+    // DPI scale for high resolution
+    const DPI_SCALE = 2;
+    
+    // Dimensions
+    const padding = 30;
+    const headerHeight = 35;
+    const titleHeight = 35;
+    const legendHeight = 35;
+    const attributionHeight = 35;
+    
+    const chartWidth = canvas.width;
+    const chartHeight = canvas.height;
+    const scaleFactor = 1.2;
+    
+    const baseWidth = Math.max(700, chartWidth * scaleFactor + padding * 2);
+    const baseHeight = padding + headerHeight + titleHeight + legendHeight + (chartHeight * scaleFactor) + attributionHeight;
+    
+    // Create canvas
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = baseWidth * DPI_SCALE;
+    tempCanvas.height = baseHeight * DPI_SCALE;
+    const ctx = tempCanvas.getContext('2d');
+    ctx.scale(DPI_SCALE, DPI_SCALE);
+    
+    // Fill background
+    ctx.fillStyle = '#0d1117';
+    ctx.fillRect(0, 0, baseWidth, baseHeight);
+    
+    // Get N and filter info
+    const distTitle = document.getElementById('dist-title');
+    const nMatch = distTitle?.innerHTML?.match(/N=(\d+)/);
+    const nValue = nMatch ? nMatch[1] : '?';
+    
+    const filterBox = document.getElementById('sample-filter-box');
+    let filterParts = [];
+    filterBox?.querySelectorAll('.filter-group input:checked')?.forEach(cb => {
+        const label = cb.nextElementSibling?.textContent?.trim();
+        if (label && label !== 'All' && !label.includes('no filter')) filterParts.push(label);
+    });
+    const filterText = filterParts.length > 0 ? filterParts.join(' + ') : 'All respondents';
+    const splitLabel = splitPart.replace('split-', 'Split by ').replace('-', ' ');
+    const fullFilterText = filterText + ' + ' + splitLabel.charAt(0).toUpperCase() + splitLabel.slice(1);
+    
+    // Draw header
+    let yPos = padding;
+    ctx.fillStyle = '#e6edf3';
+    ctx.font = 'bold 18px "DM Sans", sans-serif';
+    ctx.fillText(`N=${nValue}`, padding, yPos + 18);
+    
+    ctx.font = '14px "DM Sans", sans-serif';
+    ctx.fillStyle = '#8b949e';
+    ctx.fillText(`Filter: ${fullFilterText}`, padding + ctx.measureText(`N=${nValue}`).width + 25, yPos + 18);
+    
+    yPos += headerHeight;
+    
+    // Draw title
+    ctx.fillStyle = '#e6edf3';
+    ctx.font = 'bold 18px "DM Sans", sans-serif';
+    ctx.fillText(`Entity Combined Attributions: ${entityShort}`, padding, yPos + 20);
+    
+    yPos += titleHeight;
+    
+    // Draw legend
+    if (legendBar) {
+        const legendItems = legendBar.querySelectorAll('.legend-item');
+        let legX = padding;
+        ctx.font = '13px "DM Sans", sans-serif';
+        
+        legendItems.forEach(item => {
+            const colorBox = item.querySelector('.legend-color');
+            const bgColor = colorBox?.style?.backgroundColor || '#58a6ff';
+            const label = item.textContent.trim();
+            
+            ctx.fillStyle = bgColor;
+            ctx.fillRect(legX, yPos, 14, 14);
+            ctx.fillStyle = '#c9d1d9';
+            ctx.fillText(label, legX + 20, yPos + 12);
+            legX += ctx.measureText(label).width + 50;
         });
     }
     
-    // Draw attribution at very bottom
-    const attrY = totalHeight - 8;
-    ctx.fillStyle = '#6e7681';
-    ctx.font = '10px "DM Sans", sans-serif';
-    const attribution = '© 2025 ronyhirsch.github.io/minds-matter — Use with attribution: doi.org/10.17605/OSF.IO/XXXXX';
-    ctx.fillText(attribution, padding, attrY);
+    yPos += legendHeight;
     
-    // Get topic name for filename
-    const catSelect = document.getElementById('dist-category');
-    const topicName = catSelect?.selectedOptions[0]?.textContent || 'chart';
-    const safeName = topicName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+    // Draw chart
+    const maxW = baseWidth - padding * 2;
+    const maxH = baseHeight - yPos - attributionHeight - 10;
+    const scale = Math.min(maxW / canvas.width, maxH / canvas.height, scaleFactor);
+    const w = canvas.width * scale, h = canvas.height * scale;
+    ctx.drawImage(canvas, padding + (baseWidth - padding * 2 - w) / 2, yPos, w, h);
+    
+    // Draw attribution
+    ctx.fillStyle = '#6e7681';
+    ctx.font = '12px "DM Sans", sans-serif';
+    ctx.fillText('© 2025 ronyhirsch.github.io/minds-matter — Use with attribution: doi.org/10.17605/OSF.IO/XXXXX', padding, baseHeight - 12);
+    
+    // Generate filename
+    const entityPart = entityShort.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const filename = `minds-matter_attributions-combined_${entityPart}_${splitPart}.png`;
     
     // Download
     const link = document.createElement('a');
-    link.download = `minds-matter-${safeName}.png`;
+    link.download = filename;
     link.href = tempCanvas.toDataURL('image/png');
     link.click();
 }
@@ -8478,7 +9696,9 @@ function updateDownloadButton() {
     const chartArea = document.getElementById('dist-chart-area');
     if (btn && chartArea) {
         const hasCharts = chartArea.querySelectorAll('canvas').length > 0;
-        btn.style.display = hasCharts ? 'block' : 'none';
+        // Don't show main button if per-entity download buttons are present
+        const hasEntityButtons = chartArea.querySelectorAll('.download-entity-btn').length > 0;
+        btn.style.display = (hasCharts && !hasEntityButtons) ? 'block' : 'none';
     }
 }
 
