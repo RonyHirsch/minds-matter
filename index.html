@@ -122,6 +122,7 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="mm_hirsch.png">
     <link rel="icon" href="data:,">
     <title>Minds Matter</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
@@ -241,6 +242,91 @@
         .free-text-list { max-height:500px; overflow-y:auto; }
         .free-text-item { padding:0.75rem; border-bottom:1px solid var(--border); font-size:0.9rem; }
         .free-text-item:hover { background:var(--bg-tertiary); }
+		/* Theme tags for free-text responses */
+        .theme-tags { display:inline-flex; flex-wrap:wrap; gap:0.25rem; margin-left:0.5rem; align-items:center; align-self:center; flex-shrink:0; }
+        .theme-tag { 
+            display:inline-block; 
+            padding:0.1rem 0.4rem; 
+            border-radius:3px; 
+            font-size:0.65rem; 
+            font-weight:normal; 
+            text-transform:uppercase; 
+            letter-spacing:0.3px;
+            white-space:nowrap;
+            line-height:1.3;
+        }
+        /* Vibrant theme colors on dark bg - shared themes use same color for both questions */
+        .theme-tag[data-theme="consciousness/sentience"] { background:rgba(34,184,232,0.15); color:#22B8E8; }
+        .theme-tag[data-theme="intelligence/cognition"] { background:rgba(75,139,245,0.15); color:#4B8BF5; }
+        .theme-tag[data-theme="capacity to suffer/feel pain"] { background:rgba(255,107,107,0.15); color:#FF6B6B; }
+        .theme-tag[data-theme="ecological role/importance"] { background:rgba(95,227,161,0.15); color:#5FE3A1; }
+        /* People-only themes */
+        .theme-tag[data-theme="vulnerability"] { background:rgba(38,217,202,0.15); color:#26D9CA; }
+        .theme-tag[data-theme="benefit or harm to other people (from people)"] { background:rgba(236,72,153,0.15); color:#EC4899; }
+        /* Animals-only themes */
+        .theme-tag[data-theme="similarity/kinship to humans"] { background:rgba(139,92,246,0.15); color:#8B5CF6; }
+        .theme-tag[data-theme="domestication/pets/companionship"] { background:rgba(254,202,87,0.15); color:#FECA57; }
+        .theme-tag[data-theme="endangerment/rarity"] { background:rgba(38,217,202,0.15); color:#26D9CA; }
+        .theme-tag[data-theme="benefit or harm to humans (from animals)"] { background:rgba(236,72,153,0.15); color:#EC4899; }
+        .theme-tag[data-theme="taxa-based heuristics"] { background:rgba(255,159,67,0.15); color:#FF9F43; }
+        
+        /* Theme filter UI */
+        .theme-filter-container { 
+            margin-bottom:0.75rem; 
+            padding:0.5rem 0.75rem; 
+            background:var(--bg-tertiary); 
+            border-radius:6px; 
+        }
+        .theme-filter-label { 
+            font-size:0.9rem; 
+            color:var(--text-secondary); 
+            margin-bottom:0.4rem; 
+            display:block;
+        }
+        .theme-filter-note {
+            font-size:0.8rem;
+            color:var(--text-muted);
+            margin-top:0.5rem;
+            font-style:italic;
+        }
+        .theme-filter-note a {
+            color:#58a6ff;
+        }
+		.theme-toggle { 
+            font-size:0.9rem; 
+            color:#8b949e; 
+            cursor:pointer; 
+            margin-bottom:0.5rem;
+            display:inline-block;
+            font-weight:600;
+        }
+        .theme-toggle:hover { opacity:0.8; }
+        .themes-hidden .theme-filter-container { display:none; }
+        .themes-hidden .theme-tags { display:none; }
+        .theme-filter-chips { 
+            display:flex; 
+            flex-wrap:wrap; 
+            gap:0.35rem; 
+        }
+        .theme-filter-chip { 
+            padding:0.2rem 0.5rem; 
+            border-radius:4px; 
+            font-size:0.8rem; 
+            font-weight:normal; 
+            cursor:pointer; 
+            opacity:1; 
+            transition:opacity 0.15s, transform 0.1s;
+            text-transform:none;
+            letter-spacing:0.3px;
+        }
+        .theme-filter-chip:hover { opacity:0.75; }
+        .theme-filter-chip.active { opacity:1; transform:scale(1.02); box-shadow: 0 0 0 2px currentColor; }
+        .theme-filter-chip.clear-filter { 
+            background:rgba(110,118,129,0.2); 
+            color:#8b949e; 
+            font-weight:normal;
+            text-transform:none;
+        }
         .response-count { background:var(--bg-tertiary); padding:0.2rem 0.6rem; border-radius:100px; font-size:0.8rem; color:var(--text-secondary); margin-left:0.5rem; }
         .crosstab-wrapper { overflow-x:auto; }
         .info-box { background:rgba(88,166,255,0.1); border:1px solid var(--accent); border-radius:8px; padding:1rem; margin-bottom:1.5rem; font-size:0.9rem; }
@@ -526,6 +612,122 @@ const SPLIT_COLORS = {
         'follow-up_Prolific': '#5D5646'       // Brown base
     }
 };
+
+// Theme colors for free-text response tags
+// Shared themes between people and animals use the same color
+const THEME_COLORS = {
+    // Shared themes (same color for both questions)
+    'consciousness/sentience': '#22B8E8',
+    'intelligence/cognition': '#4B8BF5',
+    'capacity to suffer/feel pain': '#FF6B6B',
+    'ecological role/importance': '#5FE3A1',
+    // People-only themes
+    'vulnerability': '#26D9CA',
+    'benefit or harm to other people (from people)': '#EC4899',
+    // Animals-only themes
+    'similarity/kinship to humans': '#8B5CF6',
+    'domestication/pets/companionship': '#FECA57',
+    'endangerment/rarity': '#26D9CA',
+    'benefit or harm to humans (from animals)': '#EC4899',
+    'taxa-based heuristics': '#FF9F43'
+};
+
+// Short display names for theme tags (for compactness)
+const THEME_SHORT_NAMES = {
+    'consciousness/sentience': 'conscious',
+    'intelligence/cognition': 'intellect',
+    'capacity to suffer/feel pain': 'suffer',
+    'ecological role/importance': 'ecology',
+    'vulnerability': 'vulnerable',
+    'benefit or harm to other people (from people)': 'benefit/harm',
+    'similarity/kinship to humans': 'human-like',
+    'domestication/pets/companionship': 'domestic',
+    'endangerment/rarity': 'endangered',
+    'benefit or harm to humans (from animals)': 'benefit/harm',
+    'taxa-based heuristics': 'taxa'
+};
+
+// Helper function to render theme tags HTML
+function renderThemeTags(themes) {
+    if (!themes || themes.length === 0) return '';
+    return '<span class="theme-tags">' + 
+        themes.map(t => `<span class="theme-tag" data-theme="${escHTML(t)}" title="${escHTML(t)}">${escHTML(THEME_SHORT_NAMES[t] || t)}</span>`).join('') + 
+        '</span>';
+}
+
+// Helper function to build theme filter UI
+function buildThemeFilterUI(questionKey, allResponses) {
+    const themesForQuestion = DATA.metadata?.free_text_themes?.[questionKey];
+    if (!themesForQuestion || themesForQuestion.length === 0) return '';
+    
+    // Count responses per theme
+    const themeCounts = {};
+    themesForQuestion.forEach(t => themeCounts[t] = 0);
+    allResponses.forEach(item => {
+        const themes = typeof item === 'object' ? (item.themes || []) : [];
+        themes.forEach(t => {
+            if (themeCounts.hasOwnProperty(t)) themeCounts[t]++;
+        });
+    });
+    
+    let html = '<div class="theme-toggle" onclick="toggleThemeVisibility(this)">▶ Show response themes</div>';
+    html += '<div class="theme-filter-container" style="display:none;">';
+    html += '<span class="theme-filter-label">Filter by theme (click to toggle):</span>';
+    html += '<div class="theme-filter-chips">';
+    html += `<span class="theme-filter-chip clear-filter active" data-theme="all">All</span>`;
+    themesForQuestion.forEach(t => {
+        const color = THEME_COLORS[t] || '#888';
+        const shortName = t.split('/').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('/');
+        const count = themeCounts[t] || 0;
+        html += `<span class="theme-filter-chip" data-theme="${escHTML(t)}" style="background:${color}26;color:${color};" title="${escHTML(t)} (${count})">${escHTML(shortName)}</span>`;
+    });
+    html += '</div>';
+    html += '<div class="theme-filter-note">Themes were derived using keyword matching; a single response can appear under multiple themes, and some responses may not match any theme. For more information, see <a href="https://doi.org/10.17605/OSF.IO/XXXXX" target="_blank">doi.org/10.17605/OSF.IO/XXXXX</a>.</div>';
+    html += '</div>';
+    return html;
+}
+// Toggle theme visibility (filter box and tags on responses)
+function toggleThemeVisibility(toggleEl) {
+    const section = toggleEl.closest('.ft-question-section');
+    if (!section) return;
+    
+    const isCurrentlyHidden = section.classList.contains('themes-hidden') || 
+                               section.querySelector('.theme-filter-container')?.style.display === 'none';
+    
+    const filterContainer = section.querySelector('.theme-filter-container');
+    
+    if (isCurrentlyHidden) {
+        // Show themes
+        section.classList.remove('themes-hidden');
+        if (filterContainer) filterContainer.style.display = '';
+        toggleEl.textContent = '▼ Hide response themes';
+    } else {
+        // Hide themes
+        section.classList.add('themes-hidden');
+        if (filterContainer) filterContainer.style.display = 'none';
+        toggleEl.textContent = '▶ Show response themes';
+        
+        // Clear any active theme filter - reset to show all responses
+        const list = section.querySelector('.free-text-list');
+        if (list) {
+            const allResponses = JSON.parse(list.dataset.allResponses || section.dataset.allResponses || '[]');
+            const listId = list.id;
+            const countSpan = document.getElementById(`${listId}-count`);
+            const toggleSpan = document.getElementById(`${listId}-toggle`);
+            const isSplitMode = allResponses.length > 0 && allResponses[0].label !== undefined;
+            
+            // Reset chip styles to "All" active
+            if (filterContainer) {
+                filterContainer.querySelectorAll('.theme-filter-chip').forEach(c => c.classList.remove('active'));
+                const allChip = filterContainer.querySelector('.theme-filter-chip[data-theme="all"]');
+                if (allChip) allChip.classList.add('active');
+            }
+            
+            // Re-render all responses (no filter)
+            renderFilteredResponses(list, allResponses, null, isSplitMode, countSpan, toggleSpan);
+        }
+    }
+}
 
 // Generate color shades for scales (1-5) from a base color
 function generateScaleColors(baseColor, count = 4) {
@@ -934,13 +1136,13 @@ function updateSplitToggleState() {
     if (splitSourceNote) {
         const noSamplesButSomeSources = selectedSamples.length === 0 && selectedSources.length > 0;
         const hasFollowUp = isAllSelected || noSamplesButSomeSources || selectedSamples.some(s => s.toLowerCase().includes('follow'));
-        const onlyFreeSelected = selectedSources.length === 1 && selectedSources[0].toLowerCase() === 'free';
+        const freeIsSelected = selectedSources.some(s => s.toLowerCase() === 'free');
         const isSplittingBySource = document.getElementById('split-source')?.checked;
         
         // Show note if:
         // 1. Splitting by source AND follow-up is included, OR
         // 2. Only Free selected AND follow-up is included (warns that Follow-up data won't appear)
-        const shouldShowNote = hasFollowUp && (isSplittingBySource || onlyFreeSelected);
+        const shouldShowNote = hasFollowUp && (isSplittingBySource || freeIsSelected);
         
         splitSourceNote.style.display = shouldShowNote ? 'block' : 'none';
     }
@@ -10444,43 +10646,55 @@ function showDistFreeText(filterKey) {
             
             html += `<div class="filter-note align-left" style="margin-bottom:0.5rem;background:rgba(88,166,255,0.15);color:#58a6ff;font-size:0.9rem;">Responses are shown verbatim and in random order</div>`;
             
-            // Collect all responses with labels
+            // Collect all responses with labels (responses can be strings or {text, themes} objects)
             const allResponses = [];
             groups.forEach(grp => {
                 const grpData = DATA.freetext?.[grp.key]?.[key];
                 if (grpData && grpData.responses && grpData.responses.length > 0) {
                     grpData.responses.forEach(r => {
-                        allResponses.push({ text: r, label: grp.label });
+                        // Handle both string responses and {text, themes} objects
+                        if (typeof r === 'object' && r.text !== undefined) {
+                            allResponses.push({ text: r.text, themes: r.themes || [], label: grp.label });
+                        } else {
+                            allResponses.push({ text: r, themes: [], label: grp.label });
+                        }
                     });
                 }
             });
             
+            // Check if this question has themes
+            const hasThemes = DATA.metadata?.free_text_themes?.[key] && 
+                              allResponses.some(item => item.themes && item.themes.length > 0);
+            
+            // Add theme filter UI if this question has themes
+            if (hasThemes) {
+                html += buildThemeFilterUI(key, allResponses);
+            }
+            
             // Shuffle all responses
             const shuffled = [...allResponses].sort(() => Math.random() - 0.5);
             
+            // Store themes in JSON for filtering
+            const shuffledForData = shuffled.map(item => ({
+                text: item.text,
+                themes: item.themes,
+                label: item.label
+            }));
+            
             // Scrollable container for responses
-            html += `<div class="free-text-list" id="${listId}" style="max-height:500px;overflow-y:auto;background:var(--bg-secondary);border-radius:6px;padding:0.5rem;" data-all-responses='${JSON.stringify(shuffled).replace(/'/g, "&#39;")}' data-showing="100">`;
+            html += `<div class="free-text-list" id="${listId}" style="max-height:500px;overflow-y:auto;background:var(--bg-secondary);border-radius:6px;padding:0.5rem;" data-all-responses='${JSON.stringify(shuffledForData).replace(/'/g, "&#39;")}' data-showing="100" data-question-key="${key}">`;
             
             shuffled.slice(0, 100).forEach(item => {
-                html += `<div class="free-text-item" style="padding:0.5rem 0.75rem;border-bottom:1px solid var(--border);font-size:0.95rem;color:#c9d1d9;display:flex;justify-content:space-between;gap:1rem;">`;
+                const themesAttr = item.themes && item.themes.length > 0 ? ` data-themes="${escHTML(item.themes.join(','))}"` : '';
+                html += `<div class="free-text-item" style="padding:0.5rem 0.75rem;border-bottom:1px solid var(--border);font-size:0.95rem;color:#c9d1d9;display:flex;justify-content:space-between;gap:1rem;"${themesAttr}>`;
                 html += `<span style="flex:1;">${escHTML(item.text)}</span>`;
+                // Theme tags go BEFORE the split label (to the left of the separator)
+                if (item.themes && item.themes.length > 0) {
+                    html += renderThemeTags(item.themes);
+                }
                 html += `<span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;padding-left:0.5rem;border-left:1px solid var(--border);display:flex;align-items:center;">${item.label}</span>`;
                 html += `</div>`;
             });
-            
-            html += `</div>`;
-            
-            // Show all / Show less toggle
-            if (shuffled.length > 100) {
-                html += `<div style="margin-top:0.6rem;display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">`;
-                html += `<span style="color:var(--text-muted);font-size:0.9rem;" id="${listId}-count">Showing 100 of ${shuffled.length} responses</span>`;
-                html += `<span style="color:#8b949e;font-size:0.9rem;font-weight:600;cursor:pointer;text-decoration:underline;" onclick="toggleShowAllSplit('${listId}', ${shuffled.length})" id="${listId}-toggle">Show all</span>`;
-                html += `</div>`;
-            } else {
-                html += `<div style="margin-top:0.5rem;color:var(--text-muted);font-size:0.85rem;">Total: ${shuffled.length} responses</div>`;
-            }
-            
-            html += `<div style="margin-top:0.5rem;font-size:0.8rem;color:#6e7681;font-style:italic;">Content reflects respondents' own views and might include language some find offensive.</div>`;
             
             html += `</div>`;
         });
@@ -10531,10 +10745,23 @@ function showDistFreeText(filterKey) {
             console.log('[showDistFreeText] Looking for key:', key, 'found:', !!data, 'notInFollowup:', questionNotInFollowup);
             
             if (data && data.responses && data.responses.length > 0) {
-                const shuffled = [...data.responses].sort(() => Math.random() - 0.5);
+                // Normalize responses: convert strings to {text, themes} format
+                const normalizedResponses = data.responses.map(r => {
+                    if (typeof r === 'object' && r.text !== undefined) {
+                        return { text: r.text, themes: r.themes || [] };
+                    } else {
+                        return { text: r, themes: [] };
+                    }
+                });
+                
+                const shuffled = [...normalizedResponses].sort(() => Math.random() - 0.5);
                 const totalCount = shuffled.length;
                 
-                html += `<div class="ft-question-section" id="${sectionId}" style="margin-bottom:1.5rem;" data-all-responses='${JSON.stringify(shuffled).replace(/'/g, "&#39;")}' data-showing="100">`;
+                // Check if this question has themes
+                const hasThemes = DATA.metadata?.free_text_themes?.[key] && 
+                                  shuffled.some(item => item.themes && item.themes.length > 0);
+                
+                html += `<div class="ft-question-section" id="${sectionId}" style="margin-bottom:1.5rem;" data-all-responses='${JSON.stringify(shuffled).replace(/'/g, "&#39;")}' data-showing="100" data-question-key="${key}">`;
                 html += `<h5 style="margin-bottom:0.75rem;color:#e6edf3;font-size:1.05rem;">${escHTML(label)} <span class="filter-badge" style="font-weight:normal;font-size:0.9rem;">N=${data.response_count}</span></h5>`;
                 
                 if (questionNotInFollowup && includesFollowUp && !isFollowUpOnly) {
@@ -10563,9 +10790,21 @@ function showDistFreeText(filterKey) {
                 }
                 
                 html += `<div class="filter-note align-left" style="margin-bottom:0.5rem;background:rgba(88,166,255,0.15);color:#58a6ff;font-size:0.9rem;">Responses are shown verbatim and in random order</div>`;
+                
+                // Add theme filter UI if this question has themes
+                if (hasThemes) {
+                    html += buildThemeFilterUI(key, shuffled);
+                }
+                
                 html += `<div class="free-text-list" id="${listId}" style="max-height:400px;overflow-y:auto;background:var(--bg-secondary);border-radius:6px;padding:0.5rem;">`;
-                shuffled.slice(0, 100).forEach(r => {
-                    html += `<div class="free-text-item" style="padding:0.5rem 0.75rem;border-bottom:1px solid var(--border);font-size:0.95rem;color:#c9d1d9;">${escHTML(r)}</div>`;
+                shuffled.slice(0, 100).forEach(item => {
+                    const themesAttr = item.themes && item.themes.length > 0 ? ` data-themes="${escHTML(item.themes.join(','))}"` : '';
+                    html += `<div class="free-text-item" style="padding:0.5rem 0.75rem;border-bottom:1px solid var(--border);font-size:0.95rem;color:#c9d1d9;${item.themes && item.themes.length > 0 ? 'display:flex;justify-content:space-between;align-items:center;gap:0.5rem;' : ''}"${themesAttr}>`;
+                    html += `<span style="flex:1;">${escHTML(item.text)}</span>`;
+                    if (item.themes && item.themes.length > 0) {
+                        html += renderThemeTags(item.themes);
+                    }
+                    html += `</div>`;
                 });
                 html += `</div>`;
                 if (totalCount > 100) {
@@ -10618,12 +10857,14 @@ function showDistFreeText(filterKey) {
                 const shuffled = [...allResponses].sort(() => Math.random() - 0.5);
                 const showCount = Math.min(100, allResponses.length);
                 const toShow = shuffled.slice(0, showCount);
-                list.innerHTML = toShow.map(item => 
-                    `<div class="free-text-item" style="padding:0.5rem 0.75rem;border-bottom:1px solid var(--border);font-size:0.95rem;color:#c9d1d9;display:flex;justify-content:space-between;gap:1rem;">
+                list.innerHTML = toShow.map(item => {
+                    const themesAttr = item.themes && item.themes.length > 0 ? ` data-themes="${escHTML(item.themes.join(','))}"` : '';
+                    return `<div class="free-text-item" style="padding:0.5rem 0.75rem;border-bottom:1px solid var(--border);font-size:0.95rem;color:#c9d1d9;display:flex;justify-content:space-between;gap:1rem;"${themesAttr}>
                         <span style="flex:1;">${escHTML(item.text)}</span>
+                        ${item.themes && item.themes.length > 0 ? renderThemeTags(item.themes) : ''}
                         <span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;padding-left:0.5rem;border-left:1px solid var(--border);display:flex;align-items:center;">${item.label}</span>
-                    </div>`
-                ).join('');
+                    </div>`;
+                }).join('');
                 list.dataset.showing = String(showCount);
                 // Update count display
                 if (countSpan) {
@@ -10645,12 +10886,14 @@ function showDistFreeText(filterKey) {
                 
                 const filtered = allResponses.filter(item => item.label === filterLabel);
                 const shuffled = [...filtered].sort(() => Math.random() - 0.5);
-                list.innerHTML = shuffled.map(item => 
-                    `<div class="free-text-item" style="padding:0.5rem 0.75rem;border-bottom:1px solid var(--border);font-size:0.95rem;color:#c9d1d9;display:flex;justify-content:space-between;gap:1rem;">
+                list.innerHTML = shuffled.map(item => {
+                    const themesAttr = item.themes && item.themes.length > 0 ? ` data-themes="${escHTML(item.themes.join(','))}"` : '';
+                    return `<div class="free-text-item" style="padding:0.5rem 0.75rem;border-bottom:1px solid var(--border);font-size:0.95rem;color:#c9d1d9;display:flex;justify-content:space-between;gap:1rem;"${themesAttr}>
                         <span style="flex:1;">${escHTML(item.text)}</span>
+                        ${item.themes && item.themes.length > 0 ? renderThemeTags(item.themes) : ''}
                         <span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;padding-left:0.5rem;border-left:1px solid var(--border);display:flex;align-items:center;">${item.label}</span>
-                    </div>`
-                ).join('');
+                    </div>`;
+                }).join('');
                 
                 // Update count display for filtered results
                 if (countSpan) {
@@ -10666,6 +10909,111 @@ function showDistFreeText(filterKey) {
             }
         });
     });
+    
+    // Add click handlers for theme filter chips
+    ftArea.querySelectorAll('.theme-filter-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+            const container = chip.closest('.theme-filter-container');
+            const section = chip.closest('.ft-question-section');
+            const list = section?.querySelector('.free-text-list');
+            if (!list || !container) return;
+            
+            const selectedTheme = chip.dataset.theme;
+            const allResponses = JSON.parse(list.dataset.allResponses || section.dataset.allResponses || '[]');
+            const questionKey = list.dataset.questionKey || '';
+            const isAll = selectedTheme === 'all';
+            const wasActive = chip.classList.contains('active');
+            
+            // Find count and toggle spans
+            const listId = list.id;
+            const countSpan = document.getElementById(`${listId}-count`);
+            const toggleSpan = document.getElementById(`${listId}-toggle`);
+            
+            // Reset all chip styles
+            container.querySelectorAll('.theme-filter-chip').forEach(c => {
+                c.classList.remove('active');
+            });
+            
+            // Determine if this is split mode (items have labels)
+            const isSplitMode = allResponses.length > 0 && allResponses[0].label !== undefined;
+            
+            if (wasActive && !isAll) {
+                // Deactivating a theme filter - show all
+                container.querySelector('.theme-filter-chip[data-theme="all"]').classList.add('active');
+                renderFilteredResponses(list, allResponses, null, isSplitMode, countSpan, toggleSpan);
+            } else if (isAll) {
+                // Clicked "All" - show all
+                chip.classList.add('active');
+                renderFilteredResponses(list, allResponses, null, isSplitMode, countSpan, toggleSpan);
+            } else {
+                // Filter by selected theme
+                chip.classList.add('active');
+                renderFilteredResponses(list, allResponses, selectedTheme, isSplitMode, countSpan, toggleSpan);
+            }
+        });
+    });
+}
+
+// Helper function to render filtered responses (by theme)
+function renderFilteredResponses(list, allResponses, themeFilter, isSplitMode, countSpan, toggleSpan) {
+    let filtered = allResponses;
+    if (themeFilter) {
+        filtered = allResponses.filter(item => {
+            const themes = item.themes || [];
+            return themes.includes(themeFilter);
+        });
+    }
+    
+    const shuffled = [...filtered].sort(() => Math.random() - 0.5);
+    const showCount = Math.min(100, shuffled.length);
+    const toShow = shuffled.slice(0, showCount);
+    
+    if (isSplitMode) {
+        list.innerHTML = toShow.map(item => {
+            const themesAttr = item.themes && item.themes.length > 0 ? ` data-themes="${escHTML(item.themes.join(','))}"` : '';
+            return `<div class="free-text-item" style="padding:0.5rem 0.75rem;border-bottom:1px solid var(--border);font-size:0.95rem;color:#c9d1d9;display:flex;justify-content:space-between;gap:1rem;"${themesAttr}>
+                <span style="flex:1;">${escHTML(item.text)}</span>
+                ${item.themes && item.themes.length > 0 ? renderThemeTags(item.themes) : ''}
+                <span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;padding-left:0.5rem;border-left:1px solid var(--border);display:flex;align-items:center;">${item.label}</span>
+            </div>`;
+        }).join('');
+    } else {
+        list.innerHTML = toShow.map(item => {
+            const themesAttr = item.themes && item.themes.length > 0 ? ` data-themes="${escHTML(item.themes.join(','))}"` : '';
+            const hasThemes = item.themes && item.themes.length > 0;
+            return `<div class="free-text-item" style="padding:0.5rem 0.75rem;border-bottom:1px solid var(--border);font-size:0.95rem;color:#c9d1d9;${hasThemes ? 'display:flex;justify-content:space-between;align-items:center;gap:0.5rem;' : ''}"${themesAttr}>
+                <span style="flex:1;">${escHTML(item.text)}</span>
+                ${hasThemes ? renderThemeTags(item.themes) : ''}
+            </div>`;
+        }).join('');
+    }
+    
+    list.dataset.showing = String(showCount);
+    
+    // Update count display
+    if (countSpan) {
+        if (themeFilter) {
+            countSpan.textContent = `Showing ${showCount} of ${shuffled.length} responses (filtered by theme)`;
+        } else if (shuffled.length > 100) {
+            countSpan.textContent = `Showing ${showCount} of ${shuffled.length} responses`;
+        } else {
+            countSpan.textContent = `Showing all ${shuffled.length} responses`;
+        }
+    }
+    
+    // Hide toggle when filtered or when all shown
+    if (toggleSpan) {
+        if (themeFilter || shuffled.length <= 100) {
+            toggleSpan.style.display = 'none';
+        } else {
+            toggleSpan.style.display = 'inline';
+            toggleSpan.textContent = 'Show all';
+        }
+    }
+    
+    if (shuffled.length === 0) {
+        list.innerHTML = '<p class="no-data" style="padding:1rem;text-align:center;color:var(--text-muted);">No responses match this theme</p>';
+    }
 }
 
 // Toggle showing all free text responses
@@ -10680,20 +11028,30 @@ function toggleShowAll(sectionId, listId, totalCount) {
     const allResponses = JSON.parse(section.dataset.allResponses || '[]');
     const currentlyShowing = parseInt(section.dataset.showing) || 100;
     
+    // Helper to render a single response item (handles both string and {text, themes} format)
+    function renderItem(r) {
+        if (typeof r === 'object' && r.text !== undefined) {
+            const hasThemes = r.themes && r.themes.length > 0;
+            const themesAttr = hasThemes ? ` data-themes="${escHTML(r.themes.join(','))}"` : '';
+            return `<div class="free-text-item" style="padding:0.5rem 0.75rem;border-bottom:1px solid var(--border);font-size:0.95rem;color:#c9d1d9;${hasThemes ? 'display:flex;justify-content:space-between;align-items:center;gap:0.5rem;' : ''}"${themesAttr}>
+                <span style="flex:1;">${escHTML(r.text)}</span>
+                ${hasThemes ? renderThemeTags(r.themes) : ''}
+            </div>`;
+        } else {
+            return `<div class="free-text-item" style="padding:0.5rem 0.75rem;border-bottom:1px solid var(--border);font-size:0.95rem;color:#c9d1d9;">${escHTML(r)}</div>`;
+        }
+    }
+    
     if (currentlyShowing >= totalCount) {
         // Currently showing all, switch to 100
-        list.innerHTML = allResponses.slice(0, 100).map(r => 
-            `<div class="free-text-item" style="padding:0.5rem 0.75rem;border-bottom:1px solid var(--border);font-size:0.95rem;color:#c9d1d9;">${escHTML(r)}</div>`
-        ).join('');
+        list.innerHTML = allResponses.slice(0, 100).map(renderItem).join('');
         section.dataset.showing = '100';
         if (countSpan) countSpan.textContent = `Showing 100 of ${totalCount} responses`;
         if (toggleSpan) toggleSpan.textContent = 'Show all';
         list.style.maxHeight = '400px';
     } else {
         // Currently showing 100, switch to all
-        list.innerHTML = allResponses.map(r => 
-            `<div class="free-text-item" style="padding:0.5rem 0.75rem;border-bottom:1px solid var(--border);font-size:0.95rem;color:#c9d1d9;">${escHTML(r)}</div>`
-        ).join('');
+        list.innerHTML = allResponses.map(renderItem).join('');
         section.dataset.showing = String(totalCount);
         if (countSpan) countSpan.textContent = `Showing all ${totalCount} responses`;
         if (toggleSpan) toggleSpan.textContent = 'Show less';
@@ -10720,28 +11078,32 @@ function toggleShowAllSplit(listId, totalCount) {
             f.style.background = 'transparent';
             f.style.fontWeight = 'normal';
         });
+        // Also reset theme filter to "All"
+        section.querySelectorAll('.theme-filter-chip').forEach(c => c.classList.remove('active'));
+        const allChip = section.querySelector('.theme-filter-chip[data-theme="all"]');
+        if (allChip) allChip.classList.add('active');
+    }
+    
+    // Helper to render a split mode item with themes
+    function renderSplitItem(item) {
+        const themesAttr = item.themes && item.themes.length > 0 ? ` data-themes="${escHTML(item.themes.join(','))}"` : '';
+        return `<div class="free-text-item" style="padding:0.5rem 0.75rem;border-bottom:1px solid var(--border);font-size:0.95rem;color:#c9d1d9;display:flex;justify-content:space-between;gap:1rem;"${themesAttr}>
+            <span style="flex:1;">${escHTML(item.text)}</span>
+            ${item.themes && item.themes.length > 0 ? renderThemeTags(item.themes) : ''}
+            <span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;padding-left:0.5rem;border-left:1px solid var(--border);display:flex;align-items:center;">${item.label}</span>
+        </div>`;
     }
     
     if (currentlyShowing >= totalCount) {
         // Currently showing all, switch to 100
-        list.innerHTML = allResponses.slice(0, 100).map(item => 
-            `<div class="free-text-item" style="padding:0.5rem 0.75rem;border-bottom:1px solid var(--border);font-size:0.95rem;color:#c9d1d9;display:flex;justify-content:space-between;gap:1rem;">
-                <span style="flex:1;">${escHTML(item.text)}</span>
-                <span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;padding-left:0.5rem;border-left:1px solid var(--border);display:flex;align-items:center;">${item.label}</span>
-            </div>`
-        ).join('');
+        list.innerHTML = allResponses.slice(0, 100).map(renderSplitItem).join('');
         list.dataset.showing = '100';
         if (countSpan) countSpan.textContent = `Showing 100 of ${totalCount} responses`;
         if (toggleSpan) toggleSpan.textContent = 'Show all';
         list.style.maxHeight = '500px';
     } else {
         // Currently showing 100, switch to all
-        list.innerHTML = allResponses.map(item => 
-            `<div class="free-text-item" style="padding:0.5rem 0.75rem;border-bottom:1px solid var(--border);font-size:0.95rem;color:#c9d1d9;display:flex;justify-content:space-between;gap:1rem;">
-                <span style="flex:1;">${escHTML(item.text)}</span>
-                <span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;padding-left:0.5rem;border-left:1px solid var(--border);display:flex;align-items:center;">${item.label}</span>
-            </div>`
-        ).join('');
+        list.innerHTML = allResponses.map(renderSplitItem).join('');
         list.dataset.showing = String(totalCount);
         if (countSpan) countSpan.textContent = `Showing all ${totalCount} responses`;
         if (toggleSpan) toggleSpan.textContent = 'Show less';
@@ -21806,25 +22168,23 @@ function showCrossQuestion() {
     ca.innerHTML = ''; la.innerHTML = ''; tc.innerHTML = '';
     if (na) na.innerHTML = '';
     if (pt) pt.textContent = '';
-    if (sourceNote) sourceNote.style.display = 'none';
     updateCQDownloadButton();  // Hide button when clearing
     
     const t = document.getElementById('cq-topic').value;
     const q = document.getElementById('cq-question').value;
     const ct = document.getElementById('cq-cross-type').value;
     const cv = document.getElementById('cq-cross-value').value;
+    // Show/hide the Follow-up Prolific note based on filter state (before early returns)
+    const filterState = getCQFilterState();
+    if (sourceNote) {
+        sourceNote.style.display = filterState.showNote ? 'block' : 'none';
+    }
     
     if (!t || !q) { tt.textContent = 'Select a question to cross-tabulate'; return; }
     if (!ct || !cv) { tt.textContent = 'Select what to cross with'; return; }
     
     // Get filter state (includes key, showNote, showNoData)
-    const filterState = getCQFilterState();
     const currentFilterKey = filterState.key;
-    
-    // Show/hide the Follow-up Prolific note
-    if (sourceNote) {
-        sourceNote.style.display = filterState.showNote ? 'block' : 'none';
-    }
     
     // Handle "no data" case (Follow-up + Free only)
     if (filterState.showNoData) {
