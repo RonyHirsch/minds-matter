@@ -10827,12 +10827,14 @@ function showDistFreeText(filterKey) {
                     html += `</div>`;
                 });
                 html += `</div>`;
-                if (totalCount > 100) {
-                    html += `<div style="margin-top:0.6rem;display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">`;
-                    html += `<span style="color:var(--text-muted);font-size:0.9rem;" id="${listId}-count">Showing 100 of ${totalCount} responses</span>`;
-                    html += `<span style="color:#8b949e;font-size:0.9rem;font-weight:600;cursor:pointer;text-decoration:underline;" onclick="toggleShowAll('${sectionId}', '${listId}', ${totalCount})" id="${listId}-toggle">Show all</span>`;
-                    html += `</div>`;
-                }
+				html += `<div style="margin-top:0.6rem;display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">`;
+				if (totalCount > 100) {
+					html += `<span style="color:var(--text-muted);font-size:0.9rem;" id="${listId}-count">Showing 100 of ${totalCount} responses</span>`;
+					html += `<span style="color:#8b949e;font-size:0.9rem;font-weight:600;cursor:pointer;text-decoration:underline;" onclick="toggleShowAll('${sectionId}', '${listId}', ${totalCount})" id="${listId}-toggle">Show all</span>`;
+				} else {
+					html += `<span style="color:var(--text-muted);font-size:0.9rem;" id="${listId}-count">Showing all ${totalCount} responses</span>`;
+				}
+				html += `</div>`;
                 html += `<div style="margin-top:0.5rem;font-size:0.8rem;color:#6e7681;font-style:italic;">Content reflects respondents' own views and might include language some find offensive.</div>`;
                 html += `</div>`;
             } else {
