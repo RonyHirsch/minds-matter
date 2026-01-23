@@ -1,8 +1,9 @@
 # minds-matter
 
-An interactive explorer for data from a survey about the relationship between consciousness and moral status. 
+Code for a website that is an interactive explorer for data from a survey about the relationship between consciousness and moral status. 
 This website was created to visualize data collected as part of [a survey](https://doi.org/10.31234/osf.io/ve6c5_v1): 
-Hirschhorn, R., Negro, N., & Mudrik, L. (2026). The perceived role of consciousness in moral status attributions. 
+
+Hirschhorn, R., Negro, N., & Mudrik, L. (2026). The perceived role of consciousness in moral status attributions. PsyArXiv
 
 ## About the Survey
 
@@ -11,12 +12,26 @@ This survey explored what people think about **moral status** (e.g., who has it?
 Respondents were asked a combination of: 
 - Direct questions (e.g., "Do you think non-conscious creatures/systems should be taken into account in moral decisions?") 
 - Indirect questions (e.g., "Do you think a creature/system can have intentions/goals without being conscious?")
-- Moral dilemmas (e.g., about zombification - Siewert 1998; and Vulcans - Chalmers, 2014)
-With both forced-choice, ratings, and open-ended questions (free text), 
+- Moral dilemmas (e.g., about zombification - Siewert 1998; and Vulcans - Chalmers, 2022)
+
+With forced-choice, ratings, and open-ended questions (free text)
+
+
+
+<sub>
+
+References:<br>
+
+Siewert, C. P. The Significance of Consciousness. (Princeton University Press, Princeton, N.J, 1998).<br>
+
+Chalmers, D. J. Reality+: Virtual Worlds and the Problems of Philosophy. (W. W. Norton, 2022).
+
+</sub>
+
 
 ## Using the Explorer
 
-Visit the [interactive explorer](https://RonyHirsch.github.io/minds-matter) to:
+Visit the [website](https://ronyhirsch.github.io/minds-matter/?utm_source=github&utm_campaign=website_readme) to:
 
 - View distributions of responses to individual questions
 - Cross-tabulate survey responses with demographics and expertise
@@ -35,7 +50,7 @@ To prevent re-identification of respondents:
 
 If you use this data in your research, please cite:
 
-> [Citation to be added]
+[Hirschhorn, R., Negro, N., & Mudrik, L. (2026). The perceived role of consciousness in moral status attributions. PsyArXiv](https://doi.org/10.31234/osf.io/ve6c5_v1)
 
 ## License
 
@@ -43,5 +58,5 @@ This work is licensed under [CC-BY 4.0](https://creativecommons.org/licenses/by/
 
 ## Contact
 
-For questions and comments about the survey, the data, or the website, please contact [Rony Hirschhorn] (mindsmatterwebsite@gmail.com).
+For questions and comments about the survey, the data, or the website, please contact [Rony Hirschhorn](mindsmatterwebsite@gmail.com).
 
