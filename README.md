@@ -1,6 +1,8 @@
 # minds-matter
 
 An interactive explorer for data from a survey about the relationship between consciousness and moral status. 
+This website was created to visualize data collected as part of [a survey](https://doi.org/10.31234/osf.io/ve6c5_v1): 
+Hirschhorn, R., Negro, N., & Mudrik, L. (2026). The perceived role of consciousness in moral status attributions. 
 
 ## About the Survey
 
@@ -41,8 +43,5 @@ This work is licensed under [CC-BY 4.0](https://creativecommons.org/licenses/by/
 
 ## Contact
 
-For questions about the survey or data, please contact [Rony Hirschhorn] (rony.hirschhorn@gmail.com).
+For questions and comments about the survey, the data, or the website, please contact [Rony Hirschhorn] (mindsmatterwebsite@gmail.com).
 
-## References
-Siewert, C. P. The Significance of Consciousness. (Princeton University Press, Princeton, N.J, 1998). 
-Chalmers, D. J. Reality+: Virtual Worlds and the Problems of Philosophy. (W. W. Norton, 2022). 
