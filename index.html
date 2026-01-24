@@ -2581,6 +2581,79 @@ function applyURLState() {
             }
         }
     }
+    
+    // 5. Cross Questions state (cascading dropdowns - need sequential loading)
+    const cqTopic = params.get('cqTopic');
+    if (cqTopic && tab === 'crosstabs') {
+        applyCrossQuestionsURLState(params);
+    }
+}
+
+function applyCrossQuestionsURLState(params) {
+    const cqTopic = params.get('cqTopic');
+    const cqQuestion = params.get('cqQuestion');
+    const cqCross = params.get('cqCross');
+    const cqValue = params.get('cqValue');
+    const cqFilter = params.get('cqFilter');
+    
+    const topicSelect = document.getElementById('cq-topic');
+    if (topicSelect && cqTopic) {
+        topicSelect.value = cqTopic;
+        updateCQQuestionDropdown();
+        
+        setTimeout(() => {
+            const questionSelect = document.getElementById('cq-question');
+            if (questionSelect && cqQuestion) {
+                questionSelect.value = cqQuestion;
+                updateCQCrossTypeDropdown();
+                
+                setTimeout(() => {
+                    const crossTypeSelect = document.getElementById('cq-cross-type');
+                    if (crossTypeSelect && cqCross) {
+                        crossTypeSelect.value = cqCross;
+                        updateCQCrossValueOptions();
+                        
+                        setTimeout(() => {
+                            const crossValueSelect = document.getElementById('cq-cross-value');
+                            if (crossValueSelect && cqValue) {
+                                crossValueSelect.value = cqValue;
+                            }
+                            if (cqFilter) {
+                                applyCQFiltersFromURL(cqFilter);
+                            }
+                            showCrossQuestion();
+                        }, 100);
+                    } else {
+                        showCrossQuestion();
+                    }
+                }, 100);
+            } else {
+                showCrossQuestion();
+            }
+        }, 100);
+    }
+}
+
+function applyCQFiltersFromURL(filterString) {
+    const filterBox = document.getElementById('cq-filter-box');
+    if (!filterBox) return;
+    
+    const allCheckbox = document.getElementById('cq-f-none');
+    if (allCheckbox) allCheckbox.checked = false;
+    
+    filterBox.querySelectorAll('input[data-t]').forEach(cb => cb.checked = false);
+    
+    const filters = filterString.split(',');
+    filters.forEach(filter => {
+        const [type, value] = filter.split(':');
+        if (type === 'sample') {
+            const cb = document.getElementById(`cq-f-s-${value}`);
+            if (cb) cb.checked = true;
+        } else if (type === 'source') {
+            const cb = document.getElementById(`cq-f-r-${value}`);
+            if (cb) cb.checked = true;
+        }
+    });
 }
 
 function updateURLState() {
@@ -2591,33 +2664,74 @@ function updateURLState() {
         params.set('tab', activeTab.dataset.panel);
     }
     
-    const catSelect = document.getElementById('dist-category');
-    if (catSelect?.value) {
-        params.set('topic', catSelect.value);
-        
-        if (catSelect.value === 'combined_attr') {
-            const displayRadio = document.querySelector('input[name="display-mode"]:checked');
-            if (displayRadio) {
-                params.set('display', displayRadio.value);
+    const activePanel = activeTab?.dataset.panel;
+    
+    // Question Data tab state
+    if (activePanel === 'question-data' || activePanel === 'distributions') {
+        const catSelect = document.getElementById('dist-category');
+        if (catSelect?.value) {
+            params.set('topic', catSelect.value);
+            
+            if (catSelect.value === 'combined_attr') {
+                const displayRadio = document.querySelector('input[name="display-mode"]:checked');
+                if (displayRadio) {
+                    params.set('display', displayRadio.value);
+                }
             }
-        }
-        
-        const vbox = document.getElementById('vbox');
-        if (vbox) {
-            const checked = vbox.querySelectorAll('input[type="checkbox"]:checked:not(#v-all):not(#v-kpt-all)');
-            if (checked.length > 0 && checked.length < 24) {
-                const keys = Array.from(checked).map(cb => 
-                    cb.dataset.entity || cb.dataset.k
-                ).filter(Boolean);
-                if (keys.length > 0) {
-                    params.set('entities', keys.join(','));
+            
+            const vbox = document.getElementById('vbox');
+            if (vbox) {
+                const checked = vbox.querySelectorAll('input[type="checkbox"]:checked:not(#v-all):not(#v-kpt-all)');
+                if (checked.length > 0 && checked.length < 24) {
+                    const keys = Array.from(checked).map(cb => 
+                        cb.dataset.entity || cb.dataset.k
+                    ).filter(Boolean);
+                    if (keys.length > 0) {
+                        params.set('entities', keys.join(','));
+                    }
                 }
             }
         }
     }
     
+    // Cross Questions tab state
+    if (activePanel === 'crosstabs') {
+        const cqTopic = document.getElementById('cq-topic')?.value;
+        const cqQuestion = document.getElementById('cq-question')?.value;
+        const cqCross = document.getElementById('cq-cross-type')?.value;
+        const cqValue = document.getElementById('cq-cross-value')?.value;
+        
+        if (cqTopic) params.set('cqTopic', cqTopic);
+        if (cqQuestion) params.set('cqQuestion', cqQuestion);
+        if (cqCross) params.set('cqCross', cqCross);
+        if (cqValue) params.set('cqValue', cqValue);
+        
+        const cqFilterState = getCQFilterStateForURL();
+        if (cqFilterState) {
+            params.set('cqFilter', cqFilterState);
+        }
+    }
+    
     const newURL = params.toString() ? `?${params.toString()}` : window.location.pathname;
     history.replaceState(null, '', newURL);
+}
+
+function getCQFilterStateForURL() {
+    const allCheckbox = document.getElementById('cq-f-none');
+    if (allCheckbox?.checked) return null;
+    
+    const filters = [];
+    const filterBox = document.getElementById('cq-filter-box');
+    if (!filterBox) return null;
+    
+    filterBox.querySelectorAll('input[data-t="sample"]:checked').forEach(cb => {
+        filters.push(`sample:${cb.dataset.v}`);
+    });
+    filterBox.querySelectorAll('input[data-t="source"]:checked').forEach(cb => {
+        filters.push(`source:${cb.dataset.v}`);
+    });
+    
+    return filters.length > 0 ? filters.join(',') : null;
 }
 
 // ==========================================
@@ -21022,6 +21136,17 @@ async function downloadCQCharts() {
             question = 'how';
         }
     }
+	
+	// Special handling for moral_features questions: use short names
+    if (topicValue === 'moral_features') {
+        if (questionValue === 'moral_important') {
+            question = 'important_features';
+        } else if (questionValue === 'moral_most_important') {
+            question = 'most_important_feature';
+        } else if (questionValue === 'combined') {
+            question = 'combined';
+        }
+    }
     
     // crossType already declared earlier in function
     const crossTopicText = document.getElementById('cq-cross-type')?.selectedOptions[0]?.textContent || '';
@@ -21277,7 +21402,13 @@ const CQ_QUESTION_LABELS = {
     'uws_pet': 'A person with a permanent unresponsive wakefulness syndrome, or your pet?',
     'uws_Cfly': 'A person with a permanent unresponsive wakefulness syndrome, or a conscious fruit-fly?',
     'uws_AI': 'A person with a permanent unresponsive wakefulness syndrome, or an AI system that tells you it is conscious?',
-    'AI_dog': 'An AI system that tells you it is conscious, or a random dog?'
+    'AI_dog': 'An AI system that tells you it is conscious, or a random dog?',
+	
+	// Important Features for Moral Considerations
+    'moral_important': 'What do you think is important for moral considerations?',
+    'moral_most_important': 'Which do you think is the most important for moral considerations?',
+    'combined': 'Combined',
+    'moral_features_combined': 'Combined',
 };
 
 // Entity short names for attributions - mapped from entity_short_names in metadata
@@ -21737,7 +21868,7 @@ function populateCQTopicDropdown() {
         h += '</optgroup>';
     }
     
-    // Moral Dilemmas (exclude moral_features - data parsing issues with multiselect)
+    // Moral Dilemmas 
     const md = ['zombie_pill', 'earth_danger', 'kill'].filter(has);
     if (md.length) {
         h += '<optgroup label="Moral Dilemmas">';
@@ -21745,8 +21876,8 @@ function populateCQTopicDropdown() {
         h += '</optgroup>';
     }
     
-    // Direct Questions - exclude moral_features due to multiselect data parsing issues
-    const dq = ['graded', 'c_intel', 'ics', 'moral_cons'].filter(has);
+    // Direct Questions
+    const dq = ['graded', 'c_intel', 'ics', 'moral_cons', 'moral_features'].filter(has);
     if (dq.length) {
         h += '<optgroup label="Direct Questions">';
         dq.forEach(t => h += `<option value="${t}">${CQ_TOPIC_LABELS[t]}</option>`);
@@ -21890,6 +22021,14 @@ function updateCQQuestionDropdown() {
             }
         }
         sorted = orderedQuestions;
+    } else if (t === 'moral_features') {
+        // Special ordering for moral_features: combined at the end
+        sorted = [...qKeys].filter(q => q !== 'combined').sort((a, b) => 
+            getCQQuestionLabel(t, a).localeCompare(getCQQuestionLabel(t, b))
+        );
+        if (qKeys.has('combined')) {
+            sorted.push('combined');
+        }
     } else {
         // Default: special first (cluster/group), then by label
         sorted = [...qKeys].sort((a, b) => {
@@ -21922,6 +22061,8 @@ function getActualDataKey(topic, qKey) {
     if (topic === 'ics' && qKey === 'group') return 'calculated_group';
     if (topic === 'demo') return qKey;  // demo keys are just the variable name
     if (topic === 'exp') return qKey;   // exp keys are just the variable name
+    // moral_features questions have topic prefix in their keys
+    if (topic === 'moral_features') return `moral_features_${qKey}`;
     return `${topic}_${qKey}`;
 }
 
@@ -21934,11 +22075,11 @@ function getAvailableCrossTopics() {
     
     const topics = new Set();
     
-    // Topics to exclude from cross options (multiselect data parsing issues)
-    const excludeTopics = ['moral_features'];
+    // Topics to exclude from cross options
+    const excludeTopics = [];
     
     // Known topic prefixes for matching
-    const knownTopics = ['zombie_pill', 'ics', 'graded', 'moral_cons', 'c_intel', 'kill', 'earth_danger', 'c_attr', 'ms_attr', 'calculated'];
+    const knownTopics = ['zombie_pill', 'ics', 'graded', 'moral_cons', 'c_intel', 'moral_features', 'kill', 'earth_danger', 'c_attr', 'ms_attr', 'calculated'];
     
     // Helper to extract topic from a survey key part
     const extractTopic = (surveyPart) => {
@@ -22077,6 +22218,26 @@ function updateCQCrossTypeDropdown() {
         hasPetsCross = true;
     }
     
+    // For moral_features, ONLY allow Experience Levels crossing
+    if (t === 'moral_features') {
+        // Only show Experience Levels for moral_features
+        // For moral_most_important, check if ANY exp keys exist (not just current filter)
+        // because Follow-up sample has no data for this question
+        if (availExp.length) {
+            h += '<optgroup label="Respondent Information">';
+            h += '<option value="exp">Experience Levels</option>';
+            h += '</optgroup>';
+        } else if (q === 'moral_most_important') {
+            // No exp data available - likely Follow-up only filter
+            // Still show the option so user can see the "no data" message
+            h += '<optgroup label="Respondent Information">';
+            h += '<option value="exp">Experience Levels</option>';
+            h += '</optgroup>';
+        }
+        cts.innerHTML = h;
+        return;
+    }
+    
     // Survey Topics FIRST - organized like Topic menu
     const avail = getAvailableCrossTopics();
     if (avail.length) {
@@ -22213,6 +22374,14 @@ function updateCQCrossValueOptions() {
                     } else {
                         sortedKeys.unshift('moral_cons');
                     }
+                }
+            } else if (xt === 'moral_features') {
+                // Special ordering for moral_features: combined at the end
+                sortedKeys = availKeys.filter(qk => qk !== 'combined').sort((a, b) => 
+                    getCQQuestionLabel(xt, a).localeCompare(getCQQuestionLabel(xt, b))
+                );
+                if (availKeys.includes('combined')) {
+                    sortedKeys.push('combined');
                 }
             } else {
                 // Default: special first (cluster/group), then by label
@@ -22412,6 +22581,7 @@ function setupCQEvents() {
         }
         
         showCrossQuestion();
+		updateURLState();
     });
     document.getElementById('cq-question')?.addEventListener('change', () => {
         // Analytics: Track question selection in Cross Questions
@@ -22429,10 +22599,12 @@ function setupCQEvents() {
         if (cvs) cvs.innerHTML = '<option value="">Select...</option>';
         document.getElementById('cq-cross-value-group').style.display = 'none';
         showCrossQuestion();
+		updateURLState();
     });
     document.getElementById('cq-cross-type')?.addEventListener('change', () => { 
         updateCQCrossValueOptions(); 
         showCrossQuestion(); 
+		updateURLState();
     });
     document.getElementById('cq-cross-value')?.addEventListener('change', () => {
         // Analytics: Track complete cross-tabulation selection
@@ -22451,6 +22623,7 @@ function setupCQEvents() {
         }
         
         showCrossQuestion();
+		updateURLState();
     });
 }
 
@@ -22647,6 +22820,23 @@ function showCrossQuestion() {
             panel && typeof panel === 'object' && 
             Object.values(panel).some(opt => opt && typeof opt.inclusive === 'number')
         );
+    
+    // Check for moral_features_combined (stacked Important + Most Important)
+    if (xtabRaw.type === 'moral_features_combined') {
+        renderMoralFeaturesCombinedCross(xtabRaw, ca, la, tc, tt, t, q, ct, cv, ql_display, xl_display);
+        updateCQDownloadButton();
+        return;
+    }
+    
+    // For moral_features individual questions (not combined), render as simple bars
+    // Don't show exclusive/inclusive breakdown - just total counts
+    const isMoralFeaturesIndividual = (t === 'moral_features' && q !== 'combined') || 
+                                       (ct?.startsWith('survey_moral_features') && !cv?.includes('combined'));
+    if (isMoralFeaturesIndividual && isMultiselectData) {
+        renderMoralFeaturesSimpleBars(xtabRaw, ca, la, tc, tt, t, q, ct, cv, ql_display, xl_display);
+        updateCQDownloadButton();
+        return;
+    }
     
     if (isMultiselectData || isMultiselectPanels || hasMultiselectStructure) {
         // Handle multiselect data visualization
@@ -24605,6 +24795,362 @@ function renderMultiselectCrossQuestion(data, ca, la, tc, tt, t, q, ct, cv, ql, 
         h += `<td><strong>${grandTotal}</strong></td></tr></tbody></table>`;
         tc.innerHTML = h;
     }
+}
+
+function renderMoralFeaturesCombinedCross(data, ca, la, tc, tt, t, q, ct, cv, ql, xl) {
+    // Render moral_features combined (stacked Important + Most Important) × Experience Levels
+    // Experience levels (1-5) are panels, moral features are stacked horizontal bars inside
+    
+    const c = DATA.metadata?.colors || {};
+    const expColors = c.experience_scale || {
+        '1': '#E57373', '2': '#FFB74D', '3': '#FFF176', '4': '#81C784', '5': '#4DB6AC'
+    };
+    const expLabels = {
+        '1': 'Not at all (1)', '2': '2', '3': '3', '4': '4', '5': 'Very much (5)'
+    };
+    
+    // Build title
+    let titleN = 0;
+    if (data._totals) {
+        titleN = Object.values(data._totals).reduce((a, b) => a + b, 0);
+    }
+    
+    // Build title with panel question label and data question in legend area
+    let titleHtml = `${xl} × ${ql} <span class="filter-badge">N=${titleN}</span>`;
+    if (data.note) {
+        titleHtml += `<span class="filter-note note-block">${data.note}</span>`;
+    }
+    tt.innerHTML = titleHtml;
+    
+    // Set panel title (Experience Level question name)
+    const pt = document.getElementById('cq-panel-title');
+    if (pt) pt.textContent = xl || '';
+    
+    // Clear areas
+    ca.innerHTML = '';
+    la.innerHTML = '';
+    tc.innerHTML = '';
+    
+    // Get panel keys (experience levels 1-5)
+    const panelKeys = Object.keys(data.data || {}).filter(k => !k.startsWith('_')).sort((a, b) => parseInt(a) - parseInt(b));
+    
+    // Collect all feature options across all panels
+    const allFeatures = new Set();
+    panelKeys.forEach(pk => {
+        const pd = data.data[pk];
+        if (pd?.important) Object.keys(pd.important).forEach(f => allFeatures.add(f));
+        if (pd?.most_important) Object.keys(pd.most_important).forEach(f => allFeatures.add(f));
+    });
+    const features = [...allFeatures];
+    
+    // Calculate bar height based on features
+    const itemHeight = 40;
+    const bh = Math.max(200, features.length * itemHeight);
+    
+    // Build HTML grid
+    const gc = Math.min(panelKeys.length, 3);  // Max 3 columns
+    let h = `<div style="display:grid;grid-template-columns:repeat(${gc}, 1fr);gap:1rem;margin-bottom:2rem;">`;
+    
+    panelKeys.forEach((pk, i) => {
+        const panelData = data.data[pk] || {};
+        const panelN = data._totals?.[pk] || 0;
+        const panelColor = expColors[pk] || '#4097AA';
+        const panelLabel = expLabels[pk] || pk;
+        
+        h += `<div style="background:var(--bg-tertiary);border-radius:8px;overflow:hidden;">
+            <div style="background:${panelColor};color:white;padding:0.5rem;text-align:center;font-size:1rem;font-weight:600;">${panelLabel}<br><small style="font-weight:normal;font-size:0.85rem;">N=${panelN}</small></div>
+            <div style="padding:0.75rem;height:${bh}px;"><canvas id="cq-mfc-${i}"></canvas></div>
+        </div>`;
+    });
+    
+    h += '</div>';
+    
+    // Legend for stacked bars - match multiselect style
+    la.innerHTML = `<div class="legend-bar" style="justify-content:center;margin-bottom:0.5rem;">
+        <span class="legend-item"><span class="legend-color" style="background:#6e7681"></span>Most Important</span>
+        <span class="legend-item"><span class="legend-color" style="background:rgba(110,118,129,0.4)"></span>Important for Moral Considerations</span>
+    </div>`;
+    
+    ca.innerHTML = h;
+    
+    // Create charts for each panel
+    panelKeys.forEach((pk, i) => {
+        const cvs = document.getElementById(`cq-mfc-${i}`);
+        if (!cvs) return;
+        
+        const panelData = data.data[pk] || {};
+        const importantData = panelData.important || {};
+        const mostData = panelData.most_important || {};
+        
+        // Build chart data sorted by important count
+        const chartItems = features.map(f => ({
+            label: f,
+            important: importantData[f] || 0,
+            most: mostData[f] || 0
+        })).filter(item => item.important > 0 || item.most > 0)
+          .sort((a, b) => b.important - a.important);
+        
+        if (chartItems.length === 0) return;
+        
+        const labels = chartItems.map(item => item.label);
+        const importantValues = chartItems.map(item => item.important);
+        const mostValues = chartItems.map(item => item.most);
+        
+        const panelColor = expColors[pk] || '#4097AA';
+        
+        cqCharts[`mfc-${i}`] = new Chart(cvs, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Most Important',
+                        data: mostValues,
+                        backgroundColor: panelColor,
+                        borderWidth: 0,
+                        barPercentage: 0.85,
+                        categoryPercentage: 0.9
+                    },
+                    {
+                        label: 'Important',
+                        data: importantValues,
+                        backgroundColor: panelColor + '66',
+                        borderWidth: 0,
+                        barPercentage: 0.85,
+                        categoryPercentage: 0.9
+                    }
+                ]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                layout: { padding: { top: 5, bottom: 5, left: 0, right: 10 } },
+                scales: {
+                    x: {
+                        stacked: true,  // Stacked bars
+                        grid: { color: 'rgba(255,255,255,0.1)' },
+                        ticks: { color: '#e6edf3', font: { size: 13 }, precision: 0 },
+                        beginAtZero: true
+                    },
+                    y: {
+                        stacked: true,
+                        grid: { display: false },
+                        ticks: {
+                            color: '#e6edf3',
+                            font: { size: 14 },
+                            autoSkip: false,
+                            callback: function(value, index) {
+                                let label = this.getLabelForValue(value);
+                                if (!label) return '';
+                                const maxLen = 30;
+                                if (label.length <= maxLen) return label;
+                                const words = label.split(' ');
+                                const lines = [];
+                                let currentLine = '';
+                                for (const word of words) {
+                                    if ((currentLine + ' ' + word).trim().length <= maxLen) {
+                                        currentLine = (currentLine + ' ' + word).trim();
+                                    } else {
+                                        if (currentLine) lines.push(currentLine);
+                                        currentLine = word;
+                                    }
+                                }
+                                if (currentLine) lines.push(currentLine);
+                                return lines;
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.dataset.label}: ${context.raw}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+}
+
+
+function renderMoralFeaturesSimpleBars(data, ca, la, tc, tt, t, q, ct, cv, ql, xl) {
+    // Render moral_features individual questions as simple horizontal bars
+    // Uses inclusive counts only - no exclusive/with-others breakdown
+    
+    const c = DATA.metadata?.colors || {};
+    const expColors = c.experience_scale || {
+        '1': '#E57373', '2': '#FFB74D', '3': '#FFF176', '4': '#81C784', '5': '#4DB6AC'
+    };
+    const expLabels = {
+        '1': 'Not at all (1)', '2': '2', '3': '3', '4': '4', '5': 'Very much (5)'
+    };
+	
+	// Check if this is Follow-up only and moral_most_important (no data available)
+    if (q === 'moral_most_important' && (!data.data || Object.keys(data.data).length === 0)) {
+        tt.innerHTML = `${xl} × ${ql}`;
+        const pt = document.getElementById('cq-panel-title');
+        if (pt) pt.textContent = xl || '';
+        ca.innerHTML = '';
+        la.innerHTML = '';
+        tc.innerHTML = `<div style="text-align:center;padding:2rem;color:#8b949e;">
+            <div style="font-size:1.1rem;margin-bottom:0.5rem;">N = 0</div>
+            <div>Data not available: this sample was not presented with these questions.</div>
+        </div>`;
+        return;
+    }
+    
+    // Build title
+    let titleN = 0;
+    if (data._totals) {
+        titleN = Object.values(data._totals).reduce((a, b) => a + b, 0);
+    }
+    
+    let titleHtml = `${xl} × ${ql} <span class="filter-badge">N=${titleN}</span>`;
+    if (data.note) {
+        titleHtml += `<span class="filter-note note-block">${data.note}</span>`;
+    }
+    tt.innerHTML = titleHtml;
+    
+    // Set panel title (Experience Level question name)
+    const pt = document.getElementById('cq-panel-title');
+    if (pt) pt.textContent = xl || '';
+    
+    // Clear areas - no legend for simple bars
+    ca.innerHTML = '';
+    la.innerHTML = '';
+    tc.innerHTML = '';
+    
+    // Get panel keys (experience levels 1-5)
+    const panelKeysRaw = Object.keys(data.data || {}).filter(k => !k.startsWith('_'));
+    const panelKeys = panelKeysRaw.sort((a, b) => parseInt(a) - parseInt(b));
+    
+    // Collect all feature options
+    const allFeatures = new Set();
+    panelKeys.forEach(pk => {
+        Object.keys(data.data[pk] || {}).forEach(f => allFeatures.add(f));
+    });
+    const features = [...allFeatures];
+    
+    // Calculate bar height
+    const itemHeight = 40;
+    const bh = Math.max(200, features.length * itemHeight);
+    
+    // Build HTML grid
+    const gc = Math.min(panelKeys.length, 3);
+    let h = `<div style="display:grid;grid-template-columns:repeat(${gc}, 1fr);gap:1rem;margin-bottom:2rem;">`;
+    
+    panelKeys.forEach((pk, i) => {
+        const panelN = data._totals?.[pk] || 0;
+        const panelColor = expColors[pk] || '#4097AA';
+        const panelLabel = expLabels[pk] || pk;
+        
+        h += `<div style="background:var(--bg-tertiary);border-radius:8px;overflow:hidden;">
+            <div style="background:${panelColor};color:white;padding:0.5rem;text-align:center;font-size:1rem;font-weight:600;">${panelLabel}<br><small style="font-weight:normal;font-size:0.85rem;">N=${panelN}</small></div>
+            <div style="padding:0.75rem;height:${bh}px;"><canvas id="cq-mfs-${i}"></canvas></div>
+        </div>`;
+    });
+    
+    h += '</div>';
+    ca.innerHTML = h;
+    
+    // Create charts for each panel
+    panelKeys.forEach((pk, i) => {
+        const cvs = document.getElementById(`cq-mfs-${i}`);
+        if (!cvs) return;
+        
+        const panelData = data.data[pk] || {};
+        const panelColor = expColors[pk] || '#4097AA';
+        
+        // Build chart data using INCLUSIVE counts only, sorted by count
+        const chartItems = [];
+        features.forEach(f => {
+            const optData = panelData[f];
+            if (!optData) return;
+            // Use inclusive count (total who selected this option)
+            const count = typeof optData.inclusive === 'number' ? optData.inclusive : 
+                          (typeof optData === 'number' ? optData : 0);
+            if (count > 0) {
+                chartItems.push({ label: f, count: count });
+            }
+        });
+        
+        // Sort by count descending
+        chartItems.sort((a, b) => b.count - a.count);
+        
+        if (chartItems.length === 0) return;
+        
+        const labels = chartItems.map(item => item.label);
+        const values = chartItems.map(item => item.count);
+        
+        cqCharts[`mfs-${i}`] = new Chart(cvs, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: values,
+                    backgroundColor: panelColor,
+                    borderWidth: 0,
+                    barPercentage: 0.7,
+                    categoryPercentage: 0.85
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                layout: { padding: { top: 5, bottom: 5, left: 0, right: 10 } },
+                scales: {
+                    x: {
+                        grid: { color: 'rgba(255,255,255,0.1)' },
+                        ticks: { color: '#e6edf3', font: { size: 13 }, precision: 0 },
+                        beginAtZero: true
+                    },
+                    y: {
+                        grid: { display: false },
+                        ticks: {
+                            color: '#e6edf3',
+                            font: { size: 14 },
+                            autoSkip: false,
+                            callback: function(value, index) {
+                                let label = this.getLabelForValue(value);
+                                if (!label) return '';
+                                const maxLen = 30;
+                                if (label.length <= maxLen) return label;
+                                const words = label.split(' ');
+                                const lines = [];
+                                let currentLine = '';
+                                for (const word of words) {
+                                    if ((currentLine + ' ' + word).trim().length <= maxLen) {
+                                        currentLine = (currentLine + ' ' + word).trim();
+                                    } else {
+                                        if (currentLine) lines.push(currentLine);
+                                        currentLine = word;
+                                    }
+                                }
+                                if (currentLine) lines.push(currentLine);
+                                return lines;
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `Count: ${context.raw}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
 }
 
 function renderCQViz(xtab, ca, la, tc, cfg) {
