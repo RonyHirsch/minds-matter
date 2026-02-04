@@ -2590,10 +2590,10 @@ function applyURLState() {
 }
 
 function applyCrossQuestionsURLState(params) {
-    const cqTopic = params.get('cqTopic');
-    const cqQuestion = params.get('cqQuestion');
-    const cqCross = params.get('cqCross');
-    const cqValue = params.get('cqValue');
+    const cqTopic = params.get('cqTopic')?.replace(/\/$/, '');
+	const cqQuestion = params.get('cqQuestion')?.replace(/\/$/, '');
+	const cqCross = params.get('cqCross')?.replace(/\/$/, '');
+	const cqValue = params.get('cqValue')?.replace(/\/$/, '');
     const cqFilter = params.get('cqFilter');
     
     const topicSelect = document.getElementById('cq-topic');
