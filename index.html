@@ -2516,6 +2516,7 @@ function setupEvents() {
         console.log('[free-text-container] Change event fired');
         showDist();
         setTimeout(updateDownloadButton, 100);
+        setTimeout(updateURLState, 150);
     });
     
     // Legacy cross-show button (may not exist in new UI)
@@ -2576,8 +2577,31 @@ function applyURLState() {
                     showDist();
                     setTimeout(updateDownloadButton, 100);
                 }, 100);
+            } else if (topic === 'moral_features' && params.get('mfOption')) {
+                const mfOption = params.get('mfOption');
+                setTimeout(() => {
+                    const radio = document.getElementById(mfOption);
+                    if (radio) radio.checked = true;
+                    showDist();
+                    setTimeout(updateDownloadButton, 100);
+                }, 100);
             } else {
                 showDist();
+            }
+
+            const ftKeys = params.get('ftKeys');
+            if (ftKeys) {
+                setTimeout(() => {
+                    const ftContainer = document.getElementById('free-text-container');
+                    if (ftContainer) {
+                        ftKeys.split(',').forEach(key => {
+                            const cb = ftContainer.querySelector(`input[data-ft-key="${key}"]`);
+                            if (cb) cb.checked = true;
+                        });
+                        showDist();
+                        setTimeout(updateDownloadButton, 100);
+                    }
+                }, 200);
             }
         }
     }
@@ -2678,6 +2702,13 @@ function updateURLState() {
                     params.set('display', displayRadio.value);
                 }
             }
+			
+			if (catSelect.value === 'moral_features') {
+                const mfRadio = document.querySelector('input[name="mf-option"]:checked');
+                if (mfRadio) {
+                    params.set('mfOption', mfRadio.id);
+                }
+            }
             
             const vbox = document.getElementById('vbox');
             if (vbox) {
@@ -2689,6 +2720,15 @@ function updateURLState() {
                     if (keys.length > 0) {
                         params.set('entities', keys.join(','));
                     }
+                }
+            }
+
+            const ftContainer = document.getElementById('free-text-container');
+            if (ftContainer) {
+                const checkedFt = ftContainer.querySelectorAll('input[data-ft-key]:checked');
+                if (checkedFt.length > 0) {
+                    const ftKeys = Array.from(checkedFt).map(cb => cb.dataset.ftKey).filter(Boolean);
+                    if (ftKeys.length > 0) params.set('ftKeys', ftKeys.join(','));
                 }
             }
         }
