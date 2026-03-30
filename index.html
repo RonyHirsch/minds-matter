@@ -176,7 +176,10 @@
         .citation-box .teaser-thumb:hover { border-color:var(--accent); transform:translateY(-2px); }
         .citation-box .teaser-thumb img { width:100%; height:100%; object-fit:contain; display:block; }
         .subtitle-wrapper { display:inline-block; text-align:center; }
-        .stats-bar { display:flex; justify-content:center; gap:2rem; margin-top:1.5rem; flex-wrap:wrap; }
+        .stats-bar { display:flex; justify-content:center; gap:2rem; margin-top:1.5rem; flex-wrap:wrap; transition:opacity 0.3s; }
+        .stats-bar.hidden { opacity:0; pointer-events:none; height:0; margin:0; overflow:hidden; }
+        .info-box-dismiss { float:right; background:transparent; border:1px solid rgba(88,166,255,0.5); border-radius:4px; color:var(--accent); font-size:0.75rem; padding:0.15rem 0.5rem; cursor:pointer; margin:-0.1rem 0 0 0.75rem; }
+        .info-box-dismiss:hover { background:rgba(88,166,255,0.15); }
         .stat { background:var(--bg-secondary); padding:0.75rem 1.5rem; border-radius:8px; border:1px solid var(--border); }
         .stat-value { font-size:1.5rem; font-weight:700; color:var(--accent); }
         .stat-label { font-size:0.85rem; color:var(--text-secondary); }
@@ -392,14 +395,14 @@
     <div class="container">
         <header>
             <h1>Minds Matter</h1>
-            <div class="subtitle-wrapper">
-                <p class="subtitle">An explorer of results from a survey about the relationship between consciousness and moral status</p>
-                <div class="citation-box">Hirschhorn, R., Negro, N., &amp; Mudrik, L. (2026). The perceived role of consciousness in moral status attributions. <a href="https://doi.org/10.31234/osf.io/ve6c5_v1" target="_blank">doi.org/10.31234/osf.io/ve6c5_v1</a><div class="teaser-2x2"><a href="?tab=distributions&amp;topic=combined_attr&amp;display=mean&amp;selectAll=1" class="teaser-thumb"><img src="fig1_w.png" alt="Attributions of Consciousness and Moral Status"></a><a href="?tab=distributions&amp;topic=kill_test&amp;selectAll=1" class="teaser-thumb"><img src="fig2_w.png" alt="Kill to Pass a Test"></a><a href="?tab=distributions&amp;topic=moral_features&amp;mfOption=v-mf-stacked" class="teaser-thumb"><img src="fig3_w.png" alt="Important Features"></a><a href="?tab=distributions&amp;topic=earth_danger&amp;selectAll=1" class="teaser-thumb"><img src="fig4_w.png" alt="Earth in Danger"></a></div></div>
-            </div>
-            <div class="stats-bar">
+            <p class="subtitle">An explorer of results from a survey about the relationship between consciousness and moral status</p>
+            <div class="stats-bar" id="stats-bar">
                 <div class="stat"><div class="stat-value" id="total-respondents">—</div><div class="stat-label">Respondents</div></div>
                 <div class="stat"><div class="stat-value" id="total-questions">&gt;100</div><div class="stat-label">Questions</div></div>
                 <div class="stat"><div class="stat-value" id="total-countries">—</div><div class="stat-label">Countries</div></div>
+            </div>
+            <div class="subtitle-wrapper">
+                <div class="citation-box">Hirschhorn, R., Negro, N., &amp; Mudrik, L. (2026). The perceived role of consciousness in moral status attributions. <a href="https://doi.org/10.31234/osf.io/ve6c5_v1" target="_blank">doi.org/10.31234/osf.io/ve6c5_v1</a><div class="teaser-2x2"><a href="?tab=distributions&amp;topic=combined_attr&amp;display=mean&amp;selectAll=1" class="teaser-thumb"><img src="fig1_w.png" alt="Attributions of Consciousness and Moral Status"></a><a href="?tab=distributions&amp;topic=kill_test&amp;selectAll=1" class="teaser-thumb"><img src="fig2_w.png" alt="Kill to Pass a Test"></a><a href="?tab=distributions&amp;topic=moral_features&amp;mfOption=v-mf-stacked" class="teaser-thumb"><img src="fig3_w.png" alt="Important Features"></a><a href="?tab=distributions&amp;topic=earth_danger&amp;selectAll=1" class="teaser-thumb"><img src="fig4_w.png" alt="Earth in Danger"></a></div></div>
             </div>
         </header>
 
@@ -412,7 +415,7 @@
         </div>
 
         <div id="distributions" class="panel active">
-            <div class="info-box"><strong>How to use:</strong> Select a <strong>Topic</strong> to explore. Use <strong>Filter Responses</strong> to select which <span class="about-link" onclick="document.getElementById('hamburger').click();">sample phases and recruitment sources</span> to include; and check the <strong>Split by</strong> options if you want to <em>compare</em> the sampled groups instead of collapsing across them. Then select one or more <strong>Questions</strong> to view the response distributions.</div>
+            <div class="info-box" id="info-dist"><button class="info-box-dismiss" onclick="dismissInfoBox('info-dist')">Got it</button><strong>How to use:</strong> Select a <strong>Topic</strong> to explore. Use <strong>Filter Responses</strong> to select which <span class="about-link" onclick="document.getElementById('hamburger').click();">sample phases and recruitment sources</span> to include; and check the <strong>Split by</strong> options if you want to <em>compare</em> the sampled groups instead of collapsing across them. Then select one or more <strong>Questions</strong> to view the response distributions.</div>
             <div class="controls">
                 <div class="control-row">
                     <div class="control-group">
@@ -448,8 +451,8 @@
         </div>
 
         <div id="crosstabs" class="panel">
-            <div class="info-box">
-                <strong>How to use:</strong> Select a <strong>Topic</strong> and <strong>Question</strong>, then choose what to <strong>cross it with</strong>. 
+            <div class="info-box" id="info-cross"><button class="info-box-dismiss" onclick="dismissInfoBox('info-cross')">Got it</button>
+                <strong>How to use:</strong> Select a <strong>Topic</strong> and <strong>Question</strong> 
                 If you're unsure, you can always see more details about the question in the <strong>Question Data</strong> tab. 
                 <br><em>Note: to protect respondent privacy, some combinations are restricted.</em>
             </div>
@@ -608,6 +611,23 @@ function wrapLabel(label, maxWidth = 25) {
     }
     if (currentLine) lines.push(currentLine);
     return lines;
+}
+
+function dismissInfoBox(id) {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+    try { sessionStorage.setItem('mm_dismissed_' + id, '1'); } catch(e) {}
+}
+
+function initDismissed() {
+    ['info-dist', 'info-cross'].forEach(id => {
+        try {
+            if (sessionStorage.getItem('mm_dismissed_' + id) === '1') {
+                const el = document.getElementById(id);
+                if (el) el.style.display = 'none';
+            }
+        } catch(e) {}
+    });
 }
 
 // Helper to setup "Select All" checkbox event listener
@@ -954,6 +974,7 @@ function initUI() {
         initCrossQuestions();
     }
     // Apply URL state after everything is initialized
+    initDismissed();
     setTimeout(applyURLState, 200);
 }
 
@@ -3195,6 +3216,7 @@ function showDist() {
     legendArea.innerHTML = '';
     
     if (!cat) { document.getElementById('dist-title').textContent = 'Please select a topic'; chartArea.innerHTML = ''; tableArea.innerHTML = ''; return; }
+    document.getElementById('stats-bar')?.classList.add('hidden');
     
     // For follow-up only on non-followup category, show empty state with explanation
     if (isFollowUpOnly && categoryNotInFollowup) {
