@@ -171,6 +171,10 @@
         .citation-box { background:var(--bg-tertiary); padding:0.75rem 1.25rem; border-radius:8px; margin:1.25rem 0 0; font-size:0.95rem; color:var(--text-secondary); border:1px solid var(--border); text-align:center; }
         .citation-box a { color:var(--accent); text-decoration:none; display:block; margin-top:0.25rem; }
         .citation-box a:hover { text-decoration:underline; }
+		.teaser-2x2 { display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; margin-top:0.9rem; }
+        .citation-box .teaser-thumb { text-decoration:none; border:1px solid var(--border); border-radius:6px; overflow:hidden; background:var(--bg-secondary); transition:border-color 0.2s, transform 0.15s; display:flex; flex-direction:column; margin-top:0; color:inherit; }
+        .citation-box .teaser-thumb:hover { border-color:var(--accent); transform:translateY(-2px); }
+        .citation-box .teaser-thumb img { width:100%; height:auto; display:block; }
         .subtitle-wrapper { display:inline-block; text-align:center; }
         .stats-bar { display:flex; justify-content:center; gap:2rem; margin-top:1.5rem; flex-wrap:wrap; }
         .stat { background:var(--bg-secondary); padding:0.75rem 1.5rem; border-radius:8px; border:1px solid var(--border); }
@@ -390,7 +394,7 @@
             <h1>Minds Matter</h1>
             <div class="subtitle-wrapper">
                 <p class="subtitle">An explorer of results from a survey about the relationship between consciousness and moral status</p>
-                <div class="citation-box">Hirschhorn, R., Negro, N., &amp; Mudrik, L. (2026). The perceived role of consciousness in moral status attributions. <a href="https://doi.org/10.31234/osf.io/ve6c5_v1" target="_blank">doi.org/10.31234/osf.io/ve6c5_v1</a></div>
+                <div class="citation-box">Hirschhorn, R., Negro, N., &amp; Mudrik, L. (2026). The perceived role of consciousness in moral status attributions. <a href="https://doi.org/10.31234/osf.io/ve6c5_v1" target="_blank">doi.org/10.31234/osf.io/ve6c5_v1</a><div class="teaser-2x2"><a href="?tab=distributions&amp;topic=combined_attr&amp;display=mean&amp;selectAll=1" class="teaser-thumb"><img src="fig1_w.png" alt="Attributions of Consciousness and Moral Status"></a><a href="?tab=distributions&amp;topic=kill_test&amp;selectAll=1" class="teaser-thumb"><img src="fig2_w.png" alt="Kill to Pass a Test"></a><a href="?tab=distributions&amp;topic=moral_features&amp;mfOption=v-mf-stacked" class="teaser-thumb"><img src="fig3_w.png" alt="Important Features"></a><a href="?tab=distributions&amp;topic=earth_danger&amp;selectAll=1" class="teaser-thumb"><img src="fig4_w.png" alt="Earth in Danger"></a></div></div>
             </div>
             <div class="stats-bar">
                 <div class="stat"><div class="stat-value" id="total-respondents">—</div><div class="stat-label">Respondents</div></div>
@@ -2577,6 +2581,19 @@ function applyURLState() {
                     showDist();
                     setTimeout(updateDownloadButton, 100);
                 }, 100);
+            } else if (params.get('selectAll') === '1') {
+                setTimeout(() => {
+                    const kptAll = document.getElementById('v-kpt-all');
+                    const vAll = document.getElementById('v-all');
+                    const allBox = kptAll || vAll;
+                    if (allBox) { allBox.checked = true; allBox.dispatchEvent(new Event('change')); }
+                    if (topic === 'combined_attr' && displayMode) {
+                        const radio = document.querySelector(`input[name="display-mode"][value="${displayMode}"]`);
+                        if (radio) radio.checked = true;
+                    }
+                    showDist();
+                    setTimeout(updateDownloadButton, 100);
+                }, 100);
             } else if (topic === 'moral_features' && params.get('mfOption')) {
                 const mfOption = params.get('mfOption');
                 setTimeout(() => {
@@ -2721,6 +2738,13 @@ function updateURLState() {
                         params.set('entities', keys.join(','));
                     }
                 }
+            }
+
+            // Emit selectAll=1 when the master checkbox is checked and no entities param was written
+            if (!params.has('entities')) {
+                const vAll = document.getElementById('v-all');
+                const kptAll = document.getElementById('v-kpt-all');
+                if (vAll?.checked || kptAll?.checked) params.set('selectAll', '1');
             }
 
             const ftContainer = document.getElementById('free-text-container');
