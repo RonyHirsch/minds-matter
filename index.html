@@ -171,7 +171,7 @@
         .citation-box { background:var(--bg-tertiary); padding:0.75rem 1.25rem; border-radius:8px; margin:1.25rem 0 0; font-size:0.95rem; color:var(--text-secondary); border:1px solid var(--border); text-align:center; }
         .citation-box a { color:var(--accent); text-decoration:none; display:block; margin-top:0.25rem; }
         .citation-box a:hover { text-decoration:underline; }
-		.teaser-2x2 { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:0.5rem; margin-top:0.8rem; max-width:796px; margin-left:auto; margin-right:auto; }
+		.teaser-2x2 { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:0.5rem; margin-top:0.8rem; max-width:790px; margin-left:auto; margin-right:auto; }
         .citation-box .teaser-thumb { text-decoration:none; border:1px solid var(--border); border-radius:6px; overflow:hidden; background:#fff; transition:border-color 0.2s, transform 0.15s; display:flex; align-items:center; justify-content:center; margin-top:0; color:inherit; height:110px; }
         .citation-box .teaser-thumb:hover { border-color:var(--accent); transform:translateY(-2px); }
         .citation-box .teaser-thumb img { width:100%; height:100%; object-fit:contain; display:block; }
@@ -403,7 +403,7 @@
                 <div class="stat"><div class="stat-value" id="total-countries">—</div><div class="stat-label">Countries</div></div>
             </div>
             <div class="subtitle-wrapper">
-                <div class="citation-box">Hirschhorn, R., Negro, N., &amp; Mudrik, L. (2026). The perceived role of consciousness in moral status attributions. <a href="https://doi.org/10.31234/osf.io/ve6c5_v1" target="_blank">doi.org/10.31234/osf.io/ve6c5_v1</a><div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.6rem;font-style:italic;">Click to see the data, or scroll down to choose any question</div><div class="teaser-2x2"><a href="?tab=distributions&amp;topic=combined_attr&amp;display=mean&amp;selectAll=1" class="teaser-thumb"><img src="fig1_w.png" alt="Attributions of Consciousness and Moral Status"></a><a href="?tab=distributions&amp;topic=kill_test&amp;selectAll=1" class="teaser-thumb"><img src="fig2_w.png" alt="Kill to Pass a Test"></a><a href="?tab=distributions&amp;topic=moral_features&amp;mfOption=v-mf-stacked" class="teaser-thumb"><img src="fig3_w.png" alt="Important Features"></a><a href="?tab=distributions&amp;topic=earth_danger&amp;selectAll=1" class="teaser-thumb"><img src="fig4_w.png" alt="Earth in Danger"></a></div></div>
+                <div class="citation-box">Hirschhorn, R., Negro, N., &amp; Mudrik, L. (2026). The perceived role of consciousness in moral status attributions. <a href="https://doi.org/10.31234/osf.io/ve6c5_v1" target="_blank">doi.org/10.31234/osf.io/ve6c5_v1</a><div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.4rem;font-style:italic;">Click to see the data, or scroll down to choose any question</div><div class="teaser-2x2"><a href="?tab=distributions&amp;topic=combined_attr&amp;display=mean&amp;selectAll=1" class="teaser-thumb"><img src="fig1_w.png" alt="Attributions of Consciousness and Moral Status"></a><a href="?tab=distributions&amp;topic=kill_test&amp;selectAll=1" class="teaser-thumb"><img src="fig2_w.png" alt="Kill to Pass a Test"></a><a href="?tab=distributions&amp;topic=moral_features&amp;mfOption=v-mf-stacked" class="teaser-thumb"><img src="fig3_w.png" alt="Important Features"></a><a href="?tab=distributions&amp;topic=earth_danger&amp;selectAll=1" class="teaser-thumb"><img src="fig4_w.png" alt="Earth in Danger"></a></div></div>
             </div>
         </header>
 
@@ -622,7 +622,7 @@ function toggleHowTo(boxId, btnId) {
     if (!box) return;
     const visible = box.style.display !== 'none';
     box.style.display = visible ? 'none' : '';
-    if (btn) { btn.textContent = visible ? 'How to use ▸' : 'How to use ▾'; btn.classList.toggle('active', !visible); }
+    if (btn) { btn.textContent = visible ? 'Click to show the How to use box' : 'Click to hide the How to use box'; btn.classList.toggle('active', !visible); }
 }
 
 // Helper to setup "Select All" checkbox event listener
