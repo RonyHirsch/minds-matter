@@ -1,7 +1,7 @@
 # minds-matter
 
 Code for a website that is an interactive explorer for data from a survey about the relationship between consciousness and moral status. 
-This website was created to visualize data collected as part of [a survey](https://doi.org/10.31234/osf.io/ve6c5_v1): 
+This website was created to visualize data collected as part of [a survey](https://doi.org/10.31234/osf.io/ve6c5_v2): 
 
 Hirschhorn, R., Negro, N., & Mudrik, L. (2026). The perceived role of consciousness in moral status attributions. PsyArXiv
 
@@ -50,7 +50,7 @@ To prevent re-identification of respondents:
 
 If you use this data in your research, please cite:
 
-[Hirschhorn, R., Negro, N., & Mudrik, L. (2026). The perceived role of consciousness in moral status attributions. PsyArXiv](https://doi.org/10.31234/osf.io/ve6c5_v1)
+[Hirschhorn, R., Negro, N., & Mudrik, L. (2026). The perceived role of consciousness in moral status attributions. PsyArXiv](https://doi.org/10.31234/osf.io/ve6c5_v2)
 
 ## License
 
