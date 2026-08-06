@@ -4099,7 +4099,8 @@ function showDist() {
             const mostData = dists['multiselect_moral_considerations_most'];
             // Use respondent count from filter - this is the actual number of people who answered
             // Do NOT use calcNFromData for multiselect as it sums all selections, not respondents
-            const stackedN = getRespondentCount('multiselect_moral_considerations_important') || totalN;
+            const stackedN = getRespondentCount('multiselect_moral_considerations_important_most_eligible')
+              || getRespondentCount('multiselect_moral_considerations_important') || totalN;
             let stackedBadge = buildBadge(stackedN, !!(importantData || mostData));
             // Only show the "Most Important" note for Combined (no follow-up exclusion note needed)
             stackedBadge += `<span class="filter-note note-block">NOTE: "Most Important" only asked if multiple features were marked as "Important"</span>`;
@@ -6537,9 +6538,15 @@ function showMultiDistSplit(cat, splitDatasets, followUpNote = '') {
                     const isFollowUp = ds.label?.toLowerCase().includes('follow');
                     const mostData = ds.data.d?.['multiselect_moral_considerations_combined_most'] || 
                                     ds.data.d?.['multiselect_moral_considerations_most'] || {};
+                    // Both series must come from one population. Follow-up was never asked
+                    // "Most Important", so it keeps its full "important" data (Most is zeroed).
+                    const eligibleData = (!isFollowUp && ds.data.d?.['multiselect_moral_considerations_important_most_eligible'])
+                                    || filteredData;
+                    const eligibleValues = sortedKeys.map(k => eligibleData[k] || 0);
                     const mostValues = sortedKeys.map(k => isFollowUp ? 0 : (mostData[k] || 0));
-                    const importantOnlyValues = values.map((v, i) => Math.max(0, v - mostValues[i]));
-                    const respondentN = ds.data.rc?.['multiselect_moral_considerations_important'] || splitN;
+                    const importantOnlyValues = eligibleValues.map((v, i) => Math.max(0, v - mostValues[i]));
+                    const respondentN = (!isFollowUp && ds.data.rc?.['multiselect_moral_considerations_important_most_eligible'])
+                                    || ds.data.rc?.['multiselect_moral_considerations_important'] || splitN;
                     
                     // Show Y labels inside chart for horizontal-bar-internal (panel layout)
                     const showYLabels = chartType === 'horizontal-bar-internal';
@@ -9012,17 +9019,21 @@ function showStackedBarChart(importantData, mostImportantData, title, colorKey =
     
     // Use combined_most data if available (includes single-feature selections as "most important")
     const combinedMostData = dists?.['multiselect_moral_considerations_combined_most'] || mostImportantData;
-    
+    const eligibleImportant = dists?.['multiselect_moral_considerations_important_most_eligible'];
+    // Both series must come from the same population: respondentN is the eligible count,
+    // so the "important" series must be the eligible-restricted one too.
+    const importantSeries = eligibleImportant || importantData;
+
     // Get all unique labels from both datasets
-    const allLabels = [...new Set([...Object.keys(importantData || {}), ...Object.keys(combinedMostData || {})])];
+    const allLabels = [...new Set([...Object.keys(importantSeries || {}), ...Object.keys(combinedMostData || {})])];
     
     // Sort labels by total count (Important is the total, Most Important is a subset)
     const sortedLabels = allLabels
-        .filter(l => (typeof importantData?.[l] === 'number') || (typeof combinedMostData?.[l] === 'number'))
+        .filter(l => (typeof importantSeries?.[l] === 'number') || (typeof combinedMostData?.[l] === 'number'))
         .sort((a, b) => {
             // Sort by total Important count (which includes Most Important selections)
-            const aTotal = importantData?.[a] || 0;
-            const bTotal = importantData?.[b] || 0;
+            const aTotal = importantSeries?.[a] || 0;
+            const bTotal = importantSeries?.[b] || 0;
             return bTotal - aTotal;
         });
     
@@ -9030,7 +9041,7 @@ function showStackedBarChart(importantData, mostImportantData, title, colorKey =
     // Most Important = subset of Important (people who also marked it as their single most important)
     // Important Only = Important - Most Important (people who marked it important but not most important)
     const mostValues = sortedLabels.map(l => (typeof combinedMostData?.[l] === 'number') ? combinedMostData[l] : 0);
-    const totalImportantValues = sortedLabels.map(l => (typeof importantData?.[l] === 'number') ? importantData[l] : 0);
+    const totalImportantValues = sortedLabels.map(l => (typeof importantSeries?.[l] === 'number') ? importantSeries[l] : 0);
     // Important Only = Total Important - Most Important (to avoid double counting in stacked bar)
     const importantOnlyValues = sortedLabels.map((l, i) => Math.max(0, totalImportantValues[i] - mostValues[i]));
     
@@ -9218,11 +9229,15 @@ function showMoralFeaturesCombinedSplit(splitDatasets, legendArea, chartArea, ta
     
     // Create charts for each split with internal Y labels
     splitDatasets.forEach((ds, sIdx) => {
-        const importantData = ds.data.d?.['multiselect_moral_considerations_important'] || {};
+        const isFollowUp = ds.label?.toLowerCase().includes('follow');
+        // Follow-up was never asked "Most Important", so the eligible-restricted series is
+        // degenerate for it; show its full "Important" data instead (Most is zeroed below).
+        const importantData = (!isFollowUp && ds.data.d?.['multiselect_moral_considerations_important_most_eligible'])
+                   || ds.data.d?.['multiselect_moral_considerations_important'] || {};
         const mostData = ds.data.d?.['multiselect_moral_considerations_combined_most'] || 
                         ds.data.d?.['multiselect_moral_considerations_most'] || {};
-        const respondentN = ds.data.rc?.['multiselect_moral_considerations_important'] || ds.data.n || 1;
-        const isFollowUp = ds.label?.toLowerCase().includes('follow');
+        const respondentN = (!isFollowUp && ds.data.rc?.['multiselect_moral_considerations_important_most_eligible'])
+                 || ds.data.rc?.['multiselect_moral_considerations_important'] || ds.data.n || 1;
         
         const mostValues = sortedLabels.map(l => {
             if (isFollowUp) return 0;  // Follow-up doesn't have Most Important
@@ -9332,11 +9347,13 @@ function showMoralFeaturesCombinedSplit(splitDatasets, legendArea, chartArea, ta
     const allRows = [];
     sortedLabels.forEach(label => {
         splitDatasets.forEach(ds => {
-            const importantData = ds.data.d?.['multiselect_moral_considerations_important'] || {};
+            const isFollowUp = ds.label?.toLowerCase().includes('follow');
+            const importantData = (!isFollowUp && ds.data.d?.['multiselect_moral_considerations_important_most_eligible'])
+                            || ds.data.d?.['multiselect_moral_considerations_important'] || {};
             const mostData = ds.data.d?.['multiselect_moral_considerations_combined_most'] || 
                             ds.data.d?.['multiselect_moral_considerations_most'] || {};
-            const respondentN = ds.data.rc?.['multiselect_moral_considerations_important'] || ds.data.n || 1;
-            const isFollowUp = ds.label?.toLowerCase().includes('follow');
+            const respondentN = (!isFollowUp && ds.data.rc?.['multiselect_moral_considerations_important_most_eligible'])
+                            || ds.data.rc?.['multiselect_moral_considerations_important'] || ds.data.n || 1;
             
             const impVal = typeof importantData[label] === 'number' ? importantData[label] : 0;
             const mostVal = isFollowUp ? 0 : (typeof mostData[label] === 'number' ? mostData[label] : 0);
